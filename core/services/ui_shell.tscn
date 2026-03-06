@@ -1,0 +1,53 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://core/services/ui_shell/ui_shell.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://features/ui/modals/pause_modal.tscn" id="2_pause_modal"]
+[ext_resource type="PackedScene" path="res://features/ui/modals/settings_modal.tscn" id="3_settings_modal"]
+
+[node name="UiShell" type="CanvasLayer"]
+script = ExtResource("1_script")
+modal_layer_path = NodePath("ModalLayer")
+loading_overlay_path = NodePath("OverlayLayer/LoadingOverlay")
+modal_backdrop_path = NodePath("ModalLayer/ModalBackdrop")
+pause_modal_scene = ExtResource("2_pause_modal")
+settings_modal_scene = ExtResource("3_settings_modal")
+
+[node name="ModalLayer" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="ModalBackdrop" type="ColorRect" parent="ModalLayer"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+color = Color(0, 0, 0, 0.45)
+
+[node name="OverlayLayer" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="LoadingOverlay" type="ColorRect" parent="OverlayLayer"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.35)

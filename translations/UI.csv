@@ -1,0 +1,87 @@
+﻿KEY,ru,en
+Main menu,,
+UI_NEW_GAME,Начать игру,New Game
+UI_CONTINUE,Продолжить,Continue
+UI_SETTINGS,Настройки,Settings
+UI_ABOUT,Об игре,About
+UI_GUIDE,Как играть,How to play
+UI_QUIT,Выйти из игры,Quit Game
+UI_TEMPLATE_TITLE,Шаблон игры,Game Template
+UI_TEMPLATE_SUBTITLE,Базовый проект для новых игр,Foundation project for new games
+UI_BACK_TO_MENU,В главное меню,Back To Menu
+UI_SAVE,Сохранить,Save
+UI_CLOSE,Закрыть,Close
+UI_APPLY,Применить,Apply
+,,
+Ui common,,
+UI_GAME_VERSION,Версия игры: {major}.{minor}.{patch}-{status},Game version: {major}.{minor}.{patch}-{status}
+UI_ENGINE_VERSION,Версия движка Godot: {string},Godot engine version: {string}
+UI_LOADING,Загрузка...,Loading...
+,,
+Settings,,
+UI_SETTINGS_HEADER,Настройки игры,Game settings
+UI_SETTINGS_SOUND_SECTION,Настройки звука,Sound Options
+UI_SETTINGS_SOUND,Громкость звука,Master volume
+UI_SETTINGS_MUSIC,Громкость музыки,Music volume
+UI_SETTINGS_SFX,Громкость эффектов,Sound effect volume
+UI_SETTINGS_SCREEN_SECTION,Настройки экрана,Screen options
+UI_SETTINGS_SCREEN_RESOLUTION,Разрешение,Screen Resolution
+UI_SETTINGS_FULLSCREEN,Полный экран,Fullscreen
+UI_SETTINGS_CRT,Эффект ЭЛТ,CRT Effect
+UI_SETTINGS_VSYNC,Вертикальная синхронизация,VSync
+UI_SETTINGS_OVERLAY,Показать оверлей,Show overlay
+UI_SETTINGS_LANG_SECTION,Настройки языка (Только UI),Language options (UI Only)
+UI_SETTINGS_LANGUAGE,Язык,Language
+UI_SETTINGS_GAMEPLAY_SECTION,Настройки игрового процесса,Gameplay options
+UI_SETTINGS_RESET,Сбросить настройки,Reset settings
+UI_SETTINGS_BACK,Применить и вернуться,Apply and return
+,,
+About,,
+UI_ABOUT_AUTHOR,Автор игры: Макс Капралов,Game author: Max Kapralov
+UI_ABOUT_TG_CONTACT,Telegram: @BYRNANE,Telegram: @BYRNANE
+UI_ABOUT_TG_CHANNEL,Канал в telegram,Telegram channel
+UI_ABOUT_PAGE,Страничка на itch.io,Page on itch.io
+UI_ABOUT_BACK,Вернуться в меню,Back to menu
+,,
+GUI,,
+UI_GUI_DAY,ДЕНЬ,DAY
+UI_GUI_MONEY,ДЕНЬГИ:  {value},MONEY:  {value}
+UI_GUI_REPUTATION,РЕПУТАЦИЯ:  {value},REPUTATION:  {value}
+UI_GUI_PAUSE_BTN,ПАУЗА,PAUSE
+UI_GUI_BACK_TO_MENU,ВЫЙТИ В МЕНЮ,EXIT TO MENU
+UI_GUI_RETRY,ПОПРОБОВАТЬ ЕЩЕ РАЗ,TRY AGAIN
+UI_GUI_ASK_QUEST_BTN,ВЫДАТЬ КВЕСТ!,GIVE QUEST!
+UI_GUI_ASK_REWARD_BTN,ВЫДАТЬ НАГРАДУ!,GIVE REWARD!
+UI_GUI_GIVE_QUEST_BTN,ПОСЛАТЬ ГЕРОЯ!,SEND HERO!
+UI_GUI_GIVE_REWARD_BTN,{value} МОНЕТ,{value} COINS
+UI_GUI_SELECT_LOCATION,Выберите подходящую локацию и задание,Choose a suitable location and quest
+UI_GUI_LOCATION_TITLE,ЛОКАЦИЯ:,LOCATION:
+,,
+Pause,,
+UI_PAUSE_TITLE,Пауза,Pause
+UI_PAUSE_SETTINGS,Настройки,Settings
+UI_PAUSE_GUIDE,Как играть,How to play
+UI_PAUSE_CONTINUE,Продолжить игру,Continue game
+UI_PAUSE_SAVE_AND_QUIT,Сохранить и выйти,Save and quit
+,,
+Template Gameplay,,
+UI_GAMEPLAY_STATE,Состояние: {value},State: {value}
+UI_GAMEPLAY_LEVEL,Уровень: {value},Level: {value}
+UI_GAMEPLAY_HEALTH,Здоровье: {value},Health: {value}
+UI_GAMEPLAY_SCORE,Счет: {value},Score: {value}
+UI_GAMEPLAY_DAMAGE,- Здоровье,- Health
+UI_GAMEPLAY_HEAL,+ Здоровье,+ Health
+UI_GAMEPLAY_ADD_SCORE,+ Счет,+ Score
+UI_GAMEPLAY_LEVEL_A,Загрузить уровень A,Load Level A
+UI_GAMEPLAY_LEVEL_B,Загрузить уровень B,Load Level B
+UI_GAMEPLAY_SAVE,Сохранить,Save
+UI_GAMEPLAY_PAUSE_RESUME,Пауза или продолжить,Pause or Resume
+UI_GAMEPLAY_BACK_TO_MENU,В главное меню,Back To Menu
+UI_GAMEPLAY_PREVIEW,Предпросмотр уровня,Embedded Level Preview
+UI_LEVEL_STUB_A_TITLE,Заглушка уровня A,Level Stub A
+UI_LEVEL_STUB_B_TITLE,Заглушка уровня B,Level Stub B
+UI_STATE_BOOT,ЗАГРУЗКА,BOOT
+UI_STATE_MAIN_MENU,ГЛАВНОЕ МЕНЮ,MAIN_MENU
+UI_STATE_LOADING,ЗАГРУЗКА,LOADING
+UI_STATE_IN_GAME,В ИГРЕ,IN_GAME
+UI_STATE_PAUSED,ПАУЗА,PAUSED

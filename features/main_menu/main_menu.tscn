@@ -1,0 +1,64 @@
+[gd_scene format=3 uid="uid://glgqifwjnr65"]
+
+[ext_resource type="Script" uid="uid://0mcl0i6pdr5" path="res://features/main_menu/main_menu.gd" id="1_script"]
+
+[node name="MainMenu" type="Control" unique_id=344137205]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1117564538]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 64
+theme_override_constants/margin_top = 64
+theme_override_constants/margin_right = 64
+theme_override_constants/margin_bottom = 64
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=1939489121]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=96499950]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "UI_TEMPLATE_TITLE"
+
+[node name="SubtitleLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1015001269]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "UI_TEMPLATE_SUBTITLE"
+
+[node name="ButtonsSpacer" type="Control" parent="MarginContainer/VBoxContainer" unique_id=1613290033]
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+
+[node name="NewGameButton" type="Button" parent="MarginContainer/VBoxContainer" unique_id=135512355]
+unique_name_in_owner = true
+layout_mode = 2
+text = "UI_NEW_GAME"
+
+[node name="ContinueButton" type="Button" parent="MarginContainer/VBoxContainer" unique_id=874925832]
+unique_name_in_owner = true
+layout_mode = 2
+text = "UI_CONTINUE"
+
+[node name="SettingsButton" type="Button" parent="MarginContainer/VBoxContainer" unique_id=1646704431]
+unique_name_in_owner = true
+layout_mode = 2
+text = "UI_SETTINGS"
+
+[node name="QuitButton" type="Button" parent="MarginContainer/VBoxContainer" unique_id=1000249497]
+unique_name_in_owner = true
+layout_mode = 2
+text = "UI_QUIT"
