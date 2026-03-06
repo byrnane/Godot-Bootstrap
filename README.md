@@ -101,4 +101,3 @@ Input actions шаблона:
 Документация:
 - [ARCHITECTURE.md](./docs/ARCHITECTURE.md)
 - [CODESTYLE.md](./docs/CODESTYLE.md)
-

@@ -1,36 +1,39 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://dv87t8fj5xqj1"]
 
 [ext_resource type="PackedScene" path="res://features/ui/modals/base_modal.tscn" id="1_base"]
-[ext_resource type="Script" path="res://features/ui/modals/pause_modal.gd" id="2_script"]
+[ext_resource type="Script" uid="uid://b7jeo28o6yphy" path="res://features/ui/modals/pause_modal.gd" id="2_script"]
 
-[node name="PauseModal" instance=ExtResource("1_base")]
-script = ExtResource("2_script")
-close_on_backdrop = false
-default_focus_path = NodePath("MarginContainer/VBoxContainer/Body/ResumeButton")
+[node name="PauseModal" unique_id=1481707140 instance=ExtResource("1_base")]
+layout_mode = 3
 offset_left = -180.0
 offset_top = -140.0
 offset_right = 180.0
 offset_bottom = 140.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_script")
+close_on_backdrop = false
+default_focus_path = NodePath("MarginContainer/VBoxContainer/Body/ResumeButton")
 
-[node name="TitleLabel" parent="MarginContainer/VBoxContainer"]
+[node name="TitleLabel" parent="MarginContainer/VBoxContainer" index="0"]
 text = "UI_PAUSE_TITLE"
 
-[node name="ResumeButton" type="Button" parent="MarginContainer/VBoxContainer/Body"]
+[node name="ResumeButton" type="Button" parent="MarginContainer/VBoxContainer/Body" index="0" unique_id=888822576]
 unique_name_in_owner = true
 layout_mode = 2
 text = "UI_PAUSE_CONTINUE"
 
-[node name="SaveButton" type="Button" parent="MarginContainer/VBoxContainer/Body"]
+[node name="SaveButton" type="Button" parent="MarginContainer/VBoxContainer/Body" index="1" unique_id=436869637]
 unique_name_in_owner = true
 layout_mode = 2
 text = "UI_SAVE"
 
-[node name="SettingsButton" type="Button" parent="MarginContainer/VBoxContainer/Body"]
+[node name="SettingsButton" type="Button" parent="MarginContainer/VBoxContainer/Body" index="2" unique_id=1873605972]
 unique_name_in_owner = true
 layout_mode = 2
 text = "UI_PAUSE_SETTINGS"
 
-[node name="BackButton" type="Button" parent="MarginContainer/VBoxContainer/Body"]
+[node name="BackButton" type="Button" parent="MarginContainer/VBoxContainer/Body" index="3" unique_id=1957643295]
 unique_name_in_owner = true
 layout_mode = 2
 text = "UI_BACK_TO_MENU"

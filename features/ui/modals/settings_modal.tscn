@@ -1,96 +1,96 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://cre517qra8jia"]
 
 [ext_resource type="PackedScene" path="res://features/ui/modals/base_modal.tscn" id="1_base"]
-[ext_resource type="Script" path="res://features/ui/modals/settings_modal.gd" id="2_script"]
+[ext_resource type="Script" uid="uid://dqhlvq7ijywkm" path="res://features/ui/modals/settings_modal.gd" id="2_script"]
 
-[node name="SettingsModal" instance=ExtResource("1_base")]
+[node name="SettingsModal" unique_id=804201977 instance=ExtResource("1_base")]
+layout_mode = 3
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("2_script")
 default_focus_path = NodePath("MarginContainer/VBoxContainer/Body/LanguageRow/LanguageOptionButton")
 
-[node name="TitleLabel" parent="MarginContainer/VBoxContainer"]
+[node name="TitleLabel" parent="MarginContainer/VBoxContainer" index="0"]
 text = "UI_SETTINGS_HEADER"
 
-[node name="LanguageRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Body"]
+[node name="LanguageRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Body" index="0" unique_id=667877939]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="LanguageLabel" type="Label" parent="MarginContainer/VBoxContainer/Body/LanguageRow"]
+[node name="LanguageLabel" type="Label" parent="MarginContainer/VBoxContainer/Body/LanguageRow" index="0" unique_id=1393559722]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 text = "UI_SETTINGS_LANGUAGE"
 
-[node name="LanguageOptionButton" type="OptionButton" parent="MarginContainer/VBoxContainer/Body/LanguageRow"]
+[node name="LanguageOptionButton" type="OptionButton" parent="MarginContainer/VBoxContainer/Body/LanguageRow" index="1" unique_id=1720710846]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="MasterVolumeLabel" type="Label" parent="MarginContainer/VBoxContainer/Body"]
+[node name="MasterVolumeLabel" type="Label" parent="MarginContainer/VBoxContainer/Body" index="1" unique_id=2049725416]
 unique_name_in_owner = true
 layout_mode = 2
 text = "UI_SETTINGS_SOUND"
 
-[node name="MasterVolumeSlider" type="HSlider" parent="MarginContainer/VBoxContainer/Body"]
+[node name="MasterVolumeSlider" type="HSlider" parent="MarginContainer/VBoxContainer/Body" index="2" unique_id=1002553580]
 unique_name_in_owner = true
 layout_mode = 2
-min_value = 0.0
 max_value = 1.0
 step = 0.01
 value = 1.0
 
-[node name="MusicVolumeLabel" type="Label" parent="MarginContainer/VBoxContainer/Body"]
+[node name="MusicVolumeLabel" type="Label" parent="MarginContainer/VBoxContainer/Body" index="3" unique_id=374894451]
 unique_name_in_owner = true
 layout_mode = 2
 text = "UI_SETTINGS_MUSIC"
 
-[node name="MusicVolumeSlider" type="HSlider" parent="MarginContainer/VBoxContainer/Body"]
+[node name="MusicVolumeSlider" type="HSlider" parent="MarginContainer/VBoxContainer/Body" index="4" unique_id=597293241]
 unique_name_in_owner = true
 layout_mode = 2
-min_value = 0.0
 max_value = 1.0
 step = 0.01
 value = 1.0
 
-[node name="SfxVolumeLabel" type="Label" parent="MarginContainer/VBoxContainer/Body"]
+[node name="SfxVolumeLabel" type="Label" parent="MarginContainer/VBoxContainer/Body" index="5" unique_id=1555187658]
 unique_name_in_owner = true
 layout_mode = 2
 text = "UI_SETTINGS_SFX"
 
-[node name="SfxVolumeSlider" type="HSlider" parent="MarginContainer/VBoxContainer/Body"]
+[node name="SfxVolumeSlider" type="HSlider" parent="MarginContainer/VBoxContainer/Body" index="6" unique_id=1180964372]
 unique_name_in_owner = true
 layout_mode = 2
-min_value = 0.0
 max_value = 1.0
 step = 0.01
 value = 1.0
 
-[node name="FullscreenCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/Body"]
+[node name="FullscreenCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/Body" index="7" unique_id=1267183957]
 unique_name_in_owner = true
 layout_mode = 2
 text = "UI_SETTINGS_FULLSCREEN"
 
-[node name="VSyncCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/Body"]
+[node name="VSyncCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/Body" index="8" unique_id=968426595]
 unique_name_in_owner = true
 layout_mode = 2
 text = "UI_SETTINGS_VSYNC"
 
-[node name="ButtonsRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Body"]
+[node name="ButtonsRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Body" index="9" unique_id=242847119]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="ApplyButton" type="Button" parent="MarginContainer/VBoxContainer/Body/ButtonsRow"]
+[node name="ApplyButton" type="Button" parent="MarginContainer/VBoxContainer/Body/ButtonsRow" index="0" unique_id=543644533]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 text = "UI_APPLY"
 
-[node name="ResetButton" type="Button" parent="MarginContainer/VBoxContainer/Body/ButtonsRow"]
+[node name="ResetButton" type="Button" parent="MarginContainer/VBoxContainer/Body/ButtonsRow" index="1" unique_id=168368618]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 text = "UI_SETTINGS_RESET"
 
-[node name="CloseButton" type="Button" parent="MarginContainer/VBoxContainer/Body/ButtonsRow"]
+[node name="CloseButton" type="Button" parent="MarginContainer/VBoxContainer/Body/ButtonsRow" index="2" unique_id=852648993]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
