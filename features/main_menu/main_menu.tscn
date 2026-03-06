@@ -1,6 +1,7 @@
-[gd_scene format=3 uid="uid://glgqifwjnr65"]
+[gd_scene load_steps=2 format=3 uid="uid://glgqifwjnr65"]
 
 [ext_resource type="Script" uid="uid://0mcl0i6pdr5" path="res://features/main_menu/main_menu.gd" id="1_script"]
+[ext_resource type="Font" path="res://shared/ui/theme/heading_font_embedded.tres" id="2_heading_font"]
 
 [node name="MainMenu" type="Control" unique_id=344137205]
 layout_mode = 3
@@ -30,6 +31,7 @@ theme_override_constants/separation = 16
 [node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=96499950]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_fonts/font = ExtResource("2_heading_font")
 theme_override_font_sizes/font_size = 36
 text = "UI_TEMPLATE_TITLE"
 
@@ -45,20 +47,24 @@ layout_mode = 2
 
 [node name="NewGameButton" type="Button" parent="MarginContainer/VBoxContainer" unique_id=135512355]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 text = "UI_NEW_GAME"
 
 [node name="ContinueButton" type="Button" parent="MarginContainer/VBoxContainer" unique_id=874925832]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 text = "UI_CONTINUE"
 
 [node name="SettingsButton" type="Button" parent="MarginContainer/VBoxContainer" unique_id=1646704431]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 text = "UI_SETTINGS"
 
 [node name="QuitButton" type="Button" parent="MarginContainer/VBoxContainer" unique_id=1000249497]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 text = "UI_QUIT"

@@ -1,0 +1,11 @@
+[gd_resource type="FontVariation" load_steps=3 format=3]
+
+[ext_resource type="FontFile" path="res://shared/ui/theme/fonts/Exo2-VariableFont_wght.ttf" id="1_font_file"]
+[ext_resource type="Font" path="res://shared/ui/theme/body_font.tres" id="2_fallback_font"]
+
+[resource]
+base_font = ExtResource("1_font_file")
+fallbacks = Array[Font]([ExtResource("2_fallback_font")])
+variation_opentype = {
+"wght": 550
+}

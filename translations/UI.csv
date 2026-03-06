@@ -75,7 +75,7 @@ UI_GAMEPLAY_ADD_SCORE,+ Счет,+ Score
 UI_GAMEPLAY_LEVEL_A,Загрузить уровень A,Load Level A
 UI_GAMEPLAY_LEVEL_B,Загрузить уровень B,Load Level B
 UI_GAMEPLAY_SAVE,Сохранить,Save
-UI_GAMEPLAY_PAUSE_RESUME,Пауза или продолжить,Pause or Resume
+UI_GAMEPLAY_PAUSE,Пауза,Pause
 UI_GAMEPLAY_BACK_TO_MENU,В главное меню,Back To Menu
 UI_GAMEPLAY_PREVIEW,Предпросмотр уровня,Embedded Level Preview
 UI_LEVEL_STUB_A_TITLE,Заглушка уровня A,Level Stub A

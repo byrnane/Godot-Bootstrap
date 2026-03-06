@@ -27,6 +27,10 @@ SceneRouter="*res://core/services/scene_router.gd"
 UiShell="*res://core/services/ui_shell/ui_shell.tscn"
 AppFlow="*res://core/flow/app_flow.gd"
 
+[gui]
+
+theme/custom="res://shared/ui/theme/scifi_dark_theme.tres"
+
 [input]
 
 ui_cancel={
@@ -53,4 +57,3 @@ locale/translations=PackedStringArray("res://translations/UI.en.translation", "r
 rendering_device/driver.windows="d3d12"
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
-

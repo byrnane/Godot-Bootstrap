@@ -7,8 +7,6 @@ signal score_requested;
 signal level_a_requested;
 signal level_b_requested;
 signal pause_toggle_requested;
-signal save_requested;
-signal back_to_menu_requested;
 
 @onready var state_label: Label = %StateLabel;
 @onready var level_label: Label = %LevelLabel;
@@ -19,9 +17,7 @@ signal back_to_menu_requested;
 @onready var score_button: Button = %ScoreButton;
 @onready var level_a_button: Button = %LevelAButton;
 @onready var level_b_button: Button = %LevelBButton;
-@onready var save_button: Button = %SaveButton;
 @onready var pause_button: Button = %PauseButton;
-@onready var back_button: Button = %BackButton;
 
 var _view_model: Dictionary = {};
 
@@ -31,9 +27,7 @@ func _ready() -> void:
 	score_button.pressed.connect(_on_score_button_pressed);
 	level_a_button.pressed.connect(_on_level_a_button_pressed);
 	level_b_button.pressed.connect(_on_level_b_button_pressed);
-	save_button.pressed.connect(_on_save_button_pressed);
 	pause_button.pressed.connect(_on_pause_button_pressed);
-	back_button.pressed.connect(_on_back_button_pressed);
 	if not LocalizationManager.locale_changed.is_connected(_on_locale_changed):
 		LocalizationManager.locale_changed.connect(_on_locale_changed);
 	_refresh_view();
@@ -95,14 +89,8 @@ func _on_level_a_button_pressed() -> void:
 func _on_level_b_button_pressed() -> void:
 	level_b_requested.emit();
 
-func _on_save_button_pressed() -> void:
-	save_requested.emit();
-
 func _on_pause_button_pressed() -> void:
 	pause_toggle_requested.emit();
-
-func _on_back_button_pressed() -> void:
-	back_to_menu_requested.emit();
 
 func _on_locale_changed(_locale: String) -> void:
 	_refresh_view();

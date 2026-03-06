@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://features/ui/modals/base_modal.gd" id="1_script"]
+[ext_resource type="Font" path="res://shared/ui/theme/heading_font_embedded.tres" id="2_heading_font"]
 
 [node name="BaseModal" type="PanelContainer"]
 visible = false
@@ -33,6 +34,7 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "UI_LOADING"
 horizontal_alignment = 1
+theme_override_fonts/font = ExtResource("2_heading_font")
 theme_override_font_sizes/font_size = 22
 
 [node name="Body" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
