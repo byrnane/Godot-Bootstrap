@@ -6,11 +6,21 @@
 
 [node name="UiShell" type="CanvasLayer"]
 script = ExtResource("1_script")
+hud_layer_path = NodePath("HudLayer")
 modal_layer_path = NodePath("ModalLayer")
 loading_overlay_path = NodePath("OverlayLayer/LoadingOverlay")
 modal_backdrop_path = NodePath("ModalLayer/ModalBackdrop")
 pause_modal_scene = ExtResource("2_pause_modal")
 settings_modal_scene = ExtResource("3_settings_modal")
+
+[node name="HudLayer" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 
 [node name="ModalLayer" type="Control" parent="."]
 layout_mode = 3

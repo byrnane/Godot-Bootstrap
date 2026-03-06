@@ -5,14 +5,14 @@
 Layers:
 1. `main/` - bootstrap entry point
 2. `core/` - app infrastructure and long-lived services
-3. `features/` - concrete screens, gameplay stubs, modals
+3. `features/` - concrete screens, gameplay, HUDs, modals
 4. `shared/` - reusable UI pieces
 
 Main runtime parts:
 - `Main` - configures root container and starts app flow
-- `AppFlow` - owns top-level navigation
-- `SceneRouter` - swaps root scenes
-- `UiShell` - owns overlays and modal stack
+- `AppFlow` - owns top-level navigation and app state transitions
+- `SceneRouter` - swaps root scenes and runs scene/HUD lifecycle hooks
+- `UiShell` - owns the HUD host, overlays, and modal stack
 - `LocalizationManager` - applies locale
 - `SettingsManager` - loads, validates, applies, saves settings
 - `SaveManager` - loads, validates, migrates, saves game data
@@ -29,6 +29,11 @@ Rules:
 
 UI model:
 - global UI lives in `UiShell`
+- world scenes render through `SceneRouter`
+- a scene may optionally provide a HUD through `get_hud_scene()`
+- `SceneRouter` mounts HUD before `on_enter()` and unmounts it after `on_exit()`
+- scenes bind their own HUD through `bind_hud(hud)` and may clean up through `unbind_hud(hud)`
+- HUDs are presentation-only: they render view data and emit user intent back to the scene
 - modals are stack-based
 - shared modal behavior lives in `BaseModal`
 - concrete modals should use inherited scenes
@@ -48,14 +53,14 @@ Persistence:
 Слои:
 1. `main/` - точка входа и bootstrap
 2. `core/` - инфраструктура приложения и долгоживущие сервисы
-3. `features/` - конкретные экраны, gameplay stub, модалки
+3. `features/` - конкретные экраны, gameplay, HUD-слои и модалки
 4. `shared/` - переиспользуемые UI-части
 
 Основные runtime-сущности:
 - `Main` - настраивает root container и запускает app flow
-- `AppFlow` - управляет верхнеуровневой навигацией
-- `SceneRouter` - переключает root-сцены
-- `UiShell` - владеет overlay и стеком модалок
+- `AppFlow` - управляет верхнеуровневой навигацией и переходами состояния приложения
+- `SceneRouter` - переключает root-сцены и выполняет lifecycle-хуки сцены и HUD
+- `UiShell` - владеет хостом для HUD, overlay и стеком модалок
 - `LocalizationManager` - применяет локаль
 - `SettingsManager` - загружает, валидирует, применяет и сохраняет настройки
 - `SaveManager` - загружает, валидирует, мигрирует и сохраняет данные игры
@@ -72,6 +77,11 @@ Persistence:
 
 UI-модель:
 - глобальный UI живет в `UiShell`
+- world-сцены рендерятся через `SceneRouter`
+- сцена может опционально предоставить HUD через `get_hud_scene()`
+- `SceneRouter` монтирует HUD до `on_enter()` и снимает его после `on_exit()`
+- сцены сами привязывают HUD через `bind_hud(hud)` и при необходимости чистят связи через `unbind_hud(hud)`
+- HUD остается слоем представления: он рисует view-данные и отправляет пользовательские действия обратно в сцену
 - модалки работают как стек
 - общее поведение модалок живет в `BaseModal`
 - конкретные модалки должны делаться через inherited scenes

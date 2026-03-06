@@ -6,21 +6,25 @@ signal settings_requested;
 signal back_to_menu_requested;
 signal save_requested;
 
+@export var hud_layer_path: NodePath;
 @export var modal_layer_path: NodePath;
 @export var loading_overlay_path: NodePath;
 @export var modal_backdrop_path: NodePath;
 @export var pause_modal_scene: PackedScene;
 @export var settings_modal_scene: PackedScene;
 
+var _hud_layer: Control = null;
 var _modal_layer: Control = null;
 var _loading_overlay: CanvasItem = null;
 var _modal_backdrop: Control = null;
+var _current_hud: Control = null;
 var _pause_modal: PauseModal = null;
 var _settings_modal: SettingsModal = null;
 var _modal_stack: Array[Control] = [];
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS;
+	_hud_layer = get_node_or_null(hud_layer_path) as Control;
 	_modal_layer = get_node_or_null(modal_layer_path) as Control;
 	_loading_overlay = get_node_or_null(loading_overlay_path) as CanvasItem;
 	_modal_backdrop = get_node_or_null(modal_backdrop_path) as Control;
@@ -63,6 +67,28 @@ func request_back_to_menu() -> void:
 
 func request_save() -> void:
 	save_requested.emit();
+
+func set_hud_scene(hud_scene: PackedScene) -> Control:
+	clear_hud();
+	if _hud_layer == null or hud_scene == null:
+		return null;
+	_current_hud = hud_scene.instantiate() as Control;
+	if _current_hud == null:
+		return null;
+	_hud_layer.add_child(_current_hud);
+	_current_hud.process_mode = Node.PROCESS_MODE_ALWAYS;
+	return _current_hud;
+
+func clear_hud() -> void:
+	if _current_hud == null:
+		return;
+	if is_instance_valid(_current_hud):
+		_hud_layer.remove_child(_current_hud);
+		_current_hud.queue_free();
+	_current_hud = null;
+
+func get_current_hud() -> Control:
+	return _current_hud;
 
 func set_loading_visible(loading_visible: bool) -> void:
 	if _loading_overlay == null:

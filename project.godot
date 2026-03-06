@@ -24,7 +24,7 @@ SettingsManager="*res://core/services/settings_manager.gd"
 SaveManager="*res://core/services/save_manager.gd"
 AudioManager="*res://core/services/audio_manager.gd"
 SceneRouter="*res://core/services/scene_router.gd"
-UiShell="*res://core/services/ui_shell.tscn"
+UiShell="*res://core/services/ui_shell/ui_shell.tscn"
 AppFlow="*res://core/flow/app_flow.gd"
 
 [input]
@@ -42,7 +42,7 @@ ui_pause={
 
 [internationalization]
 
-locale/translations=PackedStringArray("res://translations/UI.csv")
+locale/translations=PackedStringArray("res://translations/UI.en.translation", "res://translations/UI.ru.translation")
 
 [physics]
 
@@ -53,3 +53,4 @@ locale/translations=PackedStringArray("res://translations/UI.csv")
 rendering_device/driver.windows="d3d12"
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
+

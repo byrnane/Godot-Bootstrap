@@ -33,6 +33,7 @@ func go_to(scene_id: StringName, payload: Variant = null) -> Node:
 
 	scene_will_change.emit(resolved_scene_id);
 	_call_on_exit(current_scene_root);
+	_unmount_scene_hud(current_scene_root);
 	_clear_container();
 
 	var packed_scene: PackedScene = load(scene_path) as PackedScene;
@@ -48,6 +49,7 @@ func go_to(scene_id: StringName, payload: Variant = null) -> Node:
 	_root_container.add_child(scene_instance);
 	current_scene_id = resolved_scene_id;
 	current_scene_root = scene_instance;
+	_mount_scene_hud(scene_instance);
 	_call_on_enter(scene_instance, payload);
 	scene_changed.emit(current_scene_id, current_scene_root);
 	return current_scene_root;
@@ -65,6 +67,32 @@ func _clear_container() -> void:
 	for child: Node in _root_container.get_children():
 		_root_container.remove_child(child);
 		child.queue_free();
+
+func _mount_scene_hud(target: Node) -> void:
+	if target == null or UiShell == null:
+		return;
+	var hud_scene: PackedScene = _get_scene_hud_scene(target);
+	if hud_scene == null:
+		UiShell.clear_hud();
+		return;
+	var hud_instance: Control = UiShell.set_hud_scene(hud_scene);
+	if hud_instance == null:
+		return;
+	if target.has_method("bind_hud"):
+		target.call("bind_hud", hud_instance);
+
+func _unmount_scene_hud(target: Node) -> void:
+	if UiShell == null:
+		return;
+	var hud_instance: Control = UiShell.get_current_hud();
+	if target != null and hud_instance != null and target.has_method("unbind_hud"):
+		target.call("unbind_hud", hud_instance);
+	UiShell.clear_hud();
+
+func _get_scene_hud_scene(target: Node) -> PackedScene:
+	if target == null or not target.has_method("get_hud_scene"):
+		return null;
+	return target.call("get_hud_scene") as PackedScene;
 
 func _call_on_enter(target: Node, payload: Variant) -> void:
 	if target == null:
