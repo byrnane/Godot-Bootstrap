@@ -8,8 +8,6 @@
 
 config_version=5
 
-"ï»¿config_version"=5
-
 [application]
 
 config/name="Game Template"
@@ -44,7 +42,7 @@ ui_pause={
 
 [internationalization]
 
-locale/translations=PackedStringArray("res://translations/UI.en.translation", "res://translations/UI.ru.translation")
+locale/translations=PackedStringArray("res://translations/UI.csv")
 
 [physics]
 
