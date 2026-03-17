@@ -39,6 +39,8 @@ func get_hud_scene() -> PackedScene:
 func bind_hud(hud: Control) -> void:
 	if hud == null:
 		return;
+	# The gameplay scene owns the state; HUD only emits user intent and renders
+	# the latest snapshot pushed from here.
 	_connect_signal_if_needed(hud, &"damage_requested", Callable(self, "apply_damage"));
 	_connect_signal_if_needed(hud, &"heal_requested", Callable(self, "apply_heal"));
 	_connect_signal_if_needed(hud, &"score_requested", Callable(self, "add_score_points"));
@@ -80,6 +82,8 @@ func _load_level(level_scene_id: StringName) -> void:
 		return;
 	if not Scenes.has(level_scene_id):
 		return;
+	# Gameplay keeps level content below its own root instead of using
+	# SceneRouter, because this swap is local to the active game scene.
 	for child: Node in level_root.get_children():
 		level_root.remove_child(child);
 		child.queue_free();

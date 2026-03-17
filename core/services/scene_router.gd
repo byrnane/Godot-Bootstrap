@@ -31,6 +31,8 @@ func go_to(scene_id: StringName, payload: Variant = null) -> Node:
 		push_error("SceneRouter: scene path is empty for id '%s'." % [String(resolved_scene_id)]);
 		return null;
 
+	# Exit hooks run before the node is freed so the outgoing scene can detach
+	# from services while its tree is still intact.
 	scene_will_change.emit(resolved_scene_id);
 	_call_on_exit(current_scene_root);
 	_unmount_scene_hud(current_scene_root);
@@ -49,6 +51,8 @@ func go_to(scene_id: StringName, payload: Variant = null) -> Node:
 	_root_container.add_child(scene_instance);
 	current_scene_id = resolved_scene_id;
 	current_scene_root = scene_instance;
+	# HUD is mounted before on_enter so scene code can push an initial snapshot
+	# into an already-existing presentation layer.
 	_mount_scene_hud(scene_instance);
 	_call_on_enter(scene_instance, payload);
 	scene_changed.emit(current_scene_id, current_scene_root);

@@ -1,4 +1,4 @@
-﻿extends Node;
+extends Node;
 
 const SAVE_PATH: String = "user://savegame.save";
 
@@ -20,6 +20,8 @@ func load_game() -> SaveData:
 	if save_data == null:
 		return null;
 
+	# Old snapshots are normalized on load and immediately rewritten so the next
+	# boot no longer needs to pass through migration paths.
 	var needs_resave: bool = data is SaveData;
 	if data is Dictionary:
 		needs_resave = int((data as Dictionary).get("version", 0)) != SaveData.CURRENT_VERSION;

@@ -44,6 +44,8 @@ func _populate_locales() -> void:
 		selected_locale = LocalizationManager.normalize_locale(AppContext.settings.language);
 	_is_syncing_controls = true;
 	language_option_button.clear();
+	# Rebuild labels on every open/locale change so the dropdown itself is also
+	# translated instead of freezing in the language used at startup.
 	for locale: String in LocalizationManager.get_supported_locales():
 		language_option_button.add_item(LocalizationManager.get_display_name(locale));
 		var item_index: int = language_option_button.item_count - 1;

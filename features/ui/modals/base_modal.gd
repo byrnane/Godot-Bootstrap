@@ -16,6 +16,8 @@ func _ready() -> void:
 
 func open_modal() -> void:
 	visible = true;
+	# Derived modals can re-sync controls here every time they are reopened
+	# without duplicating focus and open-state behavior.
 	_sync_ui_state();
 	focus_default_control();
 	opened.emit();

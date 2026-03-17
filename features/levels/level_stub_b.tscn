@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3]
 
-[ext_resource type="Script" path="res://features/levels/level_stub_b.gd" id="1_script"]
+[ext_resource type="Script" path="res://features/levels/level_stub.gd" id="1_script"]
 [ext_resource type="Font" path="res://shared/ui/theme/heading_font_embedded.tres" id="2_heading_font"]
 
 [node name="LevelStubB" type="Control"]

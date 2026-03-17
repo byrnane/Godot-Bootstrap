@@ -63,6 +63,7 @@ static func _from_dictionary(data: Dictionary) -> SaveData:
 	return migrated;
 
 func _sanitize() -> void:
+	# Keep normalization here so callers can treat loaded saves as trusted data.
 	version = CURRENT_VERSION;
 	if not Scenes.has(current_level_id):
 		current_level_id = DEFAULT_LEVEL_ID;

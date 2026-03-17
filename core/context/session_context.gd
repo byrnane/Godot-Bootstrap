@@ -1,8 +1,8 @@
-﻿extends Node;
+extends Node;
 
-const DEFAULT_PLAYER_HEALTH: int = 100;
-const DEFAULT_SCORE: int = 0;
-const DEFAULT_LEVEL_ID: StringName = &"level_stub_a";
+const DEFAULT_PLAYER_HEALTH: int = SaveData.DEFAULT_PLAYER_HEALTH;
+const DEFAULT_SCORE: int = SaveData.DEFAULT_SCORE;
+const DEFAULT_LEVEL_ID: StringName = SaveData.DEFAULT_LEVEL_ID;
 
 var current_level_id: StringName = DEFAULT_LEVEL_ID;
 var player_health: int = DEFAULT_PLAYER_HEALTH;
@@ -20,6 +20,8 @@ func apply_save_data(data: SaveData) -> void:
 		reset();
 		return;
 
+	# SessionContext mirrors the validated SaveData snapshot and should not
+	# re-implement migration or fallback rules on its own.
 	current_level_id = data.current_level_id;
 	player_health = data.player_health;
 	score = data.score;

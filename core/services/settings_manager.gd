@@ -18,13 +18,7 @@ func save_settings() -> void:
 	AppContext.ensure_defaults();
 	_sanitize_settings(AppContext.settings);
 	var config: ConfigFile = ConfigFile.new();
-	config.set_value(SETTINGS_SECTION, "version", AppContext.settings.version);
-	config.set_value(SETTINGS_SECTION, "language", AppContext.settings.language);
-	config.set_value(SETTINGS_SECTION, "master_volume", AppContext.settings.master_volume);
-	config.set_value(SETTINGS_SECTION, "music_volume", AppContext.settings.music_volume);
-	config.set_value(SETTINGS_SECTION, "sfx_volume", AppContext.settings.sfx_volume);
-	config.set_value(SETTINGS_SECTION, "fullscreen", AppContext.settings.fullscreen);
-	config.set_value(SETTINGS_SECTION, "vsync_enabled", AppContext.settings.vsync_enabled);
+	_write_settings_values(config, AppContext.settings);
 	config.save(SETTINGS_PATH);
 
 func apply_settings() -> void:
@@ -55,35 +49,39 @@ func _read_settings_file() -> UserSettings:
 
 	match source_version:
 		0:
-			_read_settings_v0(config, settings);
+			settings.version = UserSettings.CURRENT_VERSION;
+			_read_common_settings_values(config, settings);
 		UserSettings.CURRENT_VERSION:
-			_read_current_settings(config, settings);
+			settings.version = int(config.get_value(SETTINGS_SECTION, "version", UserSettings.CURRENT_VERSION));
+			_read_common_settings_values(config, settings);
 		_:
-			_read_current_settings(config, settings);
+			settings.version = int(config.get_value(SETTINGS_SECTION, "version", UserSettings.CURRENT_VERSION));
+			_read_common_settings_values(config, settings);
 	_sanitize_settings(settings);
 	return settings;
 
-func _read_settings_v0(config: ConfigFile, settings: UserSettings) -> void:
+func _read_common_settings_values(config: ConfigFile, settings: UserSettings) -> void:
 	settings.language = String(config.get_value(SETTINGS_SECTION, "language", settings.language));
 	settings.master_volume = float(config.get_value(SETTINGS_SECTION, "master_volume", settings.master_volume));
 	settings.music_volume = float(config.get_value(SETTINGS_SECTION, "music_volume", settings.music_volume));
 	settings.sfx_volume = float(config.get_value(SETTINGS_SECTION, "sfx_volume", settings.sfx_volume));
 	settings.fullscreen = bool(config.get_value(SETTINGS_SECTION, "fullscreen", settings.fullscreen));
 	settings.vsync_enabled = bool(config.get_value(SETTINGS_SECTION, "vsync_enabled", settings.vsync_enabled));
-	settings.version = UserSettings.CURRENT_VERSION;
 
-func _read_current_settings(config: ConfigFile, settings: UserSettings) -> void:
-	settings.version = int(config.get_value(SETTINGS_SECTION, "version", UserSettings.CURRENT_VERSION));
-	settings.language = String(config.get_value(SETTINGS_SECTION, "language", settings.language));
-	settings.master_volume = float(config.get_value(SETTINGS_SECTION, "master_volume", settings.master_volume));
-	settings.music_volume = float(config.get_value(SETTINGS_SECTION, "music_volume", settings.music_volume));
-	settings.sfx_volume = float(config.get_value(SETTINGS_SECTION, "sfx_volume", settings.sfx_volume));
-	settings.fullscreen = bool(config.get_value(SETTINGS_SECTION, "fullscreen", settings.fullscreen));
-	settings.vsync_enabled = bool(config.get_value(SETTINGS_SECTION, "vsync_enabled", settings.vsync_enabled));
+func _write_settings_values(config: ConfigFile, settings: UserSettings) -> void:
+	config.set_value(SETTINGS_SECTION, "version", settings.version);
+	config.set_value(SETTINGS_SECTION, "language", settings.language);
+	config.set_value(SETTINGS_SECTION, "master_volume", settings.master_volume);
+	config.set_value(SETTINGS_SECTION, "music_volume", settings.music_volume);
+	config.set_value(SETTINGS_SECTION, "sfx_volume", settings.sfx_volume);
+	config.set_value(SETTINGS_SECTION, "fullscreen", settings.fullscreen);
+	config.set_value(SETTINGS_SECTION, "vsync_enabled", settings.vsync_enabled);
 
 func _sanitize_settings(settings: UserSettings) -> void:
 	if settings == null:
 		return;
+	# Settings may come from disk, editor defaults, or UI controls; clamp once
+	# here so the rest of the runtime can use them without extra guards.
 	settings.version = UserSettings.CURRENT_VERSION;
 	settings.language = LocalizationManager.normalize_locale(settings.language);
 	settings.master_volume = clampf(settings.master_volume, 0.0, 1.0);

@@ -1,8 +1,8 @@
 extends Control;
-class_name LevelStubB;
+class_name LevelStub;
 
 @export var label_text: String = "";
-@export var accent_color: Color = Color(0.26, 0.62, 0.36, 1.0);
+@export var accent_color: Color = Color(0.20, 0.42, 0.75, 1.0);
 
 @onready var title_label: Label = %TitleLabel;
 @onready var accent_rect: ColorRect = %AccentRect;

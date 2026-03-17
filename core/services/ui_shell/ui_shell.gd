@@ -103,6 +103,7 @@ func _ensure_modals() -> void:
 		if _pause_modal != null:
 			_modal_layer.add_child(_pause_modal);
 			_pause_modal.process_mode = Node.PROCESS_MODE_ALWAYS;
+			# UiShell forwards modal intent upward and stays ignorant of pause logic.
 			_pause_modal.resume_requested.connect(request_resume);
 			_pause_modal.save_requested.connect(request_save);
 			_pause_modal.settings_requested.connect(open_settings);
@@ -119,6 +120,7 @@ func _push_modal(modal: Control) -> void:
 		return;
 	if _modal_stack.has(modal):
 		_modal_stack.erase(modal);
+	# Re-appending keeps stacking deterministic when one modal opens another.
 	_modal_stack.append(modal);
 	_refresh_modal_visibility();
 	_focus_top_modal();
