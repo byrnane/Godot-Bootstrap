@@ -8,29 +8,31 @@ signal save_requested;
 
 @export var hud_layer_path: NodePath;
 @export var modal_layer_path: NodePath;
-@export var loading_overlay_path: NodePath;
+@export var loading_layer_path: NodePath;
 @export var modal_backdrop_path: NodePath;
 @export var pause_modal_scene: PackedScene;
 @export var settings_modal_scene: PackedScene;
+@export var loading_screen_scene: PackedScene;
 
 var _hud_layer: Control = null;
 var _modal_layer: Control = null;
-var _loading_overlay: CanvasItem = null;
+var _loading_layer: Control = null;
 var _modal_backdrop: Control = null;
 var _current_hud: Control = null;
 var _pause_modal: PauseModal = null;
 var _settings_modal: SettingsModal = null;
+var _loading_screen: LoadingScreen = null;
 var _modal_stack: Array[Control] = [];
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS;
 	_hud_layer = get_node_or_null(hud_layer_path) as Control;
 	_modal_layer = get_node_or_null(modal_layer_path) as Control;
-	_loading_overlay = get_node_or_null(loading_overlay_path) as CanvasItem;
+	_loading_layer = get_node_or_null(loading_layer_path) as Control;
 	_modal_backdrop = get_node_or_null(modal_backdrop_path) as Control;
 	if _modal_backdrop != null and not _modal_backdrop.gui_input.is_connected(_on_modal_backdrop_gui_input):
 		_modal_backdrop.gui_input.connect(_on_modal_backdrop_gui_input);
-	set_loading_visible(false);
+	_ensure_loading_screen();
 	_ensure_modals();
 	_refresh_modal_visibility();
 
@@ -90,10 +92,21 @@ func clear_hud() -> void:
 func get_current_hud() -> Control:
 	return _current_hud;
 
-func set_loading_visible(loading_visible: bool) -> void:
-	if _loading_overlay == null:
+func show_loading_screen(data: Dictionary = {}) -> void:
+	_ensure_loading_screen();
+	if _loading_screen == null:
 		return;
-	_loading_overlay.visible = loading_visible;
+	await _loading_screen.show_screen(data);
+
+func update_loading_progress(progress: float, status_text: String = "") -> void:
+	if _loading_screen == null:
+		return;
+	_loading_screen.update_progress(progress, status_text);
+
+func hide_loading_screen() -> void:
+	if _loading_screen == null:
+		return;
+	await _loading_screen.hide_screen();
 
 func _ensure_modals() -> void:
 	if _modal_layer == null:
@@ -114,6 +127,15 @@ func _ensure_modals() -> void:
 			_modal_layer.add_child(_settings_modal);
 			_settings_modal.process_mode = Node.PROCESS_MODE_ALWAYS;
 			_settings_modal.close_requested.connect(close_settings);
+
+func _ensure_loading_screen() -> void:
+	if _loading_layer == null or loading_screen_scene == null or _loading_screen != null:
+		return;
+	_loading_screen = loading_screen_scene.instantiate() as LoadingScreen;
+	if _loading_screen == null:
+		return;
+	_loading_layer.add_child(_loading_screen);
+	_loading_screen.process_mode = Node.PROCESS_MODE_ALWAYS;
 
 func _push_modal(modal: Control) -> void:
 	if modal == null:

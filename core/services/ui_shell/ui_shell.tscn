@@ -3,15 +3,17 @@
 [ext_resource type="Script" uid="uid://co1ff8m2mtvav" path="res://core/services/ui_shell/ui_shell.gd" id="1_script"]
 [ext_resource type="PackedScene" path="res://features/ui/modals/pause_modal.tscn" id="2_pause_modal"]
 [ext_resource type="PackedScene" path="res://features/ui/modals/settings_modal.tscn" id="3_settings_modal"]
+[ext_resource type="PackedScene" path="res://shared/ui/loading/loading_screen.tscn" id="4_loading_screen"]
 
 [node name="UiShell" type="CanvasLayer" unique_id=503391043]
 script = ExtResource("1_script")
 hud_layer_path = NodePath("HudLayer")
 modal_layer_path = NodePath("ModalLayer")
-loading_overlay_path = NodePath("OverlayLayer/LoadingOverlay")
+loading_layer_path = NodePath("LoadingLayer")
 modal_backdrop_path = NodePath("ModalLayer/ModalBackdrop")
 pause_modal_scene = ExtResource("2_pause_modal")
 settings_modal_scene = ExtResource("3_settings_modal")
+loading_screen_scene = ExtResource("4_loading_screen")
 
 [node name="HudLayer" type="Control" parent="." unique_id=1554832734]
 layout_mode = 3
@@ -41,7 +43,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.45)
 
-[node name="OverlayLayer" type="Control" parent="." unique_id=1560745857]
+[node name="LoadingLayer" type="Control" parent="." unique_id=1560745857]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -49,14 +51,3 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-
-[node name="LoadingOverlay" type="ColorRect" parent="OverlayLayer" unique_id=126111848]
-visible = false
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-color = Color(0, 0, 0, 0.35)
