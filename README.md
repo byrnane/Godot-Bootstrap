@@ -1,98 +1,131 @@
 # Godot Bootstrap
 
-Стартовый шаблон на Godot 4.x для небольших и средних игр.
+Reusable Godot 4.x starter template for small and mid-sized games.
 
-Текущая версия шаблона: `0.2.0`.
+Current version: `0.2.0`
 
-Это не готовый gameplay-фреймворк и не набор "волшебных" систем. Здесь уже собрана базовая инфраструктура проекта: запуск приложения, переключение сцен, общий UI, модальные окна, настройки, сохранения и локализация. Дальше вы подставляете свою игру вместо заглушек.
+## EN
 
-## Что уже есть
+This template gives you project infrastructure, not gameplay systems.
 
-- точка входа приложения: `Main`
-- верхнеуровневый поток приложения: `AppFlow`
-- централизованное переключение корневых сцен через `SceneRouter`
-- общий UI-слой `UiShell` для HUD, затемнения и модальных окон
-- базовый класс `BaseModal` для всех модалок
+Included:
+
+- app entry point with `Main`
+- top-level flow with `AppFlow`
+- scene switching through `SceneRouter`
+- global UI shell with HUD, modal stack, and loading layer
+- `InputManager` with basic rebind support
+- `TransitionManager` with async scene loading
+- settings, save, audio, and localization services
+- starter scenes for menu, gameplay, HUD, and levels
+
+Project layout:
+
+- `main/` - app entry
+- `core/` - flow, services, state, scene registry
+- `features/` - concrete game and UI scenes
+- `shared/` - shared UI assets and reusable pieces
+- `translations/` - localization source
+
+Quick start:
+
+1. Open the project in Godot 4.x.
+2. Wait for resource import.
+3. Run the main scene.
+4. Replace demo scenes in `features/` with your own.
+5. Extend `SessionContext`, `SaveData`, and `UserSettings`.
+6. Add scene ids to `core/registry/scenes.gd`.
+7. Add translation keys to `translations/UI.csv`.
+
+Core rules:
+
+- root scenes change only through `SceneRouter`
+- top-level navigation lives in `AppFlow`
+- long-lived app state lives in `AppContext`
+- current run state lives in `SessionContext`
+- feature scenes do not access the filesystem directly
+- static UI text should use translation keys in `.tscn`
+
+Input actions included by default:
+
+- `ui_pause`
+- `ui_cancel`
+
+These actions can already be rebound through settings.
+
+Project writes:
+
+- `user://settings.cfg`
+- `user://savegame.save`
+- `user://input_bindings.save`
+
+Docs:
+
+- [Architecture](docs/ARCHITECTURE.md)
+- [Code Style](docs/CODESTYLE.md)
+- [Changelog](CHANGELOG.md)
+- [Todo / Roadmap](TODO.md)
+
+## RU
+
+Это стартовый шаблон на Godot 4.x для небольших и средних игр.
+
+Здесь есть именно инфраструктура проекта, а не готовый gameplay-фреймворк.
+
+Что уже входит:
+
+- точка входа `Main`
+- верхнеуровневый flow через `AppFlow`
+- переключение сцен через `SceneRouter`
+- общий UI-слой с HUD, модалками и экраном загрузки
 - `InputManager` с базовым ребиндом управления
-- `TransitionManager` и отдельный `LoadingScreen`
-- заготовки главного меню, игрового мира, HUD и уровней
-- загрузка и сохранение настроек
-- загрузка и сохранение игровых данных
-- локализация через `translations/UI.csv`
+- `TransitionManager` и асинхронная загрузка сцен
+- сервисы настроек, сохранений, аудио и локализации
+- заготовки меню, gameplay-сцены, HUD и уровней
 
-## Как устроен проект
+Структура проекта:
 
 - `main/` - вход в приложение
-- `core/` - инфраструктура проекта: flow, сервисы, контексты, реестр сцен
+- `core/` - flow, сервисы, состояние, реестр сцен
 - `features/` - конкретные игровые и UI-сцены
-- `shared/` - общие UI-ресурсы, тема, компоненты, виджеты
-- `shared/ui/loading/` - экран загрузки и общий loading UI
-- `translations/` - таблицы локализации
+- `shared/` - общие UI-ресурсы и переиспользуемые элементы
+- `translations/` - исходники локализации
 
-Если нужна подробная схема, смотрите [docs/ARCHITECTURE.md](/C:/GameDev/game-template/docs/ARCHITECTURE.md).
-
-## Быстрый старт
+Быстрый старт:
 
 1. Откройте проект в Godot 4.x.
 2. Дождитесь импорта ресурсов.
-3. Запустите основную сцену проекта.
+3. Запустите главную сцену.
 4. Замените демо-сцены в `features/` на свои.
-5. Обновите реестр сцен в `core/registry/scenes.gd`.
-6. При необходимости расширьте `SessionContext`, `SaveData` и `UserSettings`.
-7. Добавьте свои ключи локализации в `translations/UI.csv`.
-8. Если нужна новая модалка, наследуйтесь от `BaseModal`.
+5. Расширьте `SessionContext`, `SaveData` и `UserSettings`.
+6. Добавьте свои scene id в `core/registry/scenes.gd`.
+7. Добавьте ключи локализации в `translations/UI.csv`.
 
-## Главные правила проекта
+Основные правила:
 
-- Корневая сцена меняется только через `SceneRouter`.
-- Решения о навигации принимаются в `AppFlow`, а не внутри отдельных экранов.
-- Долгоживущее состояние приложения хранится в `AppContext`.
-- Состояние текущей игровой сессии хранится в `SessionContext`.
-- Feature-сцены не должны напрямую читать или писать файлы.
-- Статический текст в интерфейсе лучше задавать сразу ключами локализации в `.tscn`.
-- Пользовательские бинды ввода хранятся отдельно от `project.godot` и могут меняться во время игры.
+- корневые сцены меняются только через `SceneRouter`
+- верхнеуровневая навигация живёт в `AppFlow`
+- долгоживущее состояние хранится в `AppContext`
+- состояние текущей сессии хранится в `SessionContext`
+- feature-сцены не работают с файловой системой напрямую
+- статический UI-текст лучше задавать ключами локализации в `.tscn`
 
-## Как здесь работает HUD
-
-`SceneRouter` всегда держит одну активную корневую сцену. Если сцена хочет показать HUD, она может отдать отдельную HUD-сцену и связать её со своей логикой.
-
-Для этого у сцены могут быть методы:
-
-- `get_hud_scene()`
-- `bind_hud(hud)`
-- `unbind_hud(hud)`
-
-Смысл такой:
-
-- игровой мир живёт отдельно
-- HUD монтируется в `UiShell`
-- логика сцены передаёт данные в HUD
-- сам HUD только показывает данные и отправляет действия пользователя обратно в сцену
-
-Так проще не смешивать игровой код и интерфейс в одной сцене.
-
-## Что проект сохраняет на диск
-
-- `user://settings.cfg` - настройки пользователя
-- `user://savegame.save` - сохранение игры
-
-## Какие input actions уже заведены
+Действия ввода по умолчанию:
 
 - `ui_pause`
 - `ui_cancel`
 
 Эти действия уже можно переназначать через настройки.
 
-## Что имеет смысл заменить в первую очередь
+Проект пишет файлы:
 
-- сцены из `features/main_menu/`
-- сцены из `features/gameplay/`
-- заглушки уровней из `features/levels/`
-- состав `SaveData`, `UserSettings`, `SessionContext`
-- список сцен в `Scenes`
+- `user://settings.cfg`
+- `user://savegame.save`
+- `user://input_bindings.save`
 
-## Дополнительная документация
+Документация:
 
-- [docs/ARCHITECTURE.md](/C:/GameDev/game-template/docs/ARCHITECTURE.md) - как устроен проект и зачем разделены слои
-- [docs/CODESTYLE.md](/C:/GameDev/game-template/docs/CODESTYLE.md) - правила по стилю кода и устройству файлов
-- [CHANGELOG.md](/C:/GameDev/game-template/CHANGELOG.md) - история изменений шаблона по версиям
+- [Архитектура](docs/ARCHITECTURE.md)
+- [Стиль кода](docs/CODESTYLE.md)
+- [История изменений](CHANGELOG.md)
+- [Todo / Roadmap](TODO.md)

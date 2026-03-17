@@ -1,45 +1,35 @@
 # TODO
 
-## Ближайший этап
+## Next
 
-Следующий логичный этап после релиза `0.2.0`:
-
-- `DebugOverlay`
-- полировка UX загрузочного экрана
-- полировка `InputManager` после реального использования
+- Add `DebugOverlay`
+- Polish `LoadingScreen` UX after real project usage
+- Polish `InputManager` after real project usage
 
 ## Roadmap
 
-### `v0.2.0`
-
-- Завершено:
-- `InputManager` и базовый ребинд в настройках.
-- `TransitionManager`.
-- Расширяемый `LoadingScreen`.
-- Асинхронная загрузка сцен без жёсткого `load()` в момент перехода.
-- Приведение модалок к более удобному состоянию для работы в редакторе Godot.
-
 ### `v0.2.x`
 
-- Добавить базовый `DebugOverlay`.
-- Полировать `InputManager` после реального использования.
-- Расширить список ребиндимых действий.
-- Добавить более удобный вывод текущих биндов в UI.
-- Подчистить UX модалок и общих UI-паттернов.
+- Add basic `DebugOverlay`
+- Expand the list of rebindable actions
+- Improve how current bindings are shown in UI
+- Polish modal UX and common UI behavior
 
 ### `v0.3.0`
 
-- Вынести `GameConfig` как отдельную сущность рядом с `SessionContext`.
-- Подготовить typed payload для переходов сцен вместо общего `Variant`.
-- Упростить запуск новой сессии с параметрами.
+- Extract `GameConfig` as a separate runtime entity near `SessionContext`
+- Introduce typed payloads for scene transitions instead of generic `Variant`
+- Simplify starting a new session with explicit parameters
 
 ### `v0.4.0`
 
-- Добавить базовые dev-инструменты поверх `DebugOverlay`.
-- Подготовить быстрые debug-команды: очистка сохранения, переход на сцену, перезапуск сессии.
-- Укрепить шаблон простыми smoke-проверками на загрузку сцен и данные.
+- Add more dev tools on top of `DebugOverlay`
+- Add quick debug actions: clear save, jump to scene, restart session
+- Add basic smoke checks for scene loading and core data
 
-## UI
+### `v0.5.0`
 
-- Заменить встроенный `TabContainer` в `SettingsModal` на более удобное и предсказуемое решение.
-  Причина: нативные вкладки Godot выглядят криво, плохо контролируются по вёрстке и неудобны для шаблона, который будут развивать разные люди.
+- Rework shared UI components
+- Replace the current `SettingsModal` tab solution with a cleaner custom one
+- Add a reusable custom button component with hover and press sounds
+- Continue polishing interface patterns for real projects
