@@ -7,7 +7,7 @@ signal outro_finished;
 const DEFAULT_PROGRESS: float = -1.0;
 
 @export var fade_duration: float = 0.2;
-@export var minimum_visible_time: float = 0.5;
+@export var minimum_visible_time: float = 1.0;
 
 @onready var backdrop: ColorRect = %Backdrop;
 @onready var card: PanelContainer = %Card;
