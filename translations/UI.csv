@@ -33,8 +33,22 @@ UI_SETTINGS_OVERLAY,Показать оверлей,Show overlay
 UI_SETTINGS_LANG_SECTION,Настройки языка (Только UI),Language options (UI Only)
 UI_SETTINGS_LANGUAGE,Язык,Language
 UI_SETTINGS_GAMEPLAY_SECTION,Настройки игрового процесса,Gameplay options
+UI_SETTINGS_CONTROLS_SECTION,Управление,Controls
 UI_SETTINGS_RESET,Сбросить настройки,Reset settings
 UI_SETTINGS_BACK,Применить и вернуться,Apply and return
+UI_INPUT_BINDINGS_HINT,Выберите действие и нажмите новую кнопку или клавишу,Choose an action and press a new key or button
+UI_INPUT_REBIND_HINT,Ожидание нового ввода для выбранного действия,Waiting for a new input for the selected action
+UI_INPUT_RESET_BINDINGS,Сбросить управление,Reset controls
+UI_INPUT_UNBOUND,Не назначено,Unbound
+UI_INPUT_WAITING,Нажмите кнопку...,Press a button...
+UI_INPUT_ACTION_PAUSE,Пауза,Pause
+UI_INPUT_ACTION_CANCEL,Назад / отмена,Back / cancel
+UI_INPUT_MOUSE_LEFT,Левая кнопка мыши,Mouse Left
+UI_INPUT_MOUSE_RIGHT,Правая кнопка мыши,Mouse Right
+UI_INPUT_MOUSE_MIDDLE,Средняя кнопка мыши,Mouse Middle
+UI_INPUT_MOUSE_X1,Боковая кнопка мыши 1,Mouse Side Button 1
+UI_INPUT_MOUSE_X2,Боковая кнопка мыши 2,Mouse Side Button 2
+UI_INPUT_GAMEPAD_BUTTON,Кнопка геймпада,Gamepad Button
 ,,
 About,,
 UI_ABOUT_AUTHOR,Автор игры: Макс Капралов,Game author: Max Kapralov

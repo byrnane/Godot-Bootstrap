@@ -74,7 +74,27 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "UI_SETTINGS_VSYNC"
 
-[node name="ButtonsRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Body" index="9" unique_id=242847119]
+[node name="ControlsSectionLabel" type="Label" parent="MarginContainer/VBoxContainer/Body" index="9" unique_id=565845920]
+layout_mode = 2
+text = "UI_SETTINGS_CONTROLS_SECTION"
+
+[node name="BindingsStatusLabel" type="Label" parent="MarginContainer/VBoxContainer/Body" index="10" unique_id=1260056336]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 2
+text = "UI_INPUT_BINDINGS_HINT"
+
+[node name="BindingsContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/Body" index="11" unique_id=336826643]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ResetBindingsButton" type="Button" parent="MarginContainer/VBoxContainer/Body" index="12" unique_id=1130474353]
+unique_name_in_owner = true
+layout_mode = 2
+text = "UI_INPUT_RESET_BINDINGS"
+
+[node name="ButtonsRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Body" index="13" unique_id=242847119]
 layout_mode = 2
 theme_override_constants/separation = 8
 
