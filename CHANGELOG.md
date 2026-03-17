@@ -1,13 +1,65 @@
 # Changelog
 
+## EN
+
+This file tracks template changes by version.
+
+Sections:
+
+- `Added`
+- `Changed`
+- `Fixed`
+- `Removed`
+
+## [0.2.0] - 2026-03-17
+
+First production-ready template version with input rebinding and scene transition flow.
+
+### Added
+
+- `InputManager` with saved user bindings
+- basic controls rebinding UI in settings
+- `TransitionManager` for loading transitions
+- separate `LoadingScreen` with text, tip, and progress
+- async scene loading in `SceneRouter`
+- roadmap in `TODO.md`
+
+### Changed
+
+- `UiShell` now hosts a full loading layer instead of a simple overlay
+- base modals were adjusted to be easier to work with in the Godot editor
+- documentation was updated to reflect the new template systems
+
+### Fixed
+
+- reduced unpleasant loading screen flicker on fast transitions with a minimum visible time
+
+## [0.1.0] - 2026-03-17
+
+First recorded version of the template.
+
+### Added
+
+- base infrastructure for a Godot 4.x project
+- `Main`, `AppFlow`, `SceneRouter`, `UiShell`
+- starter menu, gameplay, HUD, and level stub scenes
+- settings, save, localization, and audio managers
+- base project documentation
+
+### Changed
+
+- documentation was rewritten in a more human-readable project style
+
+## RU
+
 Этот файл фиксирует изменения шаблона по версиям.
 
-Формат простой:
+Разделы:
 
-- `Added` - что добавили
-- `Changed` - что изменили
-- `Fixed` - что исправили
-- `Removed` - что убрали
+- `Added`
+- `Changed`
+- `Fixed`
+- `Removed`
 
 ## [0.2.0] - 2026-03-17
 
@@ -15,22 +67,22 @@
 
 ### Added
 
-- `InputManager` с сохранением пользовательских биндов.
-- Базовый UI для ребинда управления в настройках.
-- `TransitionManager` для координации загрузочных переходов.
-- Отдельный `LoadingScreen` с текстом, подсказкой и прогрессом.
-- Асинхронная загрузка сцен в `SceneRouter`.
-- Roadmap в `TODO.md`.
+- `InputManager` с сохранением пользовательских биндов
+- базовый UI для ребинда управления в настройках
+- `TransitionManager` для координации загрузочных переходов
+- отдельный `LoadingScreen` с текстом, подсказкой и прогрессом
+- асинхронная загрузка сцен в `SceneRouter`
+- roadmap в `TODO.md`
 
 ### Changed
 
-- `UiShell` теперь хостит полноценный loading layer вместо простого overlay.
-- Базовые модалки приведены к более удобному виду для работы в редакторе Godot.
-- Документация обновлена с учётом новых систем шаблона.
+- `UiShell` теперь хостит полноценный loading layer вместо простого overlay
+- базовые модалки приведены к более удобному виду для работы в редакторе Godot
+- документация обновлена с учётом новых систем шаблона
 
 ### Fixed
 
-- Убран неприятный эффект мигания loading screen на быстрых переходах через минимальное время показа.
+- убран неприятный эффект мигания loading screen на быстрых переходах через минимальное время показа
 
 ## [0.1.0] - 2026-03-17
 
@@ -38,12 +90,12 @@
 
 ### Added
 
-- Базовый инфраструктурный каркас проекта на Godot 4.x.
-- `Main`, `AppFlow`, `SceneRouter`, `UiShell`.
-- Заготовки главного меню, gameplay-сцены, HUD и уровней.
-- Менеджеры настроек, сохранений, локализации и аудио.
-- Базовая документация по устройству проекта.
+- базовый инфраструктурный каркас проекта на Godot 4.x
+- `Main`, `AppFlow`, `SceneRouter`, `UiShell`
+- заготовки главного меню, gameplay-сцены, HUD и уровней
+- менеджеры настроек, сохранений, локализации и аудио
+- базовая документация по устройству проекта
 
 ### Changed
 
-- Документация полностью переписана в человеческий и проектный стиль.
+- документация полностью переписана в более человеческий и проектный стиль

@@ -1,197 +1,327 @@
-# Архитектура проекта
+# Architecture
 
-Этот шаблон специально собран простым и предсказуемым. У него нет "универсальной" игровой архитектуры на все случаи жизни. Здесь есть только базовый каркас приложения, чтобы проект не превращался в набор случайно связанных сцен и скриптов.
+## EN
 
-## Слои проекта
+This template is intentionally simple and predictable. It is not a universal game architecture. It is a clean application skeleton that keeps the project from turning into a pile of loosely connected scenes and scripts.
 
-### `main/`
+### Layers
 
-Точка входа. Здесь создаётся корневой контейнер и запускается приложение.
+`main/`
 
-### `core/`
+- application entry point
 
-Инфраструктурный слой. Здесь лежит то, что живёт долго и не относится к конкретной фиче:
+`core/`
 
-- flow приложения
+- long-lived infrastructure
+- flow
+- services
+- state containers
+- types
+- scene registry
+
+`features/`
+
+- concrete gameplay and UI scenes
+- menu
+- gameplay
+- HUD
+- levels
+- modals
+
+`shared/`
+
+- shared UI assets
+- theme
+- fonts
+- icons
+- reusable UI pieces
+
+### Main runtime parts
+
+`Main`
+
+- starts the application and wires the base runtime
+
+`AppFlow`
+
+- owns top-level application flow
+- decides where the app should go next
+
+`SceneRouter`
+
+- the only place that switches root scenes
+- owns scene enter/exit flow
+- now also owns async scene loading
+
+`UiShell`
+
+- global UI host above world scenes
+- owns HUD host, modal stack, backdrop, and loading layer
+
+`AppContext`
+
+- long-lived application state
+
+`SessionContext`
+
+- current run state
+
+`SettingsManager`
+
+- loads, validates, applies, and saves settings
+
+`SaveManager`
+
+- loads, validates, migrates, and saves game data
+
+`LocalizationManager`
+
+- applies the active locale
+
+`Scenes`
+
+- central registry of scene ids and paths
+
+`InputManager`
+
+- stores default bindings
+- loads saved user bindings
+- provides a clean API for UI rebinding
+
+`TransitionManager`
+
+- coordinates scene transitions and loading UI
+- shows loading screen
+- updates progress
+- finishes the transition cleanly
+
+### Scene flow
+
+Normal flow:
+
+1. `AppFlow` decides which scene should be active.
+2. `SceneRouter` starts the transition and async load if needed.
+3. `TransitionManager` shows `LoadingScreen`.
+4. `SceneRouter` swaps the root scene when loading is done.
+5. `SceneRouter` mounts the HUD if the scene provides one.
+6. The scene starts working and talks to its HUD through explicit methods and signals.
+
+Important points:
+
+- there is always exactly one active root scene
+- HUD is separate from the world scene
+- modals live in shared UI
+- loading UI also lives in shared UI
+
+### HUD model
+
+A scene may optionally implement:
+
+- `get_hud_scene()`
+- `bind_hud(hud)`
+- `unbind_hud(hud)`
+
+The idea is simple:
+
+- gameplay logic stays in the world scene
+- HUD stays presentation-only
+- `SceneRouter` mounts and unmounts it in a controlled way
+
+### Modal model
+
+Modals work as a stack. Shared behavior lives in `BaseModal`, and concrete modals inherit from it.
+
+That keeps modal behavior consistent and makes new windows easier to build.
+
+### Scene loading
+
+The template now includes async scene loading through `ResourceLoader.load_threaded_request(...)`.
+
+This gives you:
+
+- fewer visible hitches on heavy scene changes
+- a proper loading UI instead of an empty pause
+- a clean place for tips, progress, and loading metadata
+
+### Localization
+
+- static text: translation keys in `.tscn`
+- dynamic text: `tr()` in code
+- source: `translations/UI.csv`
+
+### Persistence
+
+- `UserSettings` and `SaveData` are versioned
+- validation and migration stay inside managers
+
+### Rules
+
+- do not change root scenes outside `SceneRouter`
+- do not put top-level navigation decisions inside feature scenes
+- do not let UI work with the filesystem directly
+- do not mix save/load logic into visual scenes
+- avoid a global event bus unless there is a strong reason
+- prefer local signals and explicit APIs
+
+## RU
+
+Этот шаблон специально собран простым и предсказуемым. Это не универсальная игровая архитектура на все случаи жизни, а чистый каркас приложения, который не даёт проекту развалиться на набор случайно связанных сцен и скриптов.
+
+### Слои
+
+`main/`
+
+- вход в приложение
+
+`core/`
+
+- долгоживущая инфраструктура
+- flow
 - сервисы
-- контексты состояния
+- контейнеры состояния
 - типы
 - реестр сцен
 
-Если код нужен почти всегда и не привязан к конкретному экрану, скорее всего ему место здесь.
+`features/`
 
-### `features/`
-
-Игровые и UI-фичи. Тут находятся конкретные сцены:
-
-- главное меню
-- игровой мир
+- конкретные игровые и UI-сцены
+- меню
+- gameplay
 - HUD
 - уровни
-- модальные окна
+- модалки
 
-Это тот слой, который вы обычно переписываете под свою игру.
+`shared/`
 
-### `shared/`
-
-Общие ресурсы интерфейса:
-
+- общие UI-ресурсы
 - тема
 - шрифты
 - иконки
 - переиспользуемые UI-элементы
 
-Сюда имеет смысл складывать только действительно общие вещи, а не всё подряд.
+### Основные runtime-сущности
 
-## Основные сущности
+`Main`
 
-### `Main`
+- запускает приложение и собирает базовый runtime
 
-Стартует приложение и собирает базовый runtime.
+`AppFlow`
 
-### `AppFlow`
+- управляет верхнеуровневым flow приложения
+- решает, куда приложение должно идти дальше
 
-Управляет верхнеуровневой логикой приложения. Именно здесь должно быть понятно, что происходит дальше: открыть меню, начать игру, вернуться на экран и так далее.
+`SceneRouter`
 
-Если коротко: `AppFlow` решает, куда идём, а не рисует интерфейс и не хранит всё подряд.
+- единственное место, которое переключает корневые сцены
+- управляет enter/exit flow сцены
+- теперь также отвечает за асинхронную загрузку сцен
 
-### `SceneRouter`
+`UiShell`
 
-Единственное место, которое переключает корневые сцены. Через него же проходит жизненный цикл сцены и HUD.
+- глобальный UI-хост поверх world-сцен
+- содержит хост для HUD, стек модалок, затемнение и loading layer
 
-Это важное ограничение. Когда сцены начинают менять друг друга напрямую, навигация быстро становится хрупкой и плохо отслеживаемой.
+`AppContext`
 
-### `UiShell`
+- долгоживущее состояние приложения
 
-Глобальный UI-контейнер поверх игровых сцен. Он отвечает за:
+`SessionContext`
 
-- хост для HUD
-- затемнение фона
-- стек модальных окон
-- слой экрана загрузки
+- состояние текущего запуска
 
-Благодаря этому общий интерфейс не приходится встраивать в каждую сцену вручную.
+`SettingsManager`
 
-### `AppContext`
+- загружает, проверяет, применяет и сохраняет настройки
 
-Состояние приложения, которое живёт долго. Например, то, что нужно хранить между переходами по экранам.
+`SaveManager`
 
-### `SessionContext`
+- загружает, проверяет, мигрирует и сохраняет игровые данные
 
-Состояние текущего запуска или игровой сессии. То, что относится к активной игре "здесь и сейчас".
+`LocalizationManager`
 
-### `SettingsManager`
+- применяет активную локаль
 
-Загружает, проверяет, применяет и сохраняет настройки.
+`Scenes`
 
-### `SaveManager`
+- центральный реестр scene id и путей
 
-Загружает, проверяет, при необходимости мигрирует и сохраняет игровые данные.
+`InputManager`
 
-### `LocalizationManager`
+- хранит дефолтные бинды
+- загружает сохранённые пользовательские бинды
+- даёт чистый API для UI-ребинда
 
-Применяет текущую локаль.
+`TransitionManager`
 
-### `Scenes`
+- координирует переходы между сценами и loading UI
+- показывает экран загрузки
+- обновляет прогресс
+- корректно завершает переход
 
-Центральный реестр путей к сценам. Если в проекте есть переходы между экранами, лучше держать их в одном месте, а не разбрасывать строки с путями по коду.
+### Поток сцен
 
-### `InputManager`
+Нормальный сценарий такой:
 
-Отдельный сервис для работы с пользовательскими биндами ввода. Он хранит дефолтные действия, загружает сохранённые назначения и даёт UI понятный API для ребинда.
-
-Это принципиально лучше, чем пытаться редактировать `project.godot` на лету или разносить работу с `InputMap` по разным экранам.
-
-### `TransitionManager`
-
-Координирует переходы между сценами и экран загрузки. Его задача простая: начать переход, показать loading UI, обновлять прогресс и корректно завершить переход.
-
-`TransitionManager` не решает, на какую сцену идти. Это по-прежнему ответственность `AppFlow` и `SceneRouter`.
-
-## Как проходит управление сценами
-
-Нормальный поток такой:
-
-1. `AppFlow` решает, какой экран должен быть активен.
-2. `SceneRouter` запускает переход и, если нужно, асинхронную загрузку сцены.
-3. `TransitionManager` показывает `LoadingScreen` и обновляет его состояние.
-4. После завершения загрузки `SceneRouter` подменяет корневую сцену.
-5. Если у новой сцены есть HUD, `SceneRouter` подключает его в `UiShell`.
+1. `AppFlow` решает, какая сцена должна быть активной.
+2. `SceneRouter` запускает переход и асинхронную загрузку, если она нужна.
+3. `TransitionManager` показывает `LoadingScreen`.
+4. `SceneRouter` подменяет корневую сцену после завершения загрузки.
+5. `SceneRouter` подключает HUD, если сцена его предоставляет.
 6. Сцена начинает работать и общается со своим HUD через явные методы и сигналы.
 
 Что здесь важно:
 
 - активная корневая сцена всегда одна
 - HUD живёт отдельно от world-сцены
-- модалки не привязаны к конкретному экрану жёстко, а показываются через общий UI-слой
-- экран загрузки тоже живёт в общем UI-слое и не встраивается в конкретные gameplay-сцены
+- модалки живут в общем UI-слое
+- экран загрузки тоже живёт в общем UI-слое
 
-## Как устроен HUD
-
-HUD в этом проекте считается отдельным слоем представления, а не частью игровой сцены.
+### Модель HUD
 
 Сцена может по желанию реализовать:
 
-- `get_hud_scene()` - вернуть сцену HUD
-- `bind_hud(hud)` - передать HUD нужные зависимости и подписки
-- `unbind_hud(hud)` - аккуратно убрать связи при выходе
+- `get_hud_scene()`
+- `bind_hud(hud)`
+- `unbind_hud(hud)`
 
-`SceneRouter` делает это в правильном порядке:
+Смысл простой:
 
-- сначала монтирует HUD
-- потом даёт сцене войти в активное состояние
-- при выходе сначала завершает сцену
-- затем снимает HUD
+- игровая логика остаётся в world-сцене
+- HUD остаётся только слоем представления
+- `SceneRouter` монтирует и снимает его в контролируемом порядке
 
-Практический смысл простой: HUD отвечает только за отображение и пользовательские действия, а игровая логика остаётся в своей сцене.
+### Модель модалок
 
-## Как устроены модалки
+Модалки работают как стек. Общее поведение лежит в `BaseModal`, а конкретные окна наследуются от него.
 
-Модальные окна работают как стек. Общая механика вынесена в `BaseModal`, а конкретные окна должны делаться через наследование от него.
+Это удерживает поведение модалок единым и упрощает создание новых окон.
 
-Это полезно по двум причинам:
+### Загрузка сцен
 
-- поведение модалок остаётся единым
-- новый экран настроек или паузы не приходится собирать с нуля
+В шаблоне уже есть асинхронная загрузка сцен через `ResourceLoader.load_threaded_request(...)`.
 
-## Как устроена загрузка сцен
+Это даёт:
 
-В шаблоне уже есть базовая асинхронная загрузка через `ResourceLoader.load_threaded_request(...)`.
+- меньше заметных фризов на тяжёлых переходах
+- нормальный loading UI вместо пустой паузы
+- понятное место для подсказок, прогресса и служебной информации
 
-Практически это даёт три вещи:
+### Локализация
 
-- переходы меньше зависят от тяжести сцены
-- можно показывать понятный loading UI вместо пустой паузы
-- систему проще расширять подсказками, прогрессом и сервисной информацией
+- статический текст: ключи в `.tscn`
+- динамический текст: `tr()` в коде
+- источник: `translations/UI.csv`
 
-Важный момент: `SceneRouter` сохраняет внешнее API простым, но внутри уже работает через `TransitionManager` и `LoadingScreen`.
+### Сохранения
 
-## Локализация
+- `UserSettings` и `SaveData` версионируются
+- проверка и миграции остаются внутри менеджеров
 
-В проекте используется стандартный для Godot подход через `translations/UI.csv`.
+### Правила
 
-Правило простое:
-
-- статический текст в сценах задаём ключами локализации прямо в `.tscn`
-- динамический текст переводим через `tr()` в коде
-
-Так перевод не расползается по проекту в виде случайных строк.
-
-## Сохранения и настройки
-
-`UserSettings` и `SaveData` версионируются. Это нужно, чтобы проект можно было безопасно развивать дальше, не ломая старые данные молча.
-
-Логика проверки, загрузки, сохранения и миграций должна жить в менеджерах, а не внутри UI или gameplay-сцен.
-
-Иначе очень быстро появляется код, который трудно тестировать и ещё труднее менять.
-
-## Архитектурные правила
-
-- Не меняйте корневые сцены в обход `SceneRouter`.
-- Не принимайте верхнеуровневые навигационные решения внутри отдельных feature-сцен.
-- Не давайте UI напрямую работать с файловой системой.
-- Не складывайте сохранение и загрузку в визуальные сцены.
-- Не вводите глобальный event bus без реальной необходимости.
-- Предпочитайте локальные сигналы и явные API вместо "магической" связи всего со всем.
-
-Если сомневаетесь, куда положить код, задайте себе вопрос: это часть конкретной фичи или инфраструктура проекта? Обычно этого достаточно, чтобы выбрать правильный слой.
+- не меняйте корневые сцены в обход `SceneRouter`
+- не принимайте верхнеуровневые навигационные решения внутри feature-сцен
+- не давайте UI напрямую работать с файловой системой
+- не смешивайте save/load логику с визуальными сценами
+- не вводите глобальный event bus без серьёзной причины
+- предпочитайте локальные сигналы и явные API
