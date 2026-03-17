@@ -7,6 +7,7 @@ signal outro_finished;
 const DEFAULT_PROGRESS: float = -1.0;
 
 @export var fade_duration: float = 0.2;
+@export var minimum_visible_time: float = 0.5;
 
 @onready var backdrop: ColorRect = %Backdrop;
 @onready var card: PanelContainer = %Card;
@@ -14,6 +15,8 @@ const DEFAULT_PROGRESS: float = -1.0;
 @onready var message_label: Label = %MessageLabel;
 @onready var tip_label: Label = %TipLabel;
 @onready var progress_bar: ProgressBar = %ProgressBar;
+
+var _shown_at_msec: int = 0;
 
 func _ready() -> void:
 	visible = false;
@@ -27,9 +30,14 @@ func show_screen(data: Dictionary = {}) -> void:
 	_apply_content(data);
 	visible = true;
 	await _fade_to(1.0);
+	_shown_at_msec = Time.get_ticks_msec();
 	intro_finished.emit();
 
 func hide_screen() -> void:
+	var elapsed_seconds: float = float(Time.get_ticks_msec() - _shown_at_msec) / 1000.0;
+	var remaining_seconds: float = maxf(0.0, minimum_visible_time - elapsed_seconds);
+	if remaining_seconds > 0.0:
+		await get_tree().create_timer(remaining_seconds, false).timeout;
 	await _fade_to(0.0);
 	visible = false;
 	outro_finished.emit();
