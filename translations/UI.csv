@@ -34,6 +34,9 @@ UI_SETTINGS_LANG_SECTION,Настройки языка (Только UI),Languag
 UI_SETTINGS_LANGUAGE,Язык,Language
 UI_SETTINGS_GAMEPLAY_SECTION,Настройки игрового процесса,Gameplay options
 UI_SETTINGS_CONTROLS_SECTION,Управление,Controls
+UI_SETTINGS_TAB_GENERAL,Основное,General
+UI_SETTINGS_TAB_GRAPHICS,Графика,Graphics
+UI_SETTINGS_TAB_CONTROLS,Управление,Controls
 UI_SETTINGS_RESET,Сбросить настройки,Reset settings
 UI_SETTINGS_BACK,Применить и вернуться,Apply and return
 UI_INPUT_BINDINGS_HINT,Выберите действие и нажмите новую кнопку или клавишу,Choose an action and press a new key or button

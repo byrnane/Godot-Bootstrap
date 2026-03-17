@@ -4,41 +4,42 @@
 [ext_resource type="Script" uid="uid://b7jeo28o6yphy" path="res://features/ui/modals/pause_modal.gd" id="2_script"]
 
 [node name="PauseModal" unique_id=1481707140 instance=ExtResource("1_base")]
+visible = true
 layout_mode = 3
-offset_left = -180.0
-offset_top = -140.0
-offset_right = 180.0
-offset_bottom = 140.0
+offset_left = -202.0
+offset_top = -166.0
+offset_right = 202.0
+offset_bottom = 166.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("2_script")
 close_on_backdrop = false
-default_focus_path = NodePath("MarginContainer/VBoxContainer/Body/ResumeButton")
+default_focus_path = NodePath("MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/ResumeButton")
 
 [node name="TitleLabel" parent="MarginContainer/VBoxContainer" index="0"]
 text = "UI_PAUSE_TITLE"
 
-[node name="ResumeButton" type="Button" parent="MarginContainer/VBoxContainer/Body" index="0" unique_id=888822576]
+[node name="ResumeButton" type="Button" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body" index="0" unique_id=888822576]
 unique_name_in_owner = true
 layout_mode = 2
 text = "UI_PAUSE_CONTINUE"
 
-[node name="SaveButton" type="Button" parent="MarginContainer/VBoxContainer/Body" index="1" unique_id=436869637]
+[node name="SaveButton" type="Button" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body" index="1" unique_id=436869637]
 unique_name_in_owner = true
 layout_mode = 2
 text = "UI_SAVE"
 
-[node name="SettingsButton" type="Button" parent="MarginContainer/VBoxContainer/Body" index="2" unique_id=1873605972]
+[node name="SettingsButton" type="Button" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body" index="2" unique_id=1873605972]
 unique_name_in_owner = true
 layout_mode = 2
 text = "UI_PAUSE_SETTINGS"
 
-[node name="BackButton" type="Button" parent="MarginContainer/VBoxContainer/Body" index="3" unique_id=1957643295]
+[node name="BackButton" type="Button" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body" index="3" unique_id=1957643295]
 unique_name_in_owner = true
 layout_mode = 2
 text = "UI_BACK_TO_MENU"
 
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Body/ResumeButton" to="." method="_on_resume_button_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Body/SaveButton" to="." method="_on_save_button_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Body/SettingsButton" to="." method="_on_settings_button_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Body/BackButton" to="." method="_on_back_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/ResumeButton" to="." method="_on_resume_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SaveButton" to="." method="_on_save_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsButton" to="." method="_on_settings_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/BackButton" to="." method="_on_back_button_pressed"]

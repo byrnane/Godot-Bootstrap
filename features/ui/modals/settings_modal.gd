@@ -6,6 +6,7 @@ var _is_dirty: bool = false;
 var _binding_buttons: Dictionary = {};
 var _binding_labels: Dictionary = {};
 
+@onready var settings_tabs: TabContainer = %SettingsTabs;
 @onready var language_option_button: OptionButton = %LanguageOptionButton;
 @onready var master_volume_slider: HSlider = %MasterVolumeSlider;
 @onready var music_volume_slider: HSlider = %MusicVolumeSlider;
@@ -39,6 +40,7 @@ func _ready() -> void:
 		InputManager.rebind_canceled.connect(_on_rebind_finished);
 	_build_bindings_ui();
 	_populate_locales();
+	_refresh_tab_titles();
 	_sync_from_settings();
 
 func _exit_tree() -> void:
@@ -60,6 +62,7 @@ func open_modal() -> void:
 
 func _sync_ui_state() -> void:
 	_refresh_action_state();
+	_refresh_tab_titles();
 	_refresh_bindings_ui();
 
 func _populate_locales() -> void:
@@ -116,6 +119,13 @@ func _refresh_action_state() -> void:
 	apply_button.disabled = not _is_dirty;
 	reset_button.disabled = _is_syncing_controls;
 
+func _refresh_tab_titles() -> void:
+	if settings_tabs == null:
+		return;
+	settings_tabs.set_tab_title(0, tr("UI_SETTINGS_TAB_GENERAL"));
+	settings_tabs.set_tab_title(1, tr("UI_SETTINGS_TAB_GRAPHICS"));
+	settings_tabs.set_tab_title(2, tr("UI_SETTINGS_TAB_CONTROLS"));
+
 func _build_bindings_ui() -> void:
 	for child: Node in bindings_container.get_children():
 		bindings_container.remove_child(child);
@@ -126,7 +136,7 @@ func _build_bindings_ui() -> void:
 	for action_name: StringName in InputManager.get_rebindable_actions():
 		var row: HBoxContainer = HBoxContainer.new();
 		row.size_flags_horizontal = Control.SIZE_EXPAND_FILL;
-		row.theme_override_constants.separation = 8;
+		row.add_theme_constant_override("separation", 8);
 
 		var label: Label = Label.new();
 		label.size_flags_horizontal = Control.SIZE_EXPAND_FILL;
@@ -188,6 +198,7 @@ func _on_controls_changed(_value: Variant = null) -> void:
 
 func _on_locale_changed(_locale: String) -> void:
 	_populate_locales();
+	_refresh_tab_titles();
 	_refresh_bindings_ui();
 
 func _on_binding_button_pressed(action_name: StringName) -> void:

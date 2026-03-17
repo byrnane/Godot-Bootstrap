@@ -1,11 +1,9 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3 uid="uid://bcpsvw3g07aos"]
 
-[ext_resource type="Script" path="res://features/ui/modals/base_modal.gd" id="1_script"]
-[ext_resource type="Font" path="res://shared/ui/theme/heading_font_embedded.tres" id="2_heading_font"]
+[ext_resource type="Script" uid="uid://cmo2sq0ce0aoe" path="res://features/ui/modals/base_modal.gd" id="1_script"]
+[ext_resource type="FontVariation" path="res://shared/ui/theme/heading_font_embedded.tres" id="2_heading_font"]
 
-[node name="BaseModal" type="PanelContainer"]
-visible = false
-layout_mode = 1
+[node name="BaseModal" type="PanelContainer" unique_id=122904615]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -15,29 +13,48 @@ offset_left = -240.0
 offset_top = -200.0
 offset_right = 240.0
 offset_bottom = 200.0
-mouse_filter = 0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 4
 script = ExtResource("1_script")
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=2098910067]
 layout_mode = 2
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 20
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 20
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=1612714182]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1525170081]
 unique_name_in_owner = true
 layout_mode = 2
-text = "UI_LOADING"
-horizontal_alignment = 1
 theme_override_fonts/font = ExtResource("2_heading_font")
 theme_override_font_sizes/font_size = 22
+text = "UI_LOADING"
+horizontal_alignment = 1
 
-[node name="Body" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+[node name="BodyScroll" type="ScrollContainer" parent="MarginContainer/VBoxContainer" unique_id=2009316597]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="BodyContentMargin" type="MarginContainer" parent="MarginContainer/VBoxContainer/BodyScroll" unique_id=1610226678]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 4
+
+[node name="Body" type="VBoxContainer" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin" unique_id=480076289]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
 theme_override_constants/separation = 12

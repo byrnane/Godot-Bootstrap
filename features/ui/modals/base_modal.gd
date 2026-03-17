@@ -9,8 +9,12 @@ signal closed;
 @export var close_on_cancel: bool = true;
 @export var close_on_backdrop: bool = true;
 @export var default_focus_path: NodePath;
+@export var fullscreen_mode: bool = false;
+
+@onready var body_scroll: ScrollContainer = %BodyScroll;
 
 func _ready() -> void:
+	_apply_layout_mode();
 	process_mode = Node.PROCESS_MODE_ALWAYS;
 	visible = false;
 
@@ -20,6 +24,7 @@ func open_modal() -> void:
 	# without duplicating focus and open-state behavior.
 	_sync_ui_state();
 	focus_default_control();
+	call_deferred("_reset_scroll_position");
 	opened.emit();
 
 func close_modal() -> void:
@@ -51,3 +56,13 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _sync_ui_state() -> void:
 	pass;
+
+func _reset_scroll_position() -> void:
+	if body_scroll == null:
+		return;
+	body_scroll.scroll_vertical = 0;
+
+func _apply_layout_mode() -> void:
+	if not fullscreen_mode:
+		return;
+	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);
