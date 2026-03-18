@@ -27,6 +27,8 @@ const ACTION_GROUP_ORDER: Array[StringName] = [
 	&"UI_INPUT_GROUP_SYSTEM",
 	&"UI_INPUT_GROUP_DEBUG",
 ];
+# `InputManager` owns metadata for the actions the settings UI is allowed to edit.
+# The actual runtime bindings still live in Godot's `InputMap`.
 const ACTION_METADATA: Dictionary = {
 	&"ui_accept": {
 		"label_key": "UI_INPUT_ACTION_ACCEPT",
@@ -337,6 +339,8 @@ func _apply_rebind(action_name: StringName, event: InputEvent) -> void:
 		cancel_rebind();
 		return;
 
+	# We edit the shared Godot `InputMap` in place, so gameplay and UI keep using
+	# the native `Input.is_action_*` API without knowing about `InputManager`.
 	for other_action_name: StringName in REBINDABLE_ACTIONS:
 		if other_action_name == action_name:
 			continue;
@@ -359,6 +363,8 @@ func _can_actions_share_binding(first_action: StringName, second_action: StringN
 	var second_conflict_group: String = _get_action_conflict_group(second_action);
 	if first_conflict_group.is_empty() or second_conflict_group.is_empty():
 		return false;
+	# Matching groups mean "contextually compatible", for example `ui_pause`
+	# and `ui_cancel` on `Escape`.
 	return first_conflict_group == second_conflict_group;
 
 
