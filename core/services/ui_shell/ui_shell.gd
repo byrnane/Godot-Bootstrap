@@ -7,6 +7,10 @@ signal back_to_menu_requested;
 signal save_requested;
 
 
+const DEBUG_LAYER_Z_INDEX: int = 1000;
+const DEBUG_OVERLAY_Z_INDEX: int = 1000;
+
+
 @export var hud_layer_path: NodePath;
 @export var modal_layer_path: NodePath;
 @export var loading_layer_path: NodePath;
@@ -38,6 +42,9 @@ func _ready() -> void:
 	_modal_layer = get_node_or_null(modal_layer_path) as Control;
 	_loading_layer = get_node_or_null(loading_layer_path) as Control;
 	_debug_layer = get_node_or_null(debug_layer_path) as Control;
+	if _debug_layer != null:
+		_debug_layer.z_as_relative = false;
+		_debug_layer.z_index = DEBUG_LAYER_Z_INDEX;
 	_modal_backdrop = get_node_or_null(modal_backdrop_path) as Control;
 	if _modal_backdrop != null and not _modal_backdrop.gui_input.is_connected(_on_modal_backdrop_gui_input):
 		_modal_backdrop.gui_input.connect(_on_modal_backdrop_gui_input);
@@ -200,6 +207,8 @@ func _ensure_debug_overlay() -> void:
 		return;
 	_debug_layer.add_child(_debug_overlay);
 	_debug_overlay.process_mode = Node.PROCESS_MODE_ALWAYS;
+	_debug_overlay.z_as_relative = false;
+	_debug_overlay.z_index = DEBUG_OVERLAY_Z_INDEX;
 
 
 func _push_modal(modal: Control) -> void:
