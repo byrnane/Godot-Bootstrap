@@ -11,6 +11,7 @@ const KEY_NONE: int = 0;
 const KEYCODE_ESCAPE: int = 4194305;
 const KEYCODE_F10: int = 4194310;
 const KEYCODE_F3: int = 4194334;
+const MAX_BINDINGS_PER_ACTION: int = 2;
 const REBINDABLE_ACTIONS: Array[StringName] = [
 	&"ui_pause",
 	&"ui_cancel",
@@ -28,6 +29,7 @@ const ACTION_LABEL_KEYS: Dictionary = {
 
 var _default_bindings: Dictionary = {};
 var _pending_rebind_action: StringName = &"";
+var _pending_rebind_slot: int = -1;
 
 
 func _ready() -> void:
@@ -62,11 +64,11 @@ func get_action_events(action_name: StringName) -> Array[InputEvent]:
 	return events;
 
 
-func get_action_binding_text(action_name: StringName) -> String:
+func get_action_binding_text(action_name: StringName, binding_slot: int = 0) -> String:
 	var events: Array[InputEvent] = get_action_events(action_name);
-	if events.is_empty():
+	if binding_slot < 0 or binding_slot >= events.size():
 		return tr("UI_INPUT_UNBOUND");
-	return _get_event_display_text(events[0]);
+	return _get_event_display_text(events[binding_slot]);
 
 
 func is_rebinding() -> bool:
@@ -77,11 +79,17 @@ func is_rebinding_action(action_name: StringName) -> bool:
 	return _pending_rebind_action == action_name;
 
 
-func start_rebind(action_name: StringName) -> bool:
+func is_rebinding_slot(action_name: StringName, binding_slot: int) -> bool:
+	return _pending_rebind_action == action_name and _pending_rebind_slot == binding_slot;
+
+
+func start_rebind(action_name: StringName, binding_slot: int = 0) -> bool:
 	if not REBINDABLE_ACTIONS.has(action_name):
 		return false;
+	if binding_slot < 0 or binding_slot >= MAX_BINDINGS_PER_ACTION:
+		return false;
 
-	if is_rebinding_action(action_name):
+	if is_rebinding_slot(action_name, binding_slot):
 		cancel_rebind();
 		return false;
 
@@ -89,6 +97,7 @@ func start_rebind(action_name: StringName) -> bool:
 		cancel_rebind();
 
 	_pending_rebind_action = action_name;
+	_pending_rebind_slot = binding_slot;
 	rebind_started.emit(action_name);
 	return true;
 
@@ -99,6 +108,7 @@ func cancel_rebind() -> void:
 
 	var canceled_action: StringName = _pending_rebind_action;
 	_pending_rebind_action = &"";
+	_pending_rebind_slot = -1;
 	rebind_canceled.emit(canceled_action);
 
 
@@ -264,12 +274,17 @@ func _apply_rebind(action_name: StringName, event: InputEvent) -> void:
 		InputMap.action_erase_event(other_action_name, event);
 		bindings_changed.emit(other_action_name);
 
-	InputMap.action_erase_events(action_name);
-	InputMap.action_add_event(action_name, event);
+	var updated_events: Array[InputEvent] = _build_rebound_event_list(action_name, event, _pending_rebind_slot);
+	_set_action_events(action_name, updated_events);
 	save_bindings();
 	_pending_rebind_action = &"";
+	_pending_rebind_slot = -1;
 	bindings_changed.emit(action_name);
 	rebind_completed.emit(action_name);
+
+
+func get_binding_slot_count() -> int:
+	return MAX_BINDINGS_PER_ACTION;
 
 
 func _can_actions_share_binding(first_action: StringName, second_action: StringName) -> bool:
@@ -283,6 +298,36 @@ func _can_actions_share_binding(first_action: StringName, second_action: StringN
 		if matches_direct_order or matches_reverse_order:
 			return true;
 	return false;
+
+
+func _build_rebound_event_list(action_name: StringName, event: InputEvent, binding_slot: int) -> Array[InputEvent]:
+	var updated_events: Array[InputEvent] = _duplicate_events(get_action_events(action_name));
+	var normalized_event: InputEvent = event.duplicate();
+	var insert_index: int = clampi(binding_slot, 0, MAX_BINDINGS_PER_ACTION - 1);
+	_remove_matching_event(updated_events, normalized_event);
+	if insert_index < updated_events.size():
+		updated_events[insert_index] = normalized_event;
+	else:
+		updated_events.append(normalized_event);
+	if updated_events.size() > MAX_BINDINGS_PER_ACTION:
+		updated_events.resize(MAX_BINDINGS_PER_ACTION);
+	return updated_events;
+
+
+func _remove_matching_event(events: Array[InputEvent], event: InputEvent) -> void:
+	for event_index: int in range(events.size() - 1, -1, -1):
+		if events[event_index] != null and events[event_index].is_match(event):
+			events.remove_at(event_index);
+
+
+func _set_action_events(action_name: StringName, events: Array[InputEvent]) -> void:
+	if not InputMap.has_action(action_name):
+		InputMap.add_action(action_name);
+	InputMap.action_erase_events(action_name);
+	for input_event: InputEvent in events:
+		if input_event == null:
+			continue;
+		InputMap.action_add_event(action_name, input_event);
 
 
 func _get_event_display_text(event: InputEvent) -> String:

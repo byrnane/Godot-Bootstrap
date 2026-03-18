@@ -155,13 +155,16 @@ func _build_bindings_ui() -> void:
 		label.size_flags_horizontal = Control.SIZE_EXPAND_FILL;
 		row.add_child(label);
 
-		var button: Button = Button.new();
-		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL;
-		button.pressed.connect(_on_binding_button_pressed.bind(action_name));
-		row.add_child(button);
+		var buttons: Array[Button] = [];
+		for binding_slot: int in range(InputManager.get_binding_slot_count()):
+			var button: Button = Button.new();
+			button.size_flags_horizontal = Control.SIZE_EXPAND_FILL;
+			button.pressed.connect(_on_binding_button_pressed.bind(action_name, binding_slot));
+			row.add_child(button);
+			buttons.append(button);
 
 		bindings_container.add_child(row);
-		_binding_buttons[action_name] = button;
+		_binding_buttons[action_name] = buttons;
 		_binding_labels[action_name] = label;
 
 	_refresh_bindings_ui();
@@ -171,16 +174,20 @@ func _refresh_bindings_ui() -> void:
 	for action_name_variant: Variant in _binding_buttons.keys():
 		var action_name: StringName = StringName(action_name_variant);
 		var label: Label = _binding_labels.get(action_name) as Label;
-		var button: Button = _binding_buttons[action_name] as Button;
 		if label != null:
 			label.text = tr(InputManager.get_action_label_key(action_name));
-		if button == null:
+		var buttons: Variant = _binding_buttons.get(action_name, []);
+		if not (buttons is Array):
 			continue;
-		if InputManager.is_rebinding_action(action_name):
-			button.text = tr("UI_INPUT_WAITING");
-		else:
-			button.text = InputManager.get_action_binding_text(action_name);
-		button.disabled = InputManager.is_rebinding() and not InputManager.is_rebinding_action(action_name);
+		for binding_slot: int in range((buttons as Array).size()):
+			var button: Button = buttons[binding_slot] as Button;
+			if button == null:
+				continue;
+			if InputManager.is_rebinding_slot(action_name, binding_slot):
+				button.text = tr("UI_INPUT_WAITING");
+			else:
+				button.text = InputManager.get_action_binding_text(action_name, binding_slot);
+			button.disabled = InputManager.is_rebinding() and not InputManager.is_rebinding_slot(action_name, binding_slot);
 
 	if InputManager.is_rebinding():
 		bindings_status_label.text = tr("UI_INPUT_REBIND_HINT");
@@ -221,8 +228,8 @@ func _on_locale_changed(_locale: String) -> void:
 	_refresh_bindings_ui();
 
 
-func _on_binding_button_pressed(action_name: StringName) -> void:
-	InputManager.start_rebind(action_name);
+func _on_binding_button_pressed(action_name: StringName, binding_slot: int) -> void:
+	InputManager.start_rebind(action_name, binding_slot);
 	_refresh_bindings_ui();
 
 
