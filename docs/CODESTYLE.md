@@ -18,6 +18,8 @@ These are not abstract perfect rules. These are working agreements for this proj
 - keep semicolons to match project style
 - use explicit names
 - add types where they make code clearer and safer
+- keep 2 empty lines between major code blocks such as `const`, fields, `@onready`, and method groups
+- keep 2 empty lines between functions
 
 ### Recommended file order
 
@@ -56,6 +58,11 @@ When adding code, quickly ask:
 - is the intent obvious from names?
 - should this value be an `@export`?
 - did I leave unexplained magic values?
+
+### Пробелы в GDScript
+
+- между крупными блоками кода, например `const`, полями, `@onready` и группами методов, оставляем 2 пустые строки
+- между отдельными функциями также оставляем 2 пустые строки
 
 ## RU
 

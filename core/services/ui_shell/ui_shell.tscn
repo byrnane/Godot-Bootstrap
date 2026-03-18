@@ -4,16 +4,19 @@
 [ext_resource type="PackedScene" path="res://features/ui/modals/pause_modal.tscn" id="2_pause_modal"]
 [ext_resource type="PackedScene" path="res://features/ui/modals/settings_modal.tscn" id="3_settings_modal"]
 [ext_resource type="PackedScene" path="res://shared/ui/loading/loading_screen.tscn" id="4_loading_screen"]
+[ext_resource type="PackedScene" path="res://shared/ui/debug/debug_overlay.tscn" id="5_debug_overlay"]
 
 [node name="UiShell" type="CanvasLayer" unique_id=503391043]
 script = ExtResource("1_script")
 hud_layer_path = NodePath("HudLayer")
 modal_layer_path = NodePath("ModalLayer")
 loading_layer_path = NodePath("LoadingLayer")
+debug_layer_path = NodePath("DebugLayer")
 modal_backdrop_path = NodePath("ModalLayer/ModalBackdrop")
 pause_modal_scene = ExtResource("2_pause_modal")
 settings_modal_scene = ExtResource("3_settings_modal")
 loading_screen_scene = ExtResource("4_loading_screen")
+debug_overlay_scene = ExtResource("5_debug_overlay")
 
 [node name="HudLayer" type="Control" parent="." unique_id=1554832734]
 layout_mode = 3
@@ -44,6 +47,15 @@ grow_vertical = 2
 color = Color(0, 0, 0, 0.45)
 
 [node name="LoadingLayer" type="Control" parent="." unique_id=1560745857]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="DebugLayer" type="Control" parent="." unique_id=207058722]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0

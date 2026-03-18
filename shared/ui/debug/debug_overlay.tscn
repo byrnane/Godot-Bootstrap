@@ -1,0 +1,96 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://shared/ui/debug/debug_overlay.gd" id="1_script"]
+[ext_resource type="FontVariation" path="res://shared/ui/theme/heading_font_embedded.tres" id="2_heading_font"]
+
+[node name="DebugOverlay" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_script")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 376.0
+offset_bottom = 248.0
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 0
+theme_override_constants/margin_bottom = 0
+
+[node name="Panel" type="PanelContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="Content" type="MarginContainer" parent="MarginContainer/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 14
+
+[node name="Rows" type="VBoxContainer" parent="MarginContainer/Panel/Content"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="TitleLabel" type="Label" parent="MarginContainer/Panel/Content/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_heading_font")
+theme_override_font_sizes/font_size = 16
+text = "UI_DEBUG_HEADER"
+
+[node name="HintLabel" type="Label" parent="MarginContainer/Panel/Content/Rows"]
+unique_name_in_owner = true
+modulate = Color(0.78, 0.84, 0.92, 0.78)
+layout_mode = 2
+text = "UI_DEBUG_HINT"
+autowrap_mode = 2
+
+[node name="FpsLabel" type="Label" parent="MarginContainer/Panel/Content/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "FPS"
+
+[node name="StateLabel" type="Label" parent="MarginContainer/Panel/Content/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "State"
+
+[node name="SceneLabel" type="Label" parent="MarginContainer/Panel/Content/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Scene"
+
+[node name="PausedLabel" type="Label" parent="MarginContainer/Panel/Content/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Paused"
+
+[node name="LoadingLabel" type="Label" parent="MarginContainer/Panel/Content/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Loading"
+
+[node name="HudLabel" type="Label" parent="MarginContainer/Panel/Content/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Hud"
+
+[node name="ModalsLabel" type="Label" parent="MarginContainer/Panel/Content/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Modals"
+
+[node name="DebugLabel" type="Label" parent="MarginContainer/Panel/Content/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Debug"

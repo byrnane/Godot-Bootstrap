@@ -4,7 +4,6 @@
 
 ### Next
 
-- add `DebugOverlay`
 - polish `LoadingScreen` UX after real project usage
 - polish `InputManager` after real project usage
 
@@ -12,7 +11,6 @@
 
 #### `v0.2.x`
 
-- add basic `DebugOverlay`
 - expand the list of rebindable actions
 - improve how current bindings are shown in UI
 - improve audio workflow for music, UI sounds, and common one-shot playback
