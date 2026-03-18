@@ -2,17 +2,21 @@ extends Node;
 
 signal settings_applied(settings: UserSettings);
 
+
 const SETTINGS_PATH: String = "user://settings.cfg";
 const SETTINGS_SECTION: String = "settings";
+
 
 func _ready() -> void:
 	AppContext.ensure_defaults();
 	load_settings();
 	apply_settings();
 
+
 func load_settings() -> void:
 	AppContext.ensure_defaults();
 	AppContext.settings = _read_settings_file();
+
 
 func save_settings() -> void:
 	AppContext.ensure_defaults();
@@ -20,6 +24,7 @@ func save_settings() -> void:
 	var config: ConfigFile = ConfigFile.new();
 	_write_settings_values(config, AppContext.settings);
 	config.save(SETTINGS_PATH);
+
 
 func apply_settings() -> void:
 	AppContext.ensure_defaults();
@@ -32,6 +37,7 @@ func apply_settings() -> void:
 	else:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED);
 	settings_applied.emit(AppContext.settings);
+
 
 func _read_settings_file() -> UserSettings:
 	var settings: UserSettings = UserSettings.new();
@@ -47,18 +53,11 @@ func _read_settings_file() -> UserSettings:
 	if source_version > UserSettings.CURRENT_VERSION:
 		return settings;
 
-	match source_version:
-		0:
-			settings.version = UserSettings.CURRENT_VERSION;
-			_read_common_settings_values(config, settings);
-		UserSettings.CURRENT_VERSION:
-			settings.version = int(config.get_value(SETTINGS_SECTION, "version", UserSettings.CURRENT_VERSION));
-			_read_common_settings_values(config, settings);
-		_:
-			settings.version = int(config.get_value(SETTINGS_SECTION, "version", UserSettings.CURRENT_VERSION));
-			_read_common_settings_values(config, settings);
+	settings.version = int(config.get_value(SETTINGS_SECTION, "version", UserSettings.CURRENT_VERSION));
+	_read_common_settings_values(config, settings);
 	_sanitize_settings(settings);
 	return settings;
+
 
 func _read_common_settings_values(config: ConfigFile, settings: UserSettings) -> void:
 	settings.language = String(config.get_value(SETTINGS_SECTION, "language", settings.language));
@@ -68,6 +67,7 @@ func _read_common_settings_values(config: ConfigFile, settings: UserSettings) ->
 	settings.fullscreen = bool(config.get_value(SETTINGS_SECTION, "fullscreen", settings.fullscreen));
 	settings.vsync_enabled = bool(config.get_value(SETTINGS_SECTION, "vsync_enabled", settings.vsync_enabled));
 
+
 func _write_settings_values(config: ConfigFile, settings: UserSettings) -> void:
 	config.set_value(SETTINGS_SECTION, "version", settings.version);
 	config.set_value(SETTINGS_SECTION, "language", settings.language);
@@ -76,6 +76,7 @@ func _write_settings_values(config: ConfigFile, settings: UserSettings) -> void:
 	config.set_value(SETTINGS_SECTION, "sfx_volume", settings.sfx_volume);
 	config.set_value(SETTINGS_SECTION, "fullscreen", settings.fullscreen);
 	config.set_value(SETTINGS_SECTION, "vsync_enabled", settings.vsync_enabled);
+
 
 func _sanitize_settings(settings: UserSettings) -> void:
 	if settings == null:

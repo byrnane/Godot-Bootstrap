@@ -2,6 +2,7 @@ extends Node;
 
 signal locale_changed(locale: String);
 
+
 const DEFAULT_LOCALE: String = "en";
 const SUPPORTED_LOCALES: PackedStringArray = ["en", "ru"];
 const LOCALE_DISPLAY_NAMES: Dictionary = {
@@ -9,18 +10,23 @@ const LOCALE_DISPLAY_NAMES: Dictionary = {
 	"ru": "Русский",
 };
 
+
 func _ready() -> void:
 	apply_current_locale();
+
 
 func get_supported_locales() -> PackedStringArray:
 	return SUPPORTED_LOCALES.duplicate();
 
+
 func get_current_locale() -> String:
 	return TranslationServer.get_locale();
+
 
 func get_display_name(locale: String) -> String:
 	var normalized_locale: String = normalize_locale(locale);
 	return String(LOCALE_DISPLAY_NAMES.get(normalized_locale, normalized_locale));
+
 
 func normalize_locale(locale: String) -> String:
 	var normalized_locale: String = locale.strip_edges().to_lower();
@@ -28,15 +34,16 @@ func normalize_locale(locale: String) -> String:
 		return DEFAULT_LOCALE;
 	if SUPPORTED_LOCALES.has(normalized_locale):
 		return normalized_locale;
-	if normalized_locale.contains("_"):
-		normalized_locale = normalized_locale.get_slice("_", 0);
-		if SUPPORTED_LOCALES.has(normalized_locale):
-			return normalized_locale;
-	if normalized_locale.contains("-"):
-		normalized_locale = normalized_locale.get_slice("-", 0);
-		if SUPPORTED_LOCALES.has(normalized_locale):
-			return normalized_locale;
+
+	for separator: String in ["_", "-"]:
+		if not normalized_locale.contains(separator):
+			continue;
+		var base_locale: String = normalized_locale.get_slice(separator, 0);
+		if SUPPORTED_LOCALES.has(base_locale):
+			return base_locale;
+
 	return DEFAULT_LOCALE;
+
 
 func set_locale(locale: String, persist_to_settings: bool = true) -> void:
 	AppContext.ensure_defaults();
@@ -45,6 +52,7 @@ func set_locale(locale: String, persist_to_settings: bool = true) -> void:
 	if persist_to_settings:
 		AppContext.settings.language = normalized_locale;
 	locale_changed.emit(normalized_locale);
+
 
 func apply_current_locale() -> void:
 	AppContext.ensure_defaults();
