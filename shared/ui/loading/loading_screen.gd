@@ -11,7 +11,7 @@ const MAX_DOT_COUNT: int = 3;
 
 
 @export var fade_duration: float = 0.2;
-@export var minimum_visible_time: float = 1.0;
+@export var minimum_visible_time: float = 0.0;
 @export var tip_cycle_interval: float = 2.5;
 
 

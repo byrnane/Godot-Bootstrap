@@ -10,6 +10,7 @@ offset_right = 348.0
 offset_bottom = 279.0
 script = ExtResource("2_script")
 default_focus_path = NodePath("MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/GeneralTab/GeneralTabContent/LanguageRow/LanguageOptionButton")
+fullscreen_mode = true
 
 [node name="TitleLabel" parent="MarginContainer/VBoxContainer" parent_id_path=PackedInt32Array(1612714182) index="0" unique_id=1525170081]
 text = "UI_SETTINGS_HEADER"
@@ -25,14 +26,11 @@ layout_mode = 2
 theme_override_constants/separation = 12
 metadata/_tab_index = 0
 
-[node name="GeneralTabSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/GeneralTab" index="0" unique_id=900305310]
-layout_mode = 2
-
-[node name="GeneralTabSpacer" type="Control" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/GeneralTab" index="1" unique_id=699896152]
+[node name="GeneralTabSpacer" type="Control" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/GeneralTab" index="0" unique_id=699896152]
 custom_minimum_size = Vector2(0, 4)
 layout_mode = 2
 
-[node name="GeneralTabContent" type="VBoxContainer" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/GeneralTab" index="2" unique_id=1112094284]
+[node name="GeneralTabContent" type="VBoxContainer" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/GeneralTab" index="1" unique_id=1112094284]
 layout_mode = 2
 theme_override_constants/separation = 12
 
@@ -93,14 +91,11 @@ layout_mode = 2
 theme_override_constants/separation = 12
 metadata/_tab_index = 1
 
-[node name="GraphicsTabSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/GraphicsTab" index="0" unique_id=963492828]
-layout_mode = 2
-
-[node name="GraphicsTabSpacer" type="Control" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/GraphicsTab" index="1" unique_id=904524963]
+[node name="GraphicsTabSpacer" type="Control" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/GraphicsTab" index="0" unique_id=904524963]
 custom_minimum_size = Vector2(0, 4)
 layout_mode = 2
 
-[node name="GraphicsTabContent" type="VBoxContainer" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/GraphicsTab" index="2" unique_id=53202186]
+[node name="GraphicsTabContent" type="VBoxContainer" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/GraphicsTab" index="1" unique_id=53202186]
 layout_mode = 2
 theme_override_constants/separation = 12
 
@@ -120,14 +115,11 @@ layout_mode = 2
 theme_override_constants/separation = 12
 metadata/_tab_index = 2
 
-[node name="ControlsTabSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/ControlsTab" index="0" unique_id=1057049905]
-layout_mode = 2
-
-[node name="ControlsTabSpacer" type="Control" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/ControlsTab" index="1" unique_id=751206082]
+[node name="ControlsTabSpacer" type="Control" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/ControlsTab" index="0" unique_id=751206082]
 custom_minimum_size = Vector2(0, 4)
 layout_mode = 2
 
-[node name="ControlsTabContent" type="VBoxContainer" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/ControlsTab" index="2" unique_id=1769206162]
+[node name="ControlsTabContent" type="VBoxContainer" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/ControlsTab" index="1" unique_id=1769206162]
 layout_mode = 2
 theme_override_constants/separation = 12
 
