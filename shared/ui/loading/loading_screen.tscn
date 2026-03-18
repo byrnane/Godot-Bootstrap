@@ -66,6 +66,13 @@ unique_name_in_owner = true
 layout_mode = 2
 show_percentage = false
 
+[node name="ProgressStatusLabel" type="Label" parent="CenterContainer/Card/MarginContainer/VBoxContainer" unique_id=38492751]
+unique_name_in_owner = true
+modulate = Color(0.76, 0.84, 0.93, 0.82)
+layout_mode = 2
+text = "UI_LOADING_PROGRESS"
+horizontal_alignment = 1
+
 [node name="TipLabel" type="Label" parent="CenterContainer/Card/MarginContainer/VBoxContainer" unique_id=240581235]
 unique_name_in_owner = true
 modulate = Color(0.8, 0.86, 0.95, 0.85)

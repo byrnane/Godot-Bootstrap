@@ -19,6 +19,10 @@ UI_ENGINE_VERSION,Версия движка Godot: {string},Godot engine version
 UI_LOADING,Загрузка...,Loading...
 UI_LOADING_MESSAGE,Подготавливаем следующую сцену,Preparing the next scene
 UI_LOADING_TIP,Здесь позже можно показывать подсказки, советы и служебную информацию,This area can later show tips hints and useful loading info
+UI_LOADING_TIP_1,Подготавливаем следующую сцену и подключаем UI,Preparing the next scene and mounting the UI
+UI_LOADING_TIP_2,Здесь удобно показывать подсказки по управлению или полезные советы,This is a good place for controls hints or useful tips
+UI_LOADING_TIP_3,Тяжёлые сцены лучше грузить через асинхронный переход,Heavy scenes feel better with async transitions
+UI_LOADING_PROGRESS,Загружено: {percent}%,Loaded: {percent}%
 UI_LOADING_ERROR,Не удалось загрузить сцену,Failed to load the scene
 UI_DEBUG_HEADER,Отладочный оверлей,Debug Overlay
 UI_DEBUG_HINT,F3 переключает отображение служебной информации,F3 toggles runtime debug info
