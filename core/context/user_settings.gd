@@ -1,11 +1,13 @@
-﻿extends Resource;
+extends Resource;
 class_name UserSettings;
+
 
 const CURRENT_VERSION: int = 2;
 const DEFAULT_LANGUAGE: String = "en";
 const DEFAULT_MASTER_VOLUME: float = 1.0;
 const DEFAULT_MUSIC_VOLUME: float = 1.0;
 const DEFAULT_SFX_VOLUME: float = 1.0;
+
 
 @export var version: int = CURRENT_VERSION;
 @export var language: String = DEFAULT_LANGUAGE;
@@ -14,6 +16,7 @@ const DEFAULT_SFX_VOLUME: float = 1.0;
 @export_range(0.0, 1.0, 0.01) var sfx_volume: float = DEFAULT_SFX_VOLUME;
 @export var fullscreen: bool = false;
 @export var vsync_enabled: bool = true;
+
 
 func reset_to_defaults() -> void:
 	version = CURRENT_VERSION;

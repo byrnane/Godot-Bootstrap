@@ -8,6 +8,7 @@ signal level_a_requested;
 signal level_b_requested;
 signal pause_toggle_requested;
 
+
 @onready var state_label: Label = %StateLabel;
 @onready var level_label: Label = %LevelLabel;
 @onready var health_label: Label = %HealthLabel;
@@ -19,7 +20,9 @@ signal pause_toggle_requested;
 @onready var level_b_button: Button = %LevelBButton;
 @onready var pause_button: Button = %PauseButton;
 
+
 var _view_model: Dictionary = {};
+
 
 func _ready() -> void:
 	damage_button.pressed.connect(_on_damage_button_pressed);
@@ -32,13 +35,16 @@ func _ready() -> void:
 		LocalizationManager.locale_changed.connect(_on_locale_changed);
 	_refresh_view();
 
+
 func _exit_tree() -> void:
 	if LocalizationManager.locale_changed.is_connected(_on_locale_changed):
 		LocalizationManager.locale_changed.disconnect(_on_locale_changed);
 
+
 func apply_view_model(view_model: Dictionary) -> void:
 	_view_model = view_model.duplicate(true);
 	_refresh_view();
+
 
 func _refresh_view() -> void:
 	var state_value: AppState.Value = _view_model.get("state", AppContext.state);
@@ -49,6 +55,7 @@ func _refresh_view() -> void:
 	level_label.text = tr("UI_GAMEPLAY_LEVEL").format({"value": _get_level_label(level_id)});
 	health_label.text = tr("UI_GAMEPLAY_HEALTH").format({"value": health});
 	score_label.text = tr("UI_GAMEPLAY_SCORE").format({"value": score});
+
 
 func _get_state_label(state_value: AppState.Value) -> String:
 	match state_value:
@@ -65,6 +72,7 @@ func _get_state_label(state_value: AppState.Value) -> String:
 		_:
 			return str(state_value);
 
+
 func _get_level_label(level_scene_id: StringName) -> String:
 	match level_scene_id:
 		Scenes.LEVEL_STUB_A:
@@ -74,23 +82,30 @@ func _get_level_label(level_scene_id: StringName) -> String:
 		_:
 			return String(level_scene_id);
 
+
 func _on_damage_button_pressed() -> void:
 	damage_requested.emit();
+
 
 func _on_heal_button_pressed() -> void:
 	heal_requested.emit();
 
+
 func _on_score_button_pressed() -> void:
 	score_requested.emit();
+
 
 func _on_level_a_button_pressed() -> void:
 	level_a_requested.emit();
 
+
 func _on_level_b_button_pressed() -> void:
 	level_b_requested.emit();
 
+
 func _on_pause_button_pressed() -> void:
 	pause_toggle_requested.emit();
+
 
 func _on_locale_changed(_locale: String) -> void:
 	_refresh_view();
