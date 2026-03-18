@@ -15,6 +15,9 @@ signal closed;
 @onready var body_scroll: ScrollContainer = %BodyScroll;
 
 
+var _previous_focus_owner: Control = null;
+
+
 func _ready() -> void:
 	_apply_layout_mode();
 	process_mode = Node.PROCESS_MODE_ALWAYS;
@@ -22,6 +25,7 @@ func _ready() -> void:
 
 
 func open_modal() -> void:
+	_remember_focus_owner();
 	visible = true;
 	# Derived modals can re-sync controls here every time they are reopened
 	# without duplicating focus and open-state behavior.
@@ -33,6 +37,7 @@ func open_modal() -> void:
 
 func close_modal() -> void:
 	visible = false;
+	call_deferred("_restore_previous_focus");
 	closed.emit();
 
 
@@ -76,3 +81,23 @@ func _apply_layout_mode() -> void:
 	if not fullscreen_mode:
 		return;
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);
+
+
+func _remember_focus_owner() -> void:
+	_previous_focus_owner = get_viewport().gui_get_focus_owner();
+
+
+func _restore_previous_focus() -> void:
+	if _previous_focus_owner == null:
+		return;
+	if not is_instance_valid(_previous_focus_owner):
+		_previous_focus_owner = null;
+		return;
+	if not _previous_focus_owner.is_inside_tree():
+		_previous_focus_owner = null;
+		return;
+	if not _previous_focus_owner.visible:
+		_previous_focus_owner = null;
+		return;
+	_previous_focus_owner.grab_focus();
+	_previous_focus_owner = null;

@@ -1,0 +1,44 @@
+[gd_scene format=3 uid="uid://dpy8r3it1n51k"]
+
+[ext_resource type="PackedScene" uid="uid://bcpsvw3g07aos" path="res://features/ui/modals/base_modal.tscn" id="1_base"]
+[ext_resource type="Script" path="res://shared/ui/feedback/feedback_modal.gd" id="2_script"]
+
+[node name="FeedbackModal" instance=ExtResource("1_base")]
+visible = true
+layout_mode = 3
+offset_left = -240.0
+offset_top = -140.0
+offset_right = 240.0
+offset_bottom = 140.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_script")
+default_focus_path = NodePath("MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/ButtonsRow/ConfirmButton")
+
+[node name="TitleLabel" parent="MarginContainer/VBoxContainer" index="0"]
+text = "UI_FEEDBACK_CONFIRM_TITLE"
+
+[node name="MessageLabel" type="Label" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body" index="0" unique_id=140243842]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 2
+text = "UI_LOADING_MESSAGE"
+
+[node name="ButtonsRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body" index="1" unique_id=1945396200]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ConfirmButton" type="Button" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/ButtonsRow" index="0" unique_id=26288651]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "UI_FEEDBACK_CONFIRM_BUTTON"
+
+[node name="CancelButton" type="Button" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/ButtonsRow" index="1" unique_id=1564161242]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "UI_FEEDBACK_CANCEL_BUTTON"
+
+[connection signal="pressed" from="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/ButtonsRow/ConfirmButton" to="." method="_on_confirm_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/ButtonsRow/CancelButton" to="." method="_on_cancel_button_pressed"]

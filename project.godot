@@ -26,6 +26,7 @@ AudioManager="*res://core/services/audio_manager.gd"
 InputManager="*res://core/services/input_manager.gd"
 TransitionManager="*res://core/services/transition_manager.gd"
 SceneRouter="*res://core/services/scene_router.gd"
+UiFeedback="*res://core/services/ui_feedback.gd"
 UiShell="*res://core/services/ui_shell/ui_shell.tscn"
 AppFlow="*res://core/flow/app_flow.gd"
 

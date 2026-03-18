@@ -91,6 +91,12 @@ This template is intentionally simple and predictable. It is not a universal gam
 - keeps keyboard and mouse rebinding rules in one place
 - lets compatible actions share one button through conflict groups
 
+`UiFeedback`
+
+- global entry point for confirm, alert, and toast requests
+- keeps callback-based feedback requests out of feature scenes
+- lets `UiShell` stay the only place that actually hosts feedback UI
+
 `TransitionManager`
 
 - coordinates scene transitions and loading UI
@@ -135,6 +141,9 @@ The idea is simple:
 Modals work as a stack. Shared behavior lives in `BaseModal`, and concrete modals inherit from it.
 
 That keeps modal behavior consistent and makes new windows easier to build.
+
+Global confirm, alert, and toast requests should go through `UiFeedback`.
+`UiShell` still owns the actual presentation layer and stacking.
 
 ### Scene loading
 

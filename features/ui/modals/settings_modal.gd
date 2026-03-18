@@ -4,6 +4,7 @@ class_name SettingsModal;
 
 var _is_syncing_controls: bool = false;
 var _is_dirty: bool = false;
+var _is_close_confirmation_pending: bool = false;
 var _binding_buttons: Dictionary = {};
 var _binding_labels: Dictionary = {};
 
@@ -61,9 +62,33 @@ func _exit_tree() -> void:
 
 
 func open_modal() -> void:
+	_is_close_confirmation_pending = false;
 	_populate_locales();
 	_sync_from_settings();
 	super.open_modal();
+
+
+func request_close() -> void:
+	InputManager.cancel_rebind();
+	if not _is_dirty:
+		close_requested.emit();
+		return;
+	if _is_close_confirmation_pending:
+		return;
+
+	_is_close_confirmation_pending = true;
+	UiFeedback.confirm(
+		tr("UI_SETTINGS_DISCARD_MESSAGE"),
+		_on_confirm_close_with_unsaved_changes,
+		_on_cancel_close_with_unsaved_changes,
+		{
+			"title": tr("UI_SETTINGS_DISCARD_TITLE"),
+			"confirm_text": tr("UI_SETTINGS_DISCARD_CONFIRM"),
+			"cancel_text": tr("UI_SETTINGS_DISCARD_CANCEL"),
+			"close_on_backdrop": true,
+			"close_on_cancel": true,
+		}
+	);
 
 
 func _sync_ui_state() -> void:
@@ -219,8 +244,7 @@ func _on_reset_button_pressed() -> void:
 
 
 func _on_close_button_pressed() -> void:
-	InputManager.cancel_rebind();
-	close_requested.emit();
+	request_close();
 
 
 func _on_controls_changed(_value: Variant = null) -> void:
@@ -256,3 +280,15 @@ func _on_rebind_started(_action_name: StringName) -> void:
 
 func _on_rebind_finished(_action_name: StringName) -> void:
 	_refresh_bindings_ui();
+
+
+func _on_confirm_close_with_unsaved_changes() -> void:
+	_is_close_confirmation_pending = false;
+	_populate_locales();
+	_sync_from_settings();
+	close_requested.emit();
+
+
+func _on_cancel_close_with_unsaved_changes() -> void:
+	_is_close_confirmation_pending = false;
+	focus_default_control();
