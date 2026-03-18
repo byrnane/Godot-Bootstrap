@@ -78,8 +78,6 @@ func _populate_locales() -> void:
 		selected_locale = LocalizationManager.normalize_locale(AppContext.settings.language);
 	_is_syncing_controls = true;
 	language_option_button.clear();
-	# Rebuild labels on every open/locale change so the dropdown itself is also
-	# translated instead of freezing in the language used at startup.
 	for locale: String in LocalizationManager.get_supported_locales():
 		language_option_button.add_item(LocalizationManager.get_display_name(locale));
 		var item_index: int = language_option_button.item_count - 1;
@@ -146,26 +144,36 @@ func _build_bindings_ui() -> void:
 
 	_binding_buttons.clear();
 	_binding_labels.clear();
-	for action_name: StringName in InputManager.get_rebindable_actions():
-		var row: HBoxContainer = HBoxContainer.new();
-		row.size_flags_horizontal = Control.SIZE_EXPAND_FILL;
-		row.add_theme_constant_override("separation", 8);
+	for group_key: StringName in InputManager.get_action_groups():
+		var group_actions: Array[StringName] = InputManager.get_actions_for_group(group_key);
+		if group_actions.is_empty():
+			continue;
 
-		var label: Label = Label.new();
-		label.size_flags_horizontal = Control.SIZE_EXPAND_FILL;
-		row.add_child(label);
+		var group_label: Label = Label.new();
+		group_label.text = tr(String(group_key));
+		group_label.theme_type_variation = &"HeaderSmall";
+		bindings_container.add_child(group_label);
 
-		var buttons: Array[Button] = [];
-		for binding_slot: int in range(InputManager.get_binding_slot_count()):
-			var button: Button = Button.new();
-			button.size_flags_horizontal = Control.SIZE_EXPAND_FILL;
-			button.pressed.connect(_on_binding_button_pressed.bind(action_name, binding_slot));
-			row.add_child(button);
-			buttons.append(button);
+		for action_name: StringName in group_actions:
+			var row: HBoxContainer = HBoxContainer.new();
+			row.size_flags_horizontal = Control.SIZE_EXPAND_FILL;
+			row.add_theme_constant_override("separation", 8);
 
-		bindings_container.add_child(row);
-		_binding_buttons[action_name] = buttons;
-		_binding_labels[action_name] = label;
+			var label: Label = Label.new();
+			label.size_flags_horizontal = Control.SIZE_EXPAND_FILL;
+			row.add_child(label);
+
+			var buttons: Array[Button] = [];
+			for binding_slot: int in range(InputManager.get_binding_slot_count()):
+				var button: Button = Button.new();
+				button.size_flags_horizontal = Control.SIZE_EXPAND_FILL;
+				button.pressed.connect(_on_binding_button_pressed.bind(action_name, binding_slot));
+				row.add_child(button);
+				buttons.append(button);
+
+			bindings_container.add_child(row);
+			_binding_buttons[action_name] = buttons;
+			_binding_labels[action_name] = label;
 
 	_refresh_bindings_ui();
 

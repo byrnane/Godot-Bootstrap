@@ -8,23 +8,77 @@ signal rebind_canceled(action_name: StringName);
 
 const INPUT_SETTINGS_PATH: String = "user://input_bindings.save";
 const KEY_NONE: int = 0;
-const KEYCODE_ESCAPE: int = 4194305;
-const KEYCODE_F10: int = 4194310;
-const KEYCODE_F3: int = 4194334;
+const DEFAULT_KEY_ESCAPE: Key = KEY_ESCAPE as Key;
+const DEFAULT_KEY_F10: Key = KEY_F10 as Key;
+const DEFAULT_KEY_F3: Key = KEY_F3 as Key;
+const DEFAULT_KEY_ENTER: Key = KEY_ENTER as Key;
+const DEFAULT_KEY_SPACE: Key = KEY_SPACE as Key;
+const DEFAULT_KEY_UP: Key = KEY_UP as Key;
+const DEFAULT_KEY_W: Key = KEY_W as Key;
+const DEFAULT_KEY_DOWN: Key = KEY_DOWN as Key;
+const DEFAULT_KEY_S: Key = KEY_S as Key;
+const DEFAULT_KEY_LEFT: Key = KEY_LEFT as Key;
+const DEFAULT_KEY_A: Key = KEY_A as Key;
+const DEFAULT_KEY_RIGHT: Key = KEY_RIGHT as Key;
+const DEFAULT_KEY_D: Key = KEY_D as Key;
 const MAX_BINDINGS_PER_ACTION: int = 2;
+const ACTION_GROUP_ORDER: Array[StringName] = [
+	&"UI_INPUT_GROUP_NAVIGATION",
+	&"UI_INPUT_GROUP_SYSTEM",
+	&"UI_INPUT_GROUP_DEBUG",
+];
+const ACTION_METADATA: Dictionary = {
+	&"ui_accept": {
+		"label_key": "UI_INPUT_ACTION_ACCEPT",
+		"group_key": "UI_INPUT_GROUP_NAVIGATION",
+		"conflict_group": "navigation_confirm",
+	},
+	&"ui_up": {
+		"label_key": "UI_INPUT_ACTION_UP",
+		"group_key": "UI_INPUT_GROUP_NAVIGATION",
+		"conflict_group": "navigation_vertical",
+	},
+	&"ui_down": {
+		"label_key": "UI_INPUT_ACTION_DOWN",
+		"group_key": "UI_INPUT_GROUP_NAVIGATION",
+		"conflict_group": "navigation_vertical",
+	},
+	&"ui_left": {
+		"label_key": "UI_INPUT_ACTION_LEFT",
+		"group_key": "UI_INPUT_GROUP_NAVIGATION",
+		"conflict_group": "navigation_horizontal",
+	},
+	&"ui_right": {
+		"label_key": "UI_INPUT_ACTION_RIGHT",
+		"group_key": "UI_INPUT_GROUP_NAVIGATION",
+		"conflict_group": "navigation_horizontal",
+	},
+	&"ui_cancel": {
+		"label_key": "UI_INPUT_ACTION_CANCEL",
+		"group_key": "UI_INPUT_GROUP_SYSTEM",
+		"conflict_group": "system_contextual",
+	},
+	&"ui_pause": {
+		"label_key": "UI_INPUT_ACTION_PAUSE",
+		"group_key": "UI_INPUT_GROUP_SYSTEM",
+		"conflict_group": "system_contextual",
+	},
+	&"ui_debug_overlay": {
+		"label_key": "UI_INPUT_ACTION_DEBUG_OVERLAY",
+		"group_key": "UI_INPUT_GROUP_DEBUG",
+		"conflict_group": "debug_tools",
+	},
+};
 const REBINDABLE_ACTIONS: Array[StringName] = [
-	&"ui_pause",
+	&"ui_accept",
+	&"ui_up",
+	&"ui_down",
+	&"ui_left",
+	&"ui_right",
 	&"ui_cancel",
+	&"ui_pause",
 	&"ui_debug_overlay",
 ];
-const COMPATIBLE_BINDING_PAIRS: Array[Array] = [
-	[&"ui_pause", &"ui_cancel"],
-];
-const ACTION_LABEL_KEYS: Dictionary = {
-	&"ui_pause": "UI_INPUT_ACTION_PAUSE",
-	&"ui_cancel": "UI_INPUT_ACTION_CANCEL",
-	&"ui_debug_overlay": "UI_INPUT_ACTION_DEBUG_OVERLAY",
-};
 
 
 var _default_bindings: Dictionary = {};
@@ -53,14 +107,39 @@ func get_rebindable_actions() -> Array[StringName]:
 	return REBINDABLE_ACTIONS.duplicate();
 
 
+func get_binding_slot_count() -> int:
+	return MAX_BINDINGS_PER_ACTION;
+
+
+func get_action_groups() -> Array[StringName]:
+	var groups: Array[StringName] = [];
+	for group_key: StringName in ACTION_GROUP_ORDER:
+		if not get_actions_for_group(group_key).is_empty():
+			groups.append(group_key);
+	return groups;
+
+
+func get_actions_for_group(group_key: StringName) -> Array[StringName]:
+	var actions: Array[StringName] = [];
+	for action_name: StringName in REBINDABLE_ACTIONS:
+		if get_action_group_key(action_name) == group_key:
+			actions.append(action_name);
+	return actions;
+
+
+func get_action_group_key(action_name: StringName) -> StringName:
+	return StringName(_get_action_metadata(action_name).get("group_key", &"UI_INPUT_GROUP_SYSTEM"));
+
+
 func get_action_label_key(action_name: StringName) -> String:
-	return String(ACTION_LABEL_KEYS.get(action_name, String(action_name)));
+	return String(_get_action_metadata(action_name).get("label_key", String(action_name)));
 
 
 func get_action_events(action_name: StringName) -> Array[InputEvent]:
 	var events: Array[InputEvent] = [];
 	for event: InputEvent in InputMap.action_get_events(action_name):
-		events.append(event);
+		if _is_supported_stored_event(event):
+			events.append(event);
 	return events;
 
 
@@ -165,18 +244,14 @@ func load_bindings() -> void:
 			bindings_changed.emit(action_name);
 			continue;
 
-		if not InputMap.has_action(action_name):
-			InputMap.add_action(action_name);
-		InputMap.action_erase_events(action_name);
-		for input_event: InputEvent in loaded_events:
-			InputMap.action_add_event(action_name, input_event);
+		_set_action_events(action_name, loaded_events);
 		bindings_changed.emit(action_name);
 
 
 func _cache_default_bindings() -> void:
 	_default_bindings.clear();
 	for action_name: StringName in REBINDABLE_ACTIONS:
-		var action_events: Array[InputEvent] = _duplicate_events(InputMap.action_get_events(action_name));
+		var action_events: Array[InputEvent] = _duplicate_events(get_action_events(action_name));
 		if action_events.is_empty():
 			action_events = _get_builtin_default_events(action_name);
 		_default_bindings[action_name] = action_events;
@@ -190,7 +265,7 @@ func _restore_defaults() -> void:
 func _serialize_bindings() -> Dictionary:
 	var serialized: Dictionary = {};
 	for action_name: StringName in REBINDABLE_ACTIONS:
-		serialized[String(action_name)] = _duplicate_events(InputMap.action_get_events(action_name));
+		serialized[String(action_name)] = _duplicate_events(get_action_events(action_name));
 	return serialized;
 
 
@@ -219,18 +294,14 @@ func _deserialize_events(source_events: Array) -> Array[InputEvent]:
 	var deserialized: Array[InputEvent] = [];
 	for source_event: Variant in source_events:
 		var input_event: InputEvent = source_event as InputEvent;
-		if input_event == null:
+		if input_event == null or not _is_supported_stored_event(input_event):
 			continue;
 		deserialized.append(input_event);
 	return deserialized;
 
 
 func _restore_default_action(action_name: StringName) -> void:
-	if not InputMap.has_action(action_name):
-		InputMap.add_action(action_name);
-	InputMap.action_erase_events(action_name);
-	for default_event: InputEvent in _get_default_events(action_name):
-		InputMap.action_add_event(action_name, default_event);
+	_set_action_events(action_name, _get_default_events(action_name));
 
 
 func _emit_all_bindings_changed() -> void:
@@ -254,11 +325,11 @@ func _is_supported_rebind_event(event: InputEvent) -> bool:
 		];
 		return mouse_button_event.pressed and is_supported_button;
 
-	var joypad_button_event: InputEventJoypadButton = event as InputEventJoypadButton;
-	if joypad_button_event != null:
-		return joypad_button_event.pressed;
-
 	return false;
+
+
+func _is_supported_stored_event(event: InputEvent) -> bool:
+	return event is InputEventKey or event is InputEventMouseButton;
 
 
 func _apply_rebind(action_name: StringName, event: InputEvent) -> void:
@@ -283,21 +354,20 @@ func _apply_rebind(action_name: StringName, event: InputEvent) -> void:
 	rebind_completed.emit(action_name);
 
 
-func get_binding_slot_count() -> int:
-	return MAX_BINDINGS_PER_ACTION;
-
-
 func _can_actions_share_binding(first_action: StringName, second_action: StringName) -> bool:
-	for compatible_pair: Array in COMPATIBLE_BINDING_PAIRS:
-		if compatible_pair.size() != 2:
-			continue;
-		var left_action: StringName = compatible_pair[0];
-		var right_action: StringName = compatible_pair[1];
-		var matches_direct_order: bool = left_action == first_action and right_action == second_action;
-		var matches_reverse_order: bool = left_action == second_action and right_action == first_action;
-		if matches_direct_order or matches_reverse_order:
-			return true;
-	return false;
+	var first_conflict_group: String = _get_action_conflict_group(first_action);
+	var second_conflict_group: String = _get_action_conflict_group(second_action);
+	if first_conflict_group.is_empty() or second_conflict_group.is_empty():
+		return false;
+	return first_conflict_group == second_conflict_group;
+
+
+func _get_action_conflict_group(action_name: StringName) -> String:
+	return String(_get_action_metadata(action_name).get("conflict_group", ""));
+
+
+func _get_action_metadata(action_name: StringName) -> Dictionary:
+	return ACTION_METADATA.get(action_name, {});
 
 
 func _build_rebound_event_list(action_name: StringName, event: InputEvent, binding_slot: int) -> Array[InputEvent]:
@@ -364,27 +434,48 @@ func _get_event_display_text(event: InputEvent) -> String:
 			_:
 				return mouse_button_event.as_text();
 
-	var joypad_button_event: InputEventJoypadButton = event as InputEventJoypadButton;
-	if joypad_button_event != null:
-		return "%s %d" % [tr("UI_INPUT_GAMEPAD_BUTTON"), joypad_button_event.button_index];
-
 	return event.as_text();
 
 
 func _get_builtin_default_events(action_name: StringName) -> Array[InputEvent]:
 	match action_name:
+		&"ui_accept":
+			return [
+				_create_key_event(DEFAULT_KEY_ENTER),
+				_create_key_event(DEFAULT_KEY_SPACE),
+			];
+		&"ui_up":
+			return [
+				_create_key_event(DEFAULT_KEY_UP),
+				_create_key_event(DEFAULT_KEY_W),
+			];
+		&"ui_down":
+			return [
+				_create_key_event(DEFAULT_KEY_DOWN),
+				_create_key_event(DEFAULT_KEY_S),
+			];
+		&"ui_left":
+			return [
+				_create_key_event(DEFAULT_KEY_LEFT),
+				_create_key_event(DEFAULT_KEY_A),
+			];
+		&"ui_right":
+			return [
+				_create_key_event(DEFAULT_KEY_RIGHT),
+				_create_key_event(DEFAULT_KEY_D),
+			];
 		&"ui_pause":
-			return [_create_key_event(KEYCODE_F10)];
+			return [_create_key_event(DEFAULT_KEY_F10)];
 		&"ui_cancel":
-			return [_create_key_event(KEYCODE_ESCAPE)];
+			return [_create_key_event(DEFAULT_KEY_ESCAPE)];
 		&"ui_debug_overlay":
-			return [_create_key_event(KEYCODE_F3)];
+			return [_create_key_event(DEFAULT_KEY_F3)];
 		_:
 			return [];
 
 
-func _create_key_event(keycode: int) -> InputEventKey:
+func _create_key_event(keycode: Key) -> InputEventKey:
 	var key_event: InputEventKey = InputEventKey.new();
-	key_event.keycode = keycode as Key;
-	key_event.key_label = keycode as Key;
+	key_event.keycode = keycode;
+	key_event.key_label = keycode;
 	return key_event;

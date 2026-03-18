@@ -61,6 +61,14 @@ UI_INPUT_REBIND_HINT,Ожидание нового ввода для выбра�
 UI_INPUT_RESET_BINDINGS,Сбросить управление,Reset controls
 UI_INPUT_UNBOUND,Не назначено,Unbound
 UI_INPUT_WAITING,Нажмите кнопку...,Press a button...
+UI_INPUT_GROUP_NAVIGATION,Навигация,Navigation
+UI_INPUT_GROUP_SYSTEM,Системные действия,System actions
+UI_INPUT_GROUP_DEBUG,Отладка,Debug
+UI_INPUT_ACTION_ACCEPT,Подтвердить / выбрать,Confirm / select
+UI_INPUT_ACTION_UP,Движение вверх / выбор выше,Move up / select above
+UI_INPUT_ACTION_DOWN,Движение вниз / выбор ниже,Move down / select below
+UI_INPUT_ACTION_LEFT,Движение влево / выбор слева,Move left / select left
+UI_INPUT_ACTION_RIGHT,Движение вправо / выбор справа,Move right / select right
 UI_INPUT_ACTION_PAUSE,Пауза,Pause
 UI_INPUT_ACTION_CANCEL,Назад / отмена,Back / cancel
 UI_INPUT_ACTION_DEBUG_OVERLAY,Отладочный оверлей,Debug overlay
