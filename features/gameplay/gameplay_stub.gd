@@ -7,34 +7,39 @@ signal back_to_menu_requested;
 signal save_requested;
 signal view_changed(view_model: Dictionary);
 
+
 const GAMEPLAY_HUD_SCENE: PackedScene = preload("res://features/gameplay/gameplay_hud.tscn");
 const HEALTH_STEP: int = 5;
 const SCORE_STEP: int = 10;
+
 
 @export var pause_action_name: StringName = &"ui_pause";
 @export var level_scene_root_path: NodePath;
 
 @onready var level_root: Control = get_node_or_null(level_scene_root_path) as Control;
 
+
 func _ready() -> void:
 	if not AppContext.state_changed.is_connected(_on_app_state_changed):
 		AppContext.state_changed.connect(_on_app_state_changed);
 	_refresh_view();
 
+
 func _exit_tree() -> void:
 	if AppContext.state_changed.is_connected(_on_app_state_changed):
 		AppContext.state_changed.disconnect(_on_app_state_changed);
 
+
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed(pause_action_name):
-		if AppContext.state == AppState.Value.PAUSED:
-			resume_requested.emit();
-		else:
-			pause_requested.emit();
-		get_viewport().set_input_as_handled();
+	if not event.is_action_pressed(pause_action_name):
+		return;
+	_toggle_pause();
+	get_viewport().set_input_as_handled();
+
 
 func get_hud_scene() -> PackedScene:
 	return GAMEPLAY_HUD_SCENE;
+
 
 func bind_hud(hud: Control) -> void:
 	if hud == null:
@@ -53,29 +58,36 @@ func bind_hud(hud: Control) -> void:
 	if hud.has_method("apply_view_model"):
 		hud.call("apply_view_model", _build_view_model());
 
+
 func on_enter(_payload: Variant = null) -> void:
 	_refresh_view();
 	_load_level(SessionContext.current_level_id);
+
 
 func apply_damage() -> void:
 	SessionContext.player_health = max(SessionContext.player_health - HEALTH_STEP, 0);
 	_refresh_view();
 
+
 func apply_heal() -> void:
 	SessionContext.player_health += HEALTH_STEP;
 	_refresh_view();
+
 
 func add_score_points() -> void:
 	SessionContext.score += SCORE_STEP;
 	_refresh_view();
 
+
 func load_level_a() -> void:
 	SessionContext.current_level_id = Scenes.LEVEL_STUB_A;
 	_load_level(SessionContext.current_level_id);
 
+
 func load_level_b() -> void:
 	SessionContext.current_level_id = Scenes.LEVEL_STUB_B;
 	_load_level(SessionContext.current_level_id);
+
 
 func _load_level(level_scene_id: StringName) -> void:
 	if level_root == null:
@@ -97,8 +109,10 @@ func _load_level(level_scene_id: StringName) -> void:
 	level_root.add_child(level_instance);
 	_refresh_view();
 
+
 func _refresh_view() -> void:
 	view_changed.emit(_build_view_model());
+
 
 func _build_view_model() -> Dictionary:
 	return {
@@ -108,6 +122,7 @@ func _build_view_model() -> Dictionary:
 		"score": SessionContext.score,
 	};
 
+
 func _connect_signal_if_needed(source: Object, signal_name: StringName, target: Callable) -> void:
 	if source == null or not source.has_signal(signal_name):
 		return;
@@ -115,17 +130,21 @@ func _connect_signal_if_needed(source: Object, signal_name: StringName, target: 
 		return;
 	source.connect(signal_name, target);
 
+
 func _toggle_pause() -> void:
 	if AppContext.state == AppState.Value.PAUSED:
 		resume_requested.emit();
 		return;
 	pause_requested.emit();
 
+
 func _request_save() -> void:
 	save_requested.emit();
 
+
 func _request_back_to_menu() -> void:
 	back_to_menu_requested.emit();
+
 
 func _on_app_state_changed(_new_state: AppState.Value) -> void:
 	_refresh_view();

@@ -1,10 +1,12 @@
 extends Resource;
 class_name SaveData;
 
+
 const CURRENT_VERSION: int = 2;
 const DEFAULT_LEVEL_ID: StringName = &"level_stub_a";
 const DEFAULT_PLAYER_HEALTH: int = 100;
 const DEFAULT_SCORE: int = 0;
+
 
 @export var version: int = CURRENT_VERSION;
 @export var session_exists: bool = false;
@@ -12,12 +14,14 @@ const DEFAULT_SCORE: int = 0;
 @export var player_health: int = DEFAULT_PLAYER_HEALTH;
 @export var score: int = DEFAULT_SCORE;
 
+
 func clear() -> void:
 	version = CURRENT_VERSION;
 	session_exists = false;
 	current_level_id = DEFAULT_LEVEL_ID;
 	player_health = DEFAULT_PLAYER_HEALTH;
 	score = DEFAULT_SCORE;
+
 
 func to_dictionary() -> Dictionary:
 	return {
@@ -28,12 +32,14 @@ func to_dictionary() -> Dictionary:
 		"score": score,
 	};
 
+
 static func from_variant(data: Variant) -> SaveData:
 	if data is SaveData:
 		return _from_resource(data as SaveData);
 	if data is Dictionary:
 		return _from_dictionary(data as Dictionary);
 	return null;
+
 
 static func _from_resource(resource: SaveData) -> SaveData:
 	if resource == null:
@@ -49,6 +55,7 @@ static func _from_resource(resource: SaveData) -> SaveData:
 	migrated._sanitize();
 	return migrated;
 
+
 static func _from_dictionary(data: Dictionary) -> SaveData:
 	var source_version: int = int(data.get("version", 0));
 	if source_version > CURRENT_VERSION:
@@ -61,6 +68,7 @@ static func _from_dictionary(data: Dictionary) -> SaveData:
 	migrated.score = int(data.get("score", DEFAULT_SCORE));
 	migrated._sanitize();
 	return migrated;
+
 
 func _sanitize() -> void:
 	# Keep normalization here so callers can treat loaded saves as trusted data.

@@ -6,20 +6,25 @@ signal scene_load_progress(scene_id: StringName, progress: float);
 signal scene_load_failed(scene_id: StringName, error_text: String);
 signal scene_changed(scene_id: StringName, scene_root: Node);
 
+
 const EMPTY_SCENE_PATH: String = "";
 
 @export var default_scene_id: StringName = Scenes.MAIN_MENU;
+
 
 var current_scene_id: StringName = &"";
 var current_scene_root: Node = null;
 var _root_container: Node = null;
 var _is_loading: bool = false;
 
+
 func configure(root_container: Node) -> void:
 	_root_container = root_container;
 
+
 func has_container() -> bool:
 	return _root_container != null;
+
 
 func go_to(scene_id: StringName, payload: Variant = null) -> Node:
 	if _is_loading:
@@ -32,8 +37,10 @@ func go_to(scene_id: StringName, payload: Variant = null) -> Node:
 	call_deferred("_go_to_async", scene_id, payload);
 	return null;
 
+
 func is_loading() -> bool:
 	return _is_loading;
+
 
 func _go_to_async(scene_id: StringName, payload: Variant = null) -> void:
 	var resolved_scene_id: StringName = scene_id;
@@ -55,11 +62,7 @@ func _go_to_async(scene_id: StringName, payload: Variant = null) -> void:
 
 	var load_request: Error = ResourceLoader.load_threaded_request(scene_path);
 	if load_request != OK:
-		var request_error: String = tr("UI_LOADING_ERROR");
-		scene_load_failed.emit(resolved_scene_id, request_error);
-		push_error("SceneRouter: failed to request threaded load for '%s'." % [scene_path]);
-		await TransitionManager.fail_loading(request_error);
-		_is_loading = false;
+		await _fail_scene_load(resolved_scene_id, scene_path, "failed to request threaded load");
 		return;
 
 	var progress: Array = [];
@@ -77,22 +80,14 @@ func _go_to_async(scene_id: StringName, payload: Variant = null) -> void:
 			ResourceLoader.ThreadLoadStatus.THREAD_LOAD_LOADED:
 				break;
 			ResourceLoader.ThreadLoadStatus.THREAD_LOAD_INVALID_RESOURCE, ResourceLoader.ThreadLoadStatus.THREAD_LOAD_FAILED:
-				var load_error: String = tr("UI_LOADING_ERROR");
-				scene_load_failed.emit(resolved_scene_id, load_error);
-				push_error("SceneRouter: threaded load failed for '%s'." % [scene_path]);
-				await TransitionManager.fail_loading(load_error);
-				_is_loading = false;
+				await _fail_scene_load(resolved_scene_id, scene_path, "threaded load failed");
 				return;
 			_:
 				await get_tree().process_frame;
 
 	var packed_scene: PackedScene = ResourceLoader.load_threaded_get(scene_path) as PackedScene;
 	if packed_scene == null:
-		var packed_scene_error: String = tr("UI_LOADING_ERROR");
-		scene_load_failed.emit(resolved_scene_id, packed_scene_error);
-		push_error("SceneRouter: failed to load scene '%s'." % [scene_path]);
-		await TransitionManager.fail_loading(packed_scene_error);
-		_is_loading = false;
+		await _fail_scene_load(resolved_scene_id, scene_path, "failed to load scene");
 		return;
 
 	# Exit hooks run before the node is freed so the outgoing scene can detach
@@ -121,11 +116,13 @@ func _go_to_async(scene_id: StringName, payload: Variant = null) -> void:
 	await TransitionManager.finish_loading();
 	_is_loading = false;
 
+
 func reload_current_scene(payload: Variant = null) -> Node:
 	if current_scene_id == StringName():
 		return go_to(default_scene_id, payload);
 
 	return go_to(current_scene_id, payload);
+
 
 func _clear_container() -> void:
 	if _root_container == null:
@@ -134,6 +131,7 @@ func _clear_container() -> void:
 	for child: Node in _root_container.get_children():
 		_root_container.remove_child(child);
 		child.queue_free();
+
 
 func _mount_scene_hud(target: Node) -> void:
 	if target == null or UiShell == null:
@@ -148,6 +146,7 @@ func _mount_scene_hud(target: Node) -> void:
 	if target.has_method("bind_hud"):
 		target.call("bind_hud", hud_instance);
 
+
 func _unmount_scene_hud(target: Node) -> void:
 	if UiShell == null:
 		return;
@@ -156,10 +155,12 @@ func _unmount_scene_hud(target: Node) -> void:
 		target.call("unbind_hud", hud_instance);
 	UiShell.clear_hud();
 
+
 func _get_scene_hud_scene(target: Node) -> PackedScene:
 	if target == null or not target.has_method("get_hud_scene"):
 		return null;
 	return target.call("get_hud_scene") as PackedScene;
+
 
 func _call_on_enter(target: Node, payload: Variant) -> void:
 	if target == null:
@@ -168,9 +169,18 @@ func _call_on_enter(target: Node, payload: Variant) -> void:
 	if target.has_method("on_enter"):
 		target.call("on_enter", payload);
 
+
 func _call_on_exit(target: Node) -> void:
 	if target == null:
 		return;
 
 	if target.has_method("on_exit"):
 		target.call("on_exit");
+
+
+func _fail_scene_load(scene_id: StringName, scene_path: String, reason: String) -> void:
+	var error_text: String = tr("UI_LOADING_ERROR");
+	scene_load_failed.emit(scene_id, error_text);
+	push_error("SceneRouter: %s for '%s'." % [reason, scene_path]);
+	await TransitionManager.fail_loading(error_text);
+	_is_loading = false;
