@@ -16,6 +16,9 @@ const REBINDABLE_ACTIONS: Array[StringName] = [
 	&"ui_cancel",
 	&"ui_debug_overlay",
 ];
+const COMPATIBLE_BINDING_PAIRS: Array[Array] = [
+	[&"ui_pause", &"ui_cancel"],
+];
 const ACTION_LABEL_KEYS: Dictionary = {
 	&"ui_pause": "UI_INPUT_ACTION_PAUSE",
 	&"ui_cancel": "UI_INPUT_ACTION_CANCEL",
@@ -256,6 +259,8 @@ func _apply_rebind(action_name: StringName, event: InputEvent) -> void:
 	for other_action_name: StringName in REBINDABLE_ACTIONS:
 		if other_action_name == action_name:
 			continue;
+		if _can_actions_share_binding(action_name, other_action_name):
+			continue;
 		InputMap.action_erase_event(other_action_name, event);
 		bindings_changed.emit(other_action_name);
 
@@ -265,6 +270,19 @@ func _apply_rebind(action_name: StringName, event: InputEvent) -> void:
 	_pending_rebind_action = &"";
 	bindings_changed.emit(action_name);
 	rebind_completed.emit(action_name);
+
+
+func _can_actions_share_binding(first_action: StringName, second_action: StringName) -> bool:
+	for compatible_pair: Array in COMPATIBLE_BINDING_PAIRS:
+		if compatible_pair.size() != 2:
+			continue;
+		var left_action: StringName = compatible_pair[0];
+		var right_action: StringName = compatible_pair[1];
+		var matches_direct_order: bool = left_action == first_action and right_action == second_action;
+		var matches_reverse_order: bool = left_action == second_action and right_action == first_action;
+		if matches_direct_order or matches_reverse_order:
+			return true;
+	return false;
 
 
 func _get_event_display_text(event: InputEvent) -> String:
