@@ -125,6 +125,8 @@ UI_GAMEPLAY_SCORE,Счет: {value},Score: {value}
 UI_GAMEPLAY_DAMAGE,- Здоровье,- Health
 UI_GAMEPLAY_HEAL,+ Здоровье,+ Health
 UI_GAMEPLAY_ADD_SCORE,+ Счет,+ Score
+UI_TOAST_DAMAGE_RECEIVED,-{value} здоровья,-{value} health
+UI_TOAST_SCORE_GAINED,+{value} очков,+{value} score
 UI_GAMEPLAY_LEVEL_A,Загрузить уровень A,Load Level A
 UI_GAMEPLAY_LEVEL_B,Загрузить уровень B,Load Level B
 UI_GAMEPLAY_SAVE,Сохранить,Save

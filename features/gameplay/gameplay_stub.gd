@@ -13,6 +13,9 @@ const HEALTH_STEP: int = 5;
 const SCORE_STEP: int = 10;
 const LEVEL_A_MUSIC: AudioStream = preload("res://assets/music/level_a.mp3");
 const LEVEL_B_MUSIC: AudioStream = preload("res://assets/music/level_b.mp3");
+const DAMAGE_SFX: AudioStream = preload("res://assets/sfx/damage.ogg");
+const HEAL_SFX: AudioStream = preload("res://assets/sfx/heal.ogg");
+const SCORE_SFX: AudioStream = preload("res://assets/sfx/score.ogg");
 
 
 @export var pause_action_name: StringName = &"ui_pause";
@@ -68,16 +71,21 @@ func on_enter(_payload: Variant = null) -> void:
 
 func apply_damage() -> void:
 	SessionContext.player_health = max(SessionContext.player_health - HEALTH_STEP, 0);
+	AudioManager.play_sfx(DAMAGE_SFX);
+	UiFeedback.toast(tr("UI_TOAST_DAMAGE_RECEIVED").format({"value": HEALTH_STEP}));
 	_refresh_view();
 
 
 func apply_heal() -> void:
 	SessionContext.player_health += HEALTH_STEP;
+	AudioManager.play_sfx(HEAL_SFX);
 	_refresh_view();
 
 
 func add_score_points() -> void:
 	SessionContext.score += SCORE_STEP;
+	AudioManager.play_sfx(SCORE_SFX);
+	UiFeedback.toast(tr("UI_TOAST_SCORE_GAINED").format({"value": SCORE_STEP}));
 	_refresh_view();
 
 
