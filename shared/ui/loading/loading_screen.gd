@@ -8,6 +8,7 @@ signal outro_finished;
 const DEFAULT_PROGRESS: float = -1.0;
 const DOT_ANIMATION_STEP: float = 0.35;
 const MAX_DOT_COUNT: int = 3;
+const UiMotion = preload("res://shared/ui/motion/ui_motion.gd");
 
 
 @export var fade_duration: float = 0.2;
@@ -16,7 +17,7 @@ const MAX_DOT_COUNT: int = 3;
 
 
 @onready var backdrop: ColorRect = %Backdrop;
-@onready var card: PanelContainer = %Card;
+@onready var card: Control = %Card;
 @onready var title_label: Label = %TitleLabel;
 @onready var message_label: Label = %MessageLabel;
 @onready var progress_bar: ProgressBar = %ProgressBar;
@@ -39,6 +40,7 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS;
 	modulate.a = 0.0;
 	card.modulate.a = 0.0;
+	card.scale = UiMotion.MODAL_INITIAL_SCALE;
 	progress_bar.visible = false;
 	progress_status_label.visible = false;
 
@@ -100,10 +102,7 @@ func _apply_content(data: Dictionary) -> void:
 
 
 func _fade_to(target_alpha: float) -> void:
-	var tween: Tween = create_tween();
-	tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS);
-	tween.tween_property(self, "modulate:a", target_alpha, fade_duration);
-	tween.parallel().tween_property(card, "modulate:a", target_alpha, fade_duration);
+	var tween: Tween = UiMotion.play_loading_fade(self, card, target_alpha, fade_duration);
 	await tween.finished;
 
 

@@ -34,7 +34,7 @@ var _modal_backdrop: Control = null;
 var _current_hud: Control = null;
 var _pause_modal: PauseModal = null;
 var _settings_modal: SettingsModal = null;
-var _feedback_modal: Control = null;
+var _feedback_modal: FeedbackModal = null;
 var _loading_screen: LoadingScreen = null;
 var _debug_overlay: Control = null;
 var _modal_stack: Array[Control] = [];
@@ -186,6 +186,7 @@ func _ensure_modals() -> void:
 		if _pause_modal != null:
 			_modal_layer.add_child(_pause_modal);
 			_pause_modal.process_mode = Node.PROCESS_MODE_ALWAYS;
+			_bind_modal_lifecycle(_pause_modal);
 			# UiShell forwards modal intent upward and stays ignorant of pause logic.
 			_pause_modal.resume_requested.connect(request_resume);
 			_pause_modal.save_requested.connect(request_save);
@@ -196,14 +197,16 @@ func _ensure_modals() -> void:
 		if _settings_modal != null:
 			_modal_layer.add_child(_settings_modal);
 			_settings_modal.process_mode = Node.PROCESS_MODE_ALWAYS;
+			_bind_modal_lifecycle(_settings_modal);
 			_settings_modal.close_requested.connect(close_settings);
 	if feedback_modal_scene != null and _feedback_modal == null:
-		_feedback_modal = feedback_modal_scene.instantiate() as Control;
+		_feedback_modal = feedback_modal_scene.instantiate() as FeedbackModal;
 		if _feedback_modal != null:
 			_modal_layer.add_child(_feedback_modal);
 			_feedback_modal.process_mode = Node.PROCESS_MODE_ALWAYS;
-			_feedback_modal.connect("confirmed", _on_feedback_confirmed);
-			_feedback_modal.connect("canceled", _on_feedback_canceled);
+			_bind_modal_lifecycle(_feedback_modal);
+			_feedback_modal.confirmed.connect(_on_feedback_confirmed);
+			_feedback_modal.canceled.connect(_on_feedback_canceled);
 
 
 func _ensure_loading_screen() -> void:
@@ -253,17 +256,22 @@ func _pop_modal(modal: Control) -> void:
 
 
 func _refresh_modal_visibility() -> void:
-	var has_modals: bool = not _modal_stack.is_empty();
-	if _modal_backdrop != null:
-		_modal_backdrop.visible = has_modals;
-		_modal_backdrop.mouse_filter = Control.MOUSE_FILTER_STOP if has_modals else Control.MOUSE_FILTER_IGNORE;
+	var top_modal: Control = _modal_stack.back() if not _modal_stack.is_empty() else null;
+	var has_visible_modals: bool = false;
 	for modal: Control in _get_managed_modals():
 		if modal == null:
 			continue;
-		var modal_is_visible: bool = _modal_stack.has(modal);
-		modal.visible = modal_is_visible;
-		if modal_is_visible:
-			modal.z_index = _modal_stack.find(modal) + 1;
+		var is_stacked: bool = _modal_stack.has(modal);
+		var is_top_modal: bool = modal == top_modal;
+		if modal.visible or is_stacked:
+			has_visible_modals = true;
+		modal.mouse_filter = Control.MOUSE_FILTER_STOP if is_top_modal else Control.MOUSE_FILTER_IGNORE;
+		modal.set_process_unhandled_input(is_top_modal);
+		modal.z_index = _modal_stack.find(modal) + 1 if is_stacked else 0;
+
+	if _modal_backdrop != null:
+		_modal_backdrop.visible = has_visible_modals;
+		_modal_backdrop.mouse_filter = Control.MOUSE_FILTER_STOP if has_visible_modals else Control.MOUSE_FILTER_IGNORE;
 
 
 func _focus_top_modal() -> void:
@@ -436,7 +444,7 @@ func _on_feedback_confirmed(request_id: int) -> void:
 
 	var resolved_kind: StringName = _active_feedback_kind;
 	_clear_active_feedback_request();
-	_pop_modal(_feedback_modal);
+	await _close_feedback_modal();
 	if resolved_kind == &"alert":
 		UiFeedback.resolve_alert(request_id);
 	else:
@@ -449,7 +457,7 @@ func _on_feedback_canceled(request_id: int) -> void:
 		return;
 
 	_clear_active_feedback_request();
-	_pop_modal(_feedback_modal);
+	await _close_feedback_modal();
 	UiFeedback.resolve_confirm(request_id, false);
 	call_deferred("_try_show_next_feedback");
 
@@ -476,3 +484,26 @@ func _on_toast_expired(item: Control) -> void:
 	if item.get_parent() != null:
 		item.get_parent().remove_child(item);
 	item.queue_free();
+
+
+func _bind_modal_lifecycle(modal: BaseModal) -> void:
+	if modal == null:
+		return;
+	if not modal.opened.is_connected(_on_modal_visibility_changed):
+		modal.opened.connect(_on_modal_visibility_changed);
+	if not modal.closed.is_connected(_on_modal_visibility_changed):
+		modal.closed.connect(_on_modal_visibility_changed);
+
+
+func _close_feedback_modal() -> void:
+	if _feedback_modal == null:
+		return;
+	_pop_modal(_feedback_modal);
+	await _feedback_modal.closed;
+
+
+func _on_modal_visibility_changed() -> void:
+	_refresh_modal_visibility();
+	_refresh_debug_overlay();
+	if not _modal_stack.is_empty():
+		call_deferred("_focus_top_modal");

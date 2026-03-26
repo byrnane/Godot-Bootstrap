@@ -4,8 +4,8 @@
 
 ### Next
 
-- polish `InputManager` after real project usage
-- document postponed gamepad support and gamepad rebinding separately from keyboard and mouse
+- validate the new shared UI infrastructure on more screens and future template flows
+- keep keyboard and mouse rebinding polish separate from postponed gamepad support
 
 ### Roadmap
 
@@ -13,7 +13,7 @@
 
 - improve how current bindings are shown in UI
 - postpone gamepad support and gamepad rebinding until the keyboard and mouse layout is stable
-- polish modal UX and common UI behavior
+- continue polishing modal UX and common UI behavior on top of the new shared UI layer
 
 #### `v0.3.0`
 
@@ -22,6 +22,13 @@
 - simplify starting a new session with explicit parameters
 - add a cleaner music and ambient control layer for scene-driven playback
 - add baseline gamepad support with a fixed default scheme
+- continue adopting `shared/ui/components`, `shared/ui/navigation`, and `shared/ui/motion` in new template features
+
+#### `UI/UX infrastructure`
+
+- [done] `Components + feedback`
+- [done] `Navigation primitives`
+- [done] `Transitions + motion`
 
 #### `v0.4.0`
 
@@ -31,20 +38,12 @@
 - add simple audio smoke checks for buses and missing playback paths
 - add optional gamepad rebinding once the fixed scheme is validated
 
-#### `v0.5.0`
-
-- rework shared UI components
-- replace the current `SettingsModal` tab solution with a cleaner custom one
-- add a reusable custom button component with hover and press sounds
-- add reusable UI and gameplay audio helper components
-- continue polishing interface patterns for real projects
-
 ## RU
 
 ### Ближайшее
 
-- отполировать `InputManager` после реального использования
-- отдельно зафиксировать, что поддержка геймпада и ребиндинг геймпада отложены
+- проверить новую общую UI-инфраструктуру на других экранах и будущих flow шаблона
+- держать полировку ребиндинга клавиатуры и мыши отдельно от отложенной поддержки геймпада
 
 ### Дорожная карта
 
@@ -52,7 +51,7 @@
 
 - улучшить вывод текущих биндов в UI
 - отложить поддержку геймпада и ребиндинг геймпада до стабилизации схемы клавиатуры и мыши
-- отполировать UX модалок и общее поведение UI
+- продолжить полировку UX модалок и общего поведения UI уже поверх нового shared UI-слоя
 
 #### `v0.3.0`
 
@@ -61,6 +60,13 @@
 - упростить запуск новой сессии с явными параметрами
 - добавить более чистый слой управления музыкой и ambient-воспроизведением на уровне сцен
 - добавить базовую поддержку геймпада с фиксированной схемой управления
+- продолжить внедрение `shared/ui/components`, `shared/ui/navigation` и `shared/ui/motion` в новые части шаблона
+
+#### `UI/UX инфраструктура`
+
+- [done] `Components + feedback`
+- [done] `Navigation primitives`
+- [done] `Transitions + motion`
 
 #### `v0.4.0`
 
@@ -69,11 +75,3 @@
 - добавить базовые smoke-проверки для загрузки сцен и ключевых данных
 - добавить простые audio smoke-checks для шин и типовых путей воспроизведения
 - добавить опциональный ребиндинг геймпада после проверки фиксированной схемы
-
-#### `v0.5.0`
-
-- переработать общие UI-компоненты
-- заменить текущее решение со вкладками в `SettingsModal` на более чистое кастомное
-- добавить переиспользуемую кастомную кнопку со звуками hover и press
-- добавить переиспользуемые UI- и gameplay-audio helper-компоненты
-- продолжить полировку интерфейсных паттернов для реальных проектов

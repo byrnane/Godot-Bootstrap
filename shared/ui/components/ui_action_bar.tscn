@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://d1gxjrrv6k0dd"]
+
+[ext_resource type="Script" path="res://shared/ui/components/ui_action_bar.gd" id="1_script"]
+
+[node name="UiActionBar" type="HBoxContainer"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+alignment = 2
+script = ExtResource("1_script")

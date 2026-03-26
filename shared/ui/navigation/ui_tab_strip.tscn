@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://cwub4206v7uvc"]
+
+[ext_resource type="Script" path="res://shared/ui/navigation/ui_tab_strip.gd" id="1_script"]
+
+[node name="UiTabStrip" type="VBoxContainer"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+script = ExtResource("1_script")
+
+[node name="TabsContainer" type="HBoxContainer" parent="." unique_id=1121986183]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="PagesContainer" type="VBoxContainer" parent="." unique_id=1999659238]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3

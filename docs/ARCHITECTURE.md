@@ -103,6 +103,7 @@ This template is intentionally simple and predictable. It is not a universal gam
 - global entry point for confirm, alert, and toast requests
 - keeps callback-based feedback requests out of feature scenes
 - lets `UiShell` stay the only place that actually hosts feedback UI
+- now uses stable payload fields such as `variant`, `title`, `message`, `duration`, `confirm_text`, `cancel_text`, `close_on_backdrop`, and `close_on_cancel`
 
 `TransitionManager`
 
@@ -151,6 +152,27 @@ That keeps modal behavior consistent and makes new windows easier to build.
 
 Global confirm, alert, and toast requests should go through `UiFeedback`.
 `UiShell` still owns the actual presentation layer and stacking.
+
+### Shared UI toolkit
+
+`shared/ui/components/`
+
+- `UiCard`
+- `UiSectionHeader`
+- `UiFormRow`
+- `UiActionBar`
+- `UiStatusBadge`
+
+`shared/ui/navigation/`
+
+- `UiTabStrip`
+- `UiFocus`
+
+`shared/ui/motion/`
+
+- `UiMotion`
+
+The current proving grounds for these primitives are `SettingsModal`, `FeedbackModal`, `ToastItem`, and `LoadingScreen`.
 
 ### Scene loading
 

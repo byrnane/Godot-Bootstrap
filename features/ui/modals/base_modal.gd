@@ -1,6 +1,11 @@
 extends PanelContainer;
 class_name BaseModal;
 
+
+const UiFocus = preload("res://shared/ui/navigation/ui_focus.gd");
+const UiMotion = preload("res://shared/ui/motion/ui_motion.gd");
+
+
 signal close_requested;
 signal opened;
 signal closed;
@@ -11,21 +16,28 @@ signal closed;
 @export var close_on_backdrop: bool = true;
 @export var default_focus_path: NodePath;
 @export var fullscreen_mode: bool = false;
+@export var motion_target_path: NodePath = NodePath("MarginContainer");
 
+@onready var motion_target: Control = get_node_or_null(motion_target_path) as Control;
 @onready var body_scroll: ScrollContainer = %BodyScroll;
 
 
 var _previous_focus_owner: Control = null;
+var _motion_tween: Tween = null;
+var _is_closing: bool = false;
 
 
 func _ready() -> void:
 	_apply_layout_mode();
 	process_mode = Node.PROCESS_MODE_ALWAYS;
+	set_process_unhandled_input(false);
 	visible = false;
 	AudioManager.bind_ui_sounds(self);
 
 
 func open_modal() -> void:
+	_is_closing = false;
+	_stop_motion_tween();
 	_remember_focus_owner();
 	visible = true;
 	# Derived modals can re-sync controls here every time they are reopened
@@ -33,11 +45,28 @@ func open_modal() -> void:
 	_sync_ui_state();
 	focus_default_control();
 	call_deferred("_reset_scroll_position");
+	if motion_target != null:
+		_motion_tween = UiMotion.play_modal_open(self, motion_target);
 	opened.emit();
 
 
 func close_modal() -> void:
+	if _is_closing:
+		return;
+
+	_is_closing = true;
+	_stop_motion_tween();
+	if motion_target != null:
+		_motion_tween = UiMotion.play_modal_close(self, motion_target);
+		await _motion_tween.finished;
+
 	visible = false;
+	modulate = Color(1.0, 1.0, 1.0, 1.0);
+	if motion_target != null:
+		motion_target.modulate = Color(1.0, 1.0, 1.0, 1.0);
+		motion_target.scale = Vector2.ONE;
+
+	_is_closing = false;
 	call_deferred("_restore_previous_focus");
 	closed.emit();
 
@@ -55,9 +84,12 @@ func can_close_from_cancel() -> bool:
 
 
 func focus_default_control() -> void:
-	var default_control: Control = get_node_or_null(default_focus_path) as Control;
-	if default_control != null:
-		default_control.grab_focus();
+	if UiFocus.grab_path(self, default_focus_path):
+		return;
+
+	var fallback_control: Control = UiFocus.find_first_focusable(self);
+	if fallback_control != null:
+		fallback_control.grab_focus();
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -85,20 +117,18 @@ func _apply_layout_mode() -> void:
 
 
 func _remember_focus_owner() -> void:
-	_previous_focus_owner = get_viewport().gui_get_focus_owner();
+	_previous_focus_owner = UiFocus.capture(get_viewport());
 
 
 func _restore_previous_focus() -> void:
-	if _previous_focus_owner == null:
-		return;
-	if not is_instance_valid(_previous_focus_owner):
+	if UiFocus.restore(_previous_focus_owner):
 		_previous_focus_owner = null;
 		return;
-	if not _previous_focus_owner.is_inside_tree():
-		_previous_focus_owner = null;
-		return;
-	if not _previous_focus_owner.visible:
-		_previous_focus_owner = null;
-		return;
-	_previous_focus_owner.grab_focus();
+
 	_previous_focus_owner = null;
+
+
+func _stop_motion_tween() -> void:
+	if _motion_tween != null and _motion_tween.is_valid():
+		_motion_tween.kill();
+	_motion_tween = null;

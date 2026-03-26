@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://bpf56hpn8f5nf"]
+
+[ext_resource type="Script" path="res://shared/ui/components/ui_section_header.gd" id="1_script"]
+[ext_resource type="FontVariation" path="res://shared/ui/theme/heading_font_embedded.tres" id="2_heading_font"]
+
+[node name="UiSectionHeader" type="VBoxContainer"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+script = ExtResource("1_script")
+
+[node name="TitleLabel" type="Label" parent="." unique_id=1540322311]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_heading_font")
+theme_override_font_sizes/font_size = 18
+text = "Header"
+
+[node name="DescriptionLabel" type="Label" parent="." unique_id=599999312]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+modulate = Color(0.79, 0.85, 0.93, 0.82)
+autowrap_mode = 2
+text = "Description"

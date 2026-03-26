@@ -2,14 +2,18 @@ extends BaseModal;
 class_name SettingsModal;
 
 
+const UI_CARD_SCENE: PackedScene = preload("res://shared/ui/components/ui_card.tscn");
+const UI_SECTION_HEADER_SCENE: PackedScene = preload("res://shared/ui/components/ui_section_header.tscn");
+const UI_FORM_ROW_SCENE: PackedScene = preload("res://shared/ui/components/ui_form_row.tscn");
+
+
 var _is_syncing_controls: bool = false;
 var _is_dirty: bool = false;
 var _is_close_confirmation_pending: bool = false;
 var _binding_buttons: Dictionary = {};
-var _binding_labels: Dictionary = {};
 
 
-@onready var settings_tabs: TabContainer = %SettingsTabs;
+@onready var settings_tabs = %SettingsTabs;
 @onready var language_option_button: OptionButton = %LanguageOptionButton;
 @onready var master_volume_slider: HSlider = %MasterVolumeSlider;
 @onready var music_volume_slider: HSlider = %MusicVolumeSlider;
@@ -161,9 +165,7 @@ func _refresh_action_state() -> void:
 func _refresh_tab_titles() -> void:
 	if settings_tabs == null:
 		return;
-	settings_tabs.set_tab_title(0, tr("UI_SETTINGS_TAB_GENERAL"));
-	settings_tabs.set_tab_title(1, tr("UI_SETTINGS_TAB_GRAPHICS"));
-	settings_tabs.set_tab_title(2, tr("UI_SETTINGS_TAB_CONTROLS"));
+	settings_tabs.refresh_titles();
 
 
 func _build_bindings_ui() -> void:
@@ -172,37 +174,40 @@ func _build_bindings_ui() -> void:
 		child.queue_free();
 
 	_binding_buttons.clear();
-	_binding_labels.clear();
 	for group_key: StringName in InputManager.get_action_groups():
 		var group_actions: Array[StringName] = InputManager.get_actions_for_group(group_key);
 		if group_actions.is_empty():
 			continue;
 
-		var group_label: Label = Label.new();
-		group_label.text = tr(String(group_key));
-		group_label.theme_type_variation = &"HeaderSmall";
-		bindings_container.add_child(group_label);
+		var group_card = UI_CARD_SCENE.instantiate();
+		if group_card == null:
+			continue;
+
+		group_card.elevated = true;
+		bindings_container.add_child(group_card);
+		var group_content: VBoxContainer = group_card.get_node("%Content") as VBoxContainer;
+		var group_header = UI_SECTION_HEADER_SCENE.instantiate();
+		group_header.title_key = String(group_key);
+		group_content.add_child(group_header);
 
 		for action_name: StringName in group_actions:
-			var row: HBoxContainer = HBoxContainer.new();
-			row.size_flags_horizontal = Control.SIZE_EXPAND_FILL;
-			row.add_theme_constant_override("separation", 8);
+			var row = UI_FORM_ROW_SCENE.instantiate();
+			if row == null:
+				continue;
 
-			var label: Label = Label.new();
-			label.size_flags_horizontal = Control.SIZE_EXPAND_FILL;
-			row.add_child(label);
+			row.title_key = InputManager.get_action_label_key(action_name);
+			group_content.add_child(row);
+			var content_container: HBoxContainer = row.get_node("%Content") as HBoxContainer;
 
 			var buttons: Array[Button] = [];
 			for binding_slot: int in range(InputManager.get_binding_slot_count()):
 				var button: Button = Button.new();
 				button.size_flags_horizontal = Control.SIZE_EXPAND_FILL;
 				button.pressed.connect(_on_binding_button_pressed.bind(action_name, binding_slot));
-				row.add_child(button);
+				content_container.add_child(button);
 				buttons.append(button);
 
-			bindings_container.add_child(row);
 			_binding_buttons[action_name] = buttons;
-			_binding_labels[action_name] = label;
 
 	_refresh_bindings_ui();
 
@@ -210,9 +215,6 @@ func _build_bindings_ui() -> void:
 func _refresh_bindings_ui() -> void:
 	for action_name_variant: Variant in _binding_buttons.keys():
 		var action_name: StringName = StringName(action_name_variant);
-		var label: Label = _binding_labels.get(action_name) as Label;
-		if label != null:
-			label.text = tr(InputManager.get_action_label_key(action_name));
 		var buttons: Variant = _binding_buttons.get(action_name, []);
 		if not (buttons is Array):
 			continue;
@@ -261,7 +263,7 @@ func _on_controls_changed(_value: Variant = null) -> void:
 func _on_locale_changed(_locale: String) -> void:
 	_populate_locales();
 	_refresh_tab_titles();
-	_refresh_bindings_ui();
+	_build_bindings_ui();
 
 
 func _on_binding_button_pressed(action_name: StringName, binding_slot: int) -> void:

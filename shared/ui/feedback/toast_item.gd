@@ -4,25 +4,27 @@ class_name ToastItem;
 signal expired(item: ToastItem);
 
 
-const FADE_DURATION: float = 0.18;
 const DEFAULT_DURATION: float = 2.4;
+const UiMotion = preload("res://shared/ui/motion/ui_motion.gd");
 
 
+@onready var status_badge = %StatusBadge;
+@onready var title_label: Label = %TitleLabel;
 @onready var message_label: Label = %MessageLabel;
 
 
 func show_toast(payload: Dictionary) -> void:
+	status_badge.variant = StringName(payload.get("variant", "info"));
+	title_label.text = String(payload.get("title", ""));
+	title_label.visible = not title_label.text.is_empty();
 	message_label.text = String(payload.get("message", ""));
-	modulate = Color(1.0, 1.0, 1.0, 0.0);
 
-	var fade_in: Tween = create_tween();
-	fade_in.tween_property(self, "modulate:a", 1.0, FADE_DURATION);
-	await fade_in.finished;
+	var enter_tween: Tween = UiMotion.play_toast_enter(self);
+	await enter_tween.finished;
 
 	var duration: float = maxf(float(payload.get("duration", DEFAULT_DURATION)), 0.5);
 	await get_tree().create_timer(duration).timeout;
 
-	var fade_out: Tween = create_tween();
-	fade_out.tween_property(self, "modulate:a", 0.0, FADE_DURATION);
-	await fade_out.finished;
+	var exit_tween: Tween = UiMotion.play_toast_exit(self);
+	await exit_tween.finished;
 	expired.emit(self);

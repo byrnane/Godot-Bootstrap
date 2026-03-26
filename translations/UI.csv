@@ -84,6 +84,10 @@ UI_FEEDBACK_ALERT_TITLE,Сообщение,Message
 UI_FEEDBACK_CONFIRM_BUTTON,Подтвердить,Confirm
 UI_FEEDBACK_CANCEL_BUTTON,Отмена,Cancel
 UI_FEEDBACK_OK_BUTTON,ОК,OK
+UI_FEEDBACK_VARIANT_INFO,ИНФО,INFO
+UI_FEEDBACK_VARIANT_SUCCESS,ГОТОВО,DONE
+UI_FEEDBACK_VARIANT_WARNING,ВНИМАНИЕ,WARNING
+UI_FEEDBACK_VARIANT_ERROR,ОШИБКА,ERROR
 UI_SETTINGS_DISCARD_TITLE,Закрыть без сохранения?,Close without saving?
 UI_SETTINGS_DISCARD_MESSAGE,Есть несохранённые изменения. Закрыть окно настроек и отбросить их?,You have unsaved changes. Close settings and discard them?
 UI_SETTINGS_DISCARD_CONFIRM,Отбросить изменения,Discard changes
