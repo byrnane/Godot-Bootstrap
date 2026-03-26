@@ -11,6 +11,8 @@ signal view_changed(view_model: Dictionary);
 const GAMEPLAY_HUD_SCENE: PackedScene = preload("res://features/gameplay/gameplay_hud.tscn");
 const HEALTH_STEP: int = 5;
 const SCORE_STEP: int = 10;
+const LEVEL_A_MUSIC: AudioStream = preload("res://assets/music/level_a.mp3");
+const LEVEL_B_MUSIC: AudioStream = preload("res://assets/music/level_b.mp3");
 
 
 @export var pause_action_name: StringName = &"ui_pause";
@@ -107,6 +109,7 @@ func _load_level(level_scene_id: StringName) -> void:
 	if level_instance == null:
 		return;
 	level_root.add_child(level_instance);
+	_sync_level_music(level_scene_id);
 	_refresh_view();
 
 
@@ -148,3 +151,11 @@ func _request_back_to_menu() -> void:
 
 func _on_app_state_changed(_new_state: AppState.Value) -> void:
 	_refresh_view();
+
+
+func _sync_level_music(level_scene_id: StringName) -> void:
+	match level_scene_id:
+		Scenes.LEVEL_STUB_A:
+			AudioManager.play_music(LEVEL_A_MUSIC);
+		Scenes.LEVEL_STUB_B:
+			AudioManager.play_music(LEVEL_B_MUSIC);

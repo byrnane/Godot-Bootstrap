@@ -7,16 +7,18 @@ const UI_BUS_NAME: String = "UI";
 const SFX_BUS_NAME: String = "SFX";
 const MIN_LINEAR_VOLUME: float = 0.0001;
 const SILENT_DB: float = -80.0;
-const DEFAULT_MUSIC_FADE_DURATION: float = 0.35;
+const DEFAULT_MUSIC_FADE_DURATION: float = 0.6;
 const DEFAULT_ONE_SHOT_PITCH: float = 1.0;
 const DEFAULT_ONE_SHOT_VOLUME_DB: float = 0.0;
+const MUSIC_PLAYER_COUNT: int = 2;
 const DEFAULT_UI_HOVER_STREAM: AudioStream = preload("res://assets/sfx/btn_hover.ogg");
 const DEFAULT_UI_CLICK_STREAM: AudioStream = preload("res://assets/sfx/btn_click.ogg");
 const UI_SOUND_BOUND_META_KEY: StringName = &"_ui_sound_bound";
 
 
-var _music_player: AudioStreamPlayer = null;
-var _music_tween: Tween = null;
+var _music_players: Array[AudioStreamPlayer] = [];
+var _music_tweens: Array[Tween] = [];
+var _active_music_player_index: int = -1;
 var _one_shot_root: Node = null;
 
 
@@ -40,35 +42,44 @@ func apply_from_settings() -> void:
 func play_music(source: Variant, options: Dictionary = {}) -> void:
 	_ensure_runtime_players();
 	var stream: AudioStream = _resolve_stream(source);
-	if stream == null or _music_player == null:
+	if stream == null:
+		return;
+	if _is_music_stream_already_active(stream):
 		return;
 
 	var fade_duration: float = maxf(float(options.get("fade_duration", DEFAULT_MUSIC_FADE_DURATION)), 0.0);
 	var from_position: float = maxf(float(options.get("from_position", 0.0)), 0.0);
 	var target_volume_db: float = float(options.get("volume_db", DEFAULT_ONE_SHOT_VOLUME_DB));
-	_stop_music_tween();
-	_music_player.stop();
-	_music_player.stream = stream;
-	_music_player.volume_db = SILENT_DB if fade_duration > 0.0 else target_volume_db;
-	_music_player.bus = MUSIC_BUS_NAME;
-	_music_player.play(from_position);
+	var next_player_index: int = _get_next_music_player_index();
+	var next_player: AudioStreamPlayer = _music_players[next_player_index];
+	var previous_player: AudioStreamPlayer = _get_active_music_player();
+
+	_stop_music_tween(next_player_index);
+	next_player.stop();
+	next_player.stream = stream;
+	next_player.bus = MUSIC_BUS_NAME;
+	next_player.volume_db = SILENT_DB if fade_duration > 0.0 else target_volume_db;
+	next_player.play(from_position);
+
 	if fade_duration > 0.0:
-		_music_tween = create_tween();
-		_music_tween.tween_property(_music_player, "volume_db", target_volume_db, fade_duration);
+		_music_tweens[next_player_index] = create_tween();
+		_music_tweens[next_player_index].tween_property(next_player, "volume_db", target_volume_db, fade_duration);
+	else:
+		next_player.volume_db = target_volume_db;
+
+	if previous_player != null and previous_player.playing:
+		_stop_music_player(previous_player, _active_music_player_index, fade_duration);
+
+	_active_music_player_index = next_player_index;
 
 
 func stop_music(fade_duration: float = DEFAULT_MUSIC_FADE_DURATION) -> void:
-	if _music_player == null or not _music_player.playing:
+	var active_player: AudioStreamPlayer = _get_active_music_player();
+	if active_player == null or not active_player.playing:
 		return;
 
-	_stop_music_tween();
-	if fade_duration <= 0.0:
-		_music_player.stop();
-		return;
-
-	_music_tween = create_tween();
-	_music_tween.tween_property(_music_player, "volume_db", SILENT_DB, fade_duration);
-	_music_tween.finished.connect(_on_music_fade_out_finished, CONNECT_ONE_SHOT);
+	_stop_music_player(active_player, _active_music_player_index, fade_duration);
+	_active_music_player_index = -1;
 
 
 func play_ui(source: Variant, options: Dictionary = {}) -> AudioStreamPlayer:
@@ -123,12 +134,16 @@ func _ensure_bus_layout() -> void:
 
 
 func _ensure_runtime_players() -> void:
-	if _music_player == null:
-		_music_player = AudioStreamPlayer.new();
-		_music_player.name = "MusicPlayer";
-		_music_player.bus = MUSIC_BUS_NAME;
-		_music_player.process_mode = Node.PROCESS_MODE_ALWAYS;
-		add_child(_music_player);
+	if _music_players.is_empty():
+		for player_index: int in range(MUSIC_PLAYER_COUNT):
+			var music_player: AudioStreamPlayer = AudioStreamPlayer.new();
+			music_player.name = "MusicPlayer%d" % [player_index];
+			music_player.bus = MUSIC_BUS_NAME;
+			music_player.volume_db = SILENT_DB;
+			music_player.process_mode = Node.PROCESS_MODE_ALWAYS;
+			add_child(music_player);
+			_music_players.append(music_player);
+			_music_tweens.append(null);
 
 	if _one_shot_root == null:
 		_one_shot_root = Node.new();
@@ -175,12 +190,51 @@ func _resolve_stream(source: Variant) -> AudioStream:
 	return null;
 
 
-func _stop_music_tween() -> void:
-	if _music_tween == null:
+func _get_active_music_player() -> AudioStreamPlayer:
+	if _active_music_player_index < 0 or _active_music_player_index >= _music_players.size():
+		return null;
+	return _music_players[_active_music_player_index];
+
+
+func _get_next_music_player_index() -> int:
+	if _music_players.size() < 2:
+		return 0;
+	if _active_music_player_index < 0:
+		return 0;
+	return 1 - _active_music_player_index;
+
+
+func _is_music_stream_already_active(stream: AudioStream) -> bool:
+	var active_player: AudioStreamPlayer = _get_active_music_player();
+	if active_player == null:
+		return false;
+	return active_player.playing and active_player.stream == stream;
+
+
+func _stop_music_player(player: AudioStreamPlayer, player_index: int, fade_duration: float) -> void:
+	if player == null:
 		return;
-	if _music_tween.is_running():
-		_music_tween.kill();
-	_music_tween = null;
+
+	_stop_music_tween(player_index);
+	if fade_duration <= 0.0:
+		player.stop();
+		player.volume_db = SILENT_DB;
+		return;
+
+	_music_tweens[player_index] = create_tween();
+	_music_tweens[player_index].tween_property(player, "volume_db", SILENT_DB, fade_duration);
+	_music_tweens[player_index].finished.connect(_on_music_fade_out_finished.bind(player, player_index), CONNECT_ONE_SHOT);
+
+
+func _stop_music_tween(player_index: int) -> void:
+	if player_index < 0 or player_index >= _music_tweens.size():
+		return;
+	var tween: Tween = _music_tweens[player_index];
+	if tween == null:
+		return;
+	if tween.is_running():
+		tween.kill();
+	_music_tweens[player_index] = null;
 
 
 func _on_ui_button_pressed(button: BaseButton) -> void:
@@ -195,12 +249,13 @@ func _on_ui_button_hovered(button: BaseButton) -> void:
 	play_ui_hover();
 
 
-func _on_music_fade_out_finished() -> void:
-	if _music_player == null:
+func _on_music_fade_out_finished(player: AudioStreamPlayer, player_index: int) -> void:
+	if player == null:
 		return;
-	_music_player.stop();
-	_music_player.volume_db = DEFAULT_ONE_SHOT_VOLUME_DB;
-	_music_tween = null;
+	player.stop();
+	player.volume_db = SILENT_DB;
+	if player_index >= 0 and player_index < _music_tweens.size():
+		_music_tweens[player_index] = null;
 
 
 func _on_one_shot_finished(player: AudioStreamPlayer) -> void:

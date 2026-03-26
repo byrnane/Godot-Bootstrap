@@ -4,6 +4,9 @@ extends Node;
 @export var gameplay_scene_id: StringName = Scenes.GAMEPLAY;
 
 
+const MAIN_MENU_MUSIC: AudioStream = preload("res://assets/music/main_menu.mp3");
+
+
 var _started: bool = false;
 
 
@@ -94,6 +97,7 @@ func _on_scene_changed(_scene_id: StringName, scene_root: Node) -> void:
 	if scene_root == null:
 		return;
 
+	_sync_scene_music(SceneRouter.current_scene_id);
 	_connect_main_menu(scene_root);
 	_connect_gameplay(scene_root);
 
@@ -130,3 +134,11 @@ func _reset_pause_ui() -> void:
 	UiShell.close_pause();
 	UiShell.close_settings();
 	get_tree().paused = false;
+
+
+func _sync_scene_music(scene_id: StringName) -> void:
+	match scene_id:
+		Scenes.MAIN_MENU:
+			AudioManager.play_music(MAIN_MENU_MUSIC);
+		Scenes.GAMEPLAY:
+			pass;
