@@ -74,6 +74,13 @@ This template is intentionally simple and predictable. It is not a universal gam
 
 - loads, validates, migrates, and saves game data
 
+`AudioManager`
+
+- owns runtime audio buses for `Music`, `UI`, and `SFX`
+- applies volume settings to buses
+- provides one-shot playback for UI and sound effects
+- provides a dedicated music playback API
+
 `LocalizationManager`
 
 - applies the active locale

@@ -25,6 +25,7 @@ var _view_model: Dictionary = {};
 
 
 func _ready() -> void:
+	AudioManager.bind_ui_sounds(self);
 	damage_button.pressed.connect(_on_damage_button_pressed);
 	heal_button.pressed.connect(_on_heal_button_pressed);
 	score_button.pressed.connect(_on_score_button_pressed);

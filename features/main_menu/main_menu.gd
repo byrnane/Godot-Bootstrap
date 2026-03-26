@@ -14,6 +14,7 @@ signal quit_requested;
 
 
 func _ready() -> void:
+	AudioManager.bind_ui_sounds(self);
 	continue_button.pressed.connect(_on_continue_button_pressed);
 	new_game_button.pressed.connect(_on_new_game_button_pressed);
 	settings_button.pressed.connect(_on_settings_button_pressed);

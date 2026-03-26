@@ -73,12 +73,24 @@ max_value = 1.0
 step = 0.01
 value = 1.0
 
-[node name="SfxVolumeLabel" type="Label" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/GeneralTab/GeneralTabContent" index="5" unique_id=1555187658]
+[node name="UiVolumeLabel" type="Label" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/GeneralTab/GeneralTabContent" index="5" unique_id=1386042505]
+unique_name_in_owner = true
+layout_mode = 2
+text = "UI_SETTINGS_UI"
+
+[node name="UiVolumeSlider" type="HSlider" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/GeneralTab/GeneralTabContent" index="6" unique_id=1453757690]
+unique_name_in_owner = true
+layout_mode = 2
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="SfxVolumeLabel" type="Label" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/GeneralTab/GeneralTabContent" index="7" unique_id=1555187658]
 unique_name_in_owner = true
 layout_mode = 2
 text = "UI_SETTINGS_SFX"
 
-[node name="SfxVolumeSlider" type="HSlider" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/GeneralTab/GeneralTabContent" index="6" unique_id=1180964372]
+[node name="SfxVolumeSlider" type="HSlider" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/GeneralTab/GeneralTabContent" index="8" unique_id=1180964372]
 unique_name_in_owner = true
 layout_mode = 2
 max_value = 1.0

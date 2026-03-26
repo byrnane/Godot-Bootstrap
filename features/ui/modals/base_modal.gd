@@ -22,6 +22,7 @@ func _ready() -> void:
 	_apply_layout_mode();
 	process_mode = Node.PROCESS_MODE_ALWAYS;
 	visible = false;
+	AudioManager.bind_ui_sounds(self);
 
 
 func open_modal() -> void:

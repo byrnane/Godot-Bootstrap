@@ -13,7 +13,6 @@
 
 - improve how current bindings are shown in UI
 - postpone gamepad support and gamepad rebinding until the keyboard and mouse layout is stable
-- improve audio workflow for music, UI sounds, and common one-shot playback
 - polish modal UX and common UI behavior
 
 #### `v0.3.0`
@@ -53,7 +52,6 @@
 
 - улучшить вывод текущих биндов в UI
 - отложить поддержку геймпада и ребиндинг геймпада до стабилизации схемы клавиатуры и мыши
-- улучшить workflow для музыки, UI-звуков и типового one-shot playback
 - отполировать UX модалок и общее поведение UI
 
 #### `v0.3.0`

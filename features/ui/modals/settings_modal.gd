@@ -13,6 +13,7 @@ var _binding_labels: Dictionary = {};
 @onready var language_option_button: OptionButton = %LanguageOptionButton;
 @onready var master_volume_slider: HSlider = %MasterVolumeSlider;
 @onready var music_volume_slider: HSlider = %MusicVolumeSlider;
+@onready var ui_volume_slider: HSlider = %UiVolumeSlider;
 @onready var sfx_volume_slider: HSlider = %SfxVolumeSlider;
 @onready var fullscreen_check_box: CheckBox = %FullscreenCheckBox;
 @onready var vsync_check_box: CheckBox = %VSyncCheckBox;
@@ -30,6 +31,7 @@ func _ready() -> void:
 	language_option_button.item_selected.connect(_on_controls_changed);
 	master_volume_slider.value_changed.connect(_on_controls_changed);
 	music_volume_slider.value_changed.connect(_on_controls_changed);
+	ui_volume_slider.value_changed.connect(_on_controls_changed);
 	sfx_volume_slider.value_changed.connect(_on_controls_changed);
 	fullscreen_check_box.toggled.connect(_on_controls_changed);
 	vsync_check_box.toggled.connect(_on_controls_changed);
@@ -121,6 +123,7 @@ func _sync_from_settings() -> void:
 			break;
 	master_volume_slider.value = AppContext.settings.master_volume;
 	music_volume_slider.value = AppContext.settings.music_volume;
+	ui_volume_slider.value = AppContext.settings.ui_volume;
 	sfx_volume_slider.value = AppContext.settings.sfx_volume;
 	fullscreen_check_box.button_pressed = AppContext.settings.fullscreen;
 	vsync_check_box.button_pressed = AppContext.settings.vsync_enabled;
@@ -133,6 +136,7 @@ func _apply_values() -> void:
 	AppContext.settings.language = _get_selected_locale_value();
 	AppContext.settings.master_volume = float(master_volume_slider.value);
 	AppContext.settings.music_volume = float(music_volume_slider.value);
+	AppContext.settings.ui_volume = float(ui_volume_slider.value);
 	AppContext.settings.sfx_volume = float(sfx_volume_slider.value);
 	AppContext.settings.fullscreen = fullscreen_check_box.button_pressed;
 	AppContext.settings.vsync_enabled = vsync_check_box.button_pressed;

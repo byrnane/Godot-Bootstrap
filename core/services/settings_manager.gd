@@ -63,6 +63,7 @@ func _read_common_settings_values(config: ConfigFile, settings: UserSettings) ->
 	settings.language = String(config.get_value(SETTINGS_SECTION, "language", settings.language));
 	settings.master_volume = float(config.get_value(SETTINGS_SECTION, "master_volume", settings.master_volume));
 	settings.music_volume = float(config.get_value(SETTINGS_SECTION, "music_volume", settings.music_volume));
+	settings.ui_volume = float(config.get_value(SETTINGS_SECTION, "ui_volume", settings.ui_volume));
 	settings.sfx_volume = float(config.get_value(SETTINGS_SECTION, "sfx_volume", settings.sfx_volume));
 	settings.fullscreen = bool(config.get_value(SETTINGS_SECTION, "fullscreen", settings.fullscreen));
 	settings.vsync_enabled = bool(config.get_value(SETTINGS_SECTION, "vsync_enabled", settings.vsync_enabled));
@@ -73,6 +74,7 @@ func _write_settings_values(config: ConfigFile, settings: UserSettings) -> void:
 	config.set_value(SETTINGS_SECTION, "language", settings.language);
 	config.set_value(SETTINGS_SECTION, "master_volume", settings.master_volume);
 	config.set_value(SETTINGS_SECTION, "music_volume", settings.music_volume);
+	config.set_value(SETTINGS_SECTION, "ui_volume", settings.ui_volume);
 	config.set_value(SETTINGS_SECTION, "sfx_volume", settings.sfx_volume);
 	config.set_value(SETTINGS_SECTION, "fullscreen", settings.fullscreen);
 	config.set_value(SETTINGS_SECTION, "vsync_enabled", settings.vsync_enabled);
@@ -87,4 +89,5 @@ func _sanitize_settings(settings: UserSettings) -> void:
 	settings.language = LocalizationManager.normalize_locale(settings.language);
 	settings.master_volume = clampf(settings.master_volume, 0.0, 1.0);
 	settings.music_volume = clampf(settings.music_volume, 0.0, 1.0);
+	settings.ui_volume = clampf(settings.ui_volume, 0.0, 1.0);
 	settings.sfx_volume = clampf(settings.sfx_volume, 0.0, 1.0);

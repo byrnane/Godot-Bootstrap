@@ -40,6 +40,7 @@ UI_SETTINGS_HEADER,Настройки игры,Game settings
 UI_SETTINGS_SOUND_SECTION,Настройки звука,Sound Options
 UI_SETTINGS_SOUND,Громкость звука,Master volume
 UI_SETTINGS_MUSIC,Громкость музыки,Music volume
+UI_SETTINGS_UI,Громкость интерфейса,UI volume
 UI_SETTINGS_SFX,Громкость эффектов,Sound effect volume
 UI_SETTINGS_SCREEN_SECTION,Настройки экрана,Screen options
 UI_SETTINGS_SCREEN_RESOLUTION,Разрешение,Screen Resolution
