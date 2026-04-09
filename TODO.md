@@ -197,7 +197,7 @@ Focus: make the template easy to adopt and evolve.
 
 - [x] Keep demo scenes simulation-only (state/view/input/save demonstration).
 - [x] Remove any remaining mechanic-like behavior that is not template infrastructure.
-- [ ] Ensure demo content is easy to replace in first integration pass.
+- [x] Ensure demo content is easy to replace in first integration pass.
 
 ### 5.3 Release process
 
