@@ -1,5 +1,5 @@
-extends RefCounted
-class_name UiFocus
+extends RefCounted;
+class_name UiFocus;
 
 
 static func capture(viewport: Viewport) -> Control:

@@ -1,5 +1,5 @@
-extends PanelContainer
-class_name UiCard
+extends PanelContainer;
+class_name UiCard;
 
 
 @export var elevated: bool = false:

@@ -1,5 +1,5 @@
-extends PanelContainer
-class_name UiStatusBadge
+extends PanelContainer;
+class_name UiStatusBadge;
 
 
 const VARIANT_STYLES: Dictionary = {

@@ -1,5 +1,5 @@
-extends VBoxContainer
-class_name UiTabStrip
+extends VBoxContainer;
+class_name UiTabStrip;
 
 signal tab_changed(tab_id: StringName, index: int);
 

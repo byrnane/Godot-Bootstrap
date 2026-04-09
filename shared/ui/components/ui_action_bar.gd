@@ -1,5 +1,5 @@
-extends HBoxContainer
-class_name UiActionBar
+extends HBoxContainer;
+class_name UiActionBar;
 
 
 @export_enum("start", "center", "end") var content_alignment: String = "end":

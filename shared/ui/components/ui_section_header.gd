@@ -1,5 +1,5 @@
-extends VBoxContainer
-class_name UiSectionHeader
+extends VBoxContainer;
+class_name UiSectionHeader;
 
 
 @export var title_key: String = "":

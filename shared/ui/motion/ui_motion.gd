@@ -1,5 +1,5 @@
-extends RefCounted
-class_name UiMotion
+extends RefCounted;
+class_name UiMotion;
 
 
 const SHORT_DURATION: float = 0.16;
