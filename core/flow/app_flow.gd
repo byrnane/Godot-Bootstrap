@@ -1,10 +1,5 @@
 extends Node;
 
-@export var start_scene_id: StringName = Scenes.MAIN_MENU;
-@export var gameplay_scene_id: StringName = Scenes.GAMEPLAY;
-
-
-const MAIN_MENU_MUSIC: AudioStream = preload("res://assets/music/main_menu.mp3");
 const SCENE_TRANSITION_PAYLOAD_TYPE = preload("res://core/types/scene_transition_payload.gd");
 const APP_STARTUP_PARAMS_TYPE = preload("res://core/types/app_startup_params.gd");
 const SESSION_START_PARAMS_TYPE = preload("res://core/types/session_start_params.gd");
@@ -83,7 +78,7 @@ func return_to_main_menu() -> void:
 func request_pause() -> void:
 	if AppContext.state != AppState.Value.IN_GAME:
 		return;
-	if SceneRouter.current_scene_id != gameplay_scene_id:
+	if SceneRouter.current_scene_id != _get_gameplay_scene_id():
 		return;
 	if SceneRouter.is_loading() or TransitionManager.is_active():
 		return;
@@ -120,7 +115,7 @@ func _go_to_main_menu(
 	if _is_transition_blocked():
 		return;
 	if target_scene_id == StringName():
-		target_scene_id = start_scene_id;
+		target_scene_id = _get_start_scene_id();
 	_reset_pause_ui();
 	AppContext.set_state(AppState.Value.MAIN_MENU);
 	SceneRouter.go_to(target_scene_id, _build_main_menu_payload(transition_kind, target_scene_id));
@@ -191,11 +186,9 @@ func _reset_pause_ui() -> void:
 
 
 func _sync_scene_music(scene_id: StringName) -> void:
-	match scene_id:
-		Scenes.MAIN_MENU:
-			AudioManager.play_music(MAIN_MENU_MUSIC);
-		_:
-			return;
+	if scene_id != _get_start_scene_id():
+		return;
+	AudioManager.play_music(GameConfig.get_main_menu_music());
 
 
 func _connect_scene_signal(scene_root: Node, signal_name: StringName, target: Callable) -> void:
@@ -273,15 +266,15 @@ func _resolve_startup_params(params: APP_STARTUP_PARAMS_TYPE) -> APP_STARTUP_PAR
 	if resolved_params == null:
 		resolved_params = APP_STARTUP_PARAMS_TYPE.new();
 	if resolved_params.main_menu_scene_id == StringName():
-		resolved_params.main_menu_scene_id = start_scene_id;
+		resolved_params.main_menu_scene_id = _get_start_scene_id();
 	if not Scenes.has(resolved_params.main_menu_scene_id):
 		push_warning(
 			"AppFlow: startup main_menu_scene_id '%s' is unknown, fallback to '%s'." % [
 				String(resolved_params.main_menu_scene_id),
-				String(start_scene_id),
+				String(_get_start_scene_id()),
 			]
 		);
-		resolved_params.main_menu_scene_id = start_scene_id;
+		resolved_params.main_menu_scene_id = _get_start_scene_id();
 	if resolved_params.launch_mode == APP_STARTUP_PARAMS_TYPE.LaunchMode.START_SESSION:
 		if resolved_params.session_start_params == null:
 			resolved_params.session_start_params = _create_session_start_params(SESSION_START_PARAMS_TYPE.Mode.NEW_GAME);
@@ -296,20 +289,28 @@ func _resolve_session_start_params(params: SESSION_START_PARAMS_TYPE) -> SESSION
 	if resolved_params == null:
 		resolved_params = _create_session_start_params(SESSION_START_PARAMS_TYPE.Mode.NEW_GAME);
 	if resolved_params.gameplay_scene_id == StringName():
-		resolved_params.gameplay_scene_id = gameplay_scene_id;
+		resolved_params.gameplay_scene_id = _get_gameplay_scene_id();
 	if not Scenes.has(resolved_params.gameplay_scene_id):
 		push_warning(
 			"AppFlow: session gameplay_scene_id '%s' is unknown, fallback to '%s'." % [
 				String(resolved_params.gameplay_scene_id),
-				String(gameplay_scene_id),
+				String(_get_gameplay_scene_id()),
 			]
 		);
-		resolved_params.gameplay_scene_id = gameplay_scene_id;
+		resolved_params.gameplay_scene_id = _get_gameplay_scene_id();
 	return resolved_params;
 
 
 func _create_session_start_params(mode: int) -> SESSION_START_PARAMS_TYPE:
 	var params: SESSION_START_PARAMS_TYPE = SESSION_START_PARAMS_TYPE.new();
 	params.mode = mode;
-	params.gameplay_scene_id = gameplay_scene_id;
+	params.gameplay_scene_id = _get_gameplay_scene_id();
 	return params;
+
+
+func _get_start_scene_id() -> StringName:
+	return GameConfig.get_start_scene_id();
+
+
+func _get_gameplay_scene_id() -> StringName:
+	return GameConfig.get_gameplay_scene_id();

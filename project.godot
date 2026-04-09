@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 AppContext="*res://core/context/app_context.gd"
 SessionContext="*res://core/context/session_context.gd"
+GameConfig="*res://core/context/game_config.gd"
 LocalizationManager="*res://core/services/localization_manager.gd"
 SettingsManager="*res://core/services/settings_manager.gd"
 SaveManager="*res://core/services/save_manager.gd"

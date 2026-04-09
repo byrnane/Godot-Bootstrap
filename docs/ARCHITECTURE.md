@@ -67,6 +67,11 @@ This template is intentionally simple and predictable. It is not a universal gam
 
 - current run state
 
+`GameConfig`
+
+- runtime template config separated from `SessionContext` and user settings
+- resolves configured scene ids and default menu music with safe fallbacks
+
 `SettingsManager`
 
 - loads, validates, applies, and saves settings

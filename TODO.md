@@ -69,7 +69,7 @@ Focus: make the app skeleton strongly typed and extensible.
 
 ### 1.2 Runtime configuration layer
 
-- [ ] Add `GameConfig` as a dedicated runtime entity (separate from user settings/session data).
+- [x] Add `GameConfig` as a dedicated runtime entity (separate from user settings/session data).
 - [ ] Define config source strategy (defaults + optional project override).
 - [ ] Route non-user, game-level constants through `GameConfig`.
 
