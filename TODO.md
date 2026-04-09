@@ -35,13 +35,13 @@ Focus: remove current risks, warnings, and architectural rough edges.
 ### 0.1 Runtime warnings and script hygiene
 
 - [x] Remove class-name shadowing warnings (`UiFocus`, `UiMotion` constants vs global classes).
-- [ ] Standardize script structure and formatting where inconsistent with `docs/CODESTYLE.md`.
+- [x] Standardize script structure and formatting where inconsistent with `docs/CODESTYLE.md`.
 - [x] Eliminate dead/unused code paths and placeholder `pass` blocks where behavior is expected.
 
 ### 0.2 State flow correctness
 
 - [x] Integrate `AppState.LOADING` into real transition flow (set/unset in transition lifecycle).
-- [ ] Verify pause/resume/tree pause behavior across all modal and transition combinations.
+- [x] Verify pause/resume/tree pause behavior across all modal and transition combinations.
 - [x] Add guardrails for invalid scene contracts (missing signals/methods on connected scenes).
 
 ### 0.3 Integration safety
@@ -53,8 +53,8 @@ Focus: remove current risks, warnings, and architectural rough edges.
 ### Exit criteria for Phase 0
 
 - [x] Project launches without warnings.
-- [ ] Main menu -> gameplay -> pause/settings -> back to menu works repeatedly without regressions.
-- [ ] No known runtime blockers in current infrastructure.
+- [x] Main menu -> gameplay -> pause/settings -> back to menu works repeatedly without regressions.
+- [x] No known runtime blockers in current infrastructure.
 
 
 ## Phase 1 - Core Runtime Hardening

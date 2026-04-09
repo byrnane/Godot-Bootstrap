@@ -65,6 +65,7 @@ Docs:
 - [Code Style](docs/CODESTYLE.md)
 - [Changelog](CHANGELOG.md)
 - [Todo / Roadmap](TODO.md)
+- [Manual Test Plan](docs/MANUAL_TEST_PLAN.md)
 
 ## RU
 
