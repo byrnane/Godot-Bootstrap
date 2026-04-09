@@ -67,6 +67,12 @@ Docs:
 - [Todo / Roadmap](TODO.md)
 - [Manual Test Plan](docs/MANUAL_TEST_PLAN.md)
 
+Smoke (one command):
+
+- `powershell -ExecutionPolicy Bypass -File .\scripts\run_smoke.ps1`
+- Optional explicit binary: `powershell -ExecutionPolicy Bypass -File .\scripts\run_smoke.ps1 -GodotExecutable "C:\Path\To\godot.exe"`
+- Optional headless mode: `powershell -ExecutionPolicy Bypass -File .\scripts\run_smoke.ps1 -Headless`
+
 ## RU
 
 Это стартовый шаблон на Godot 4.x для небольших и средних игр.

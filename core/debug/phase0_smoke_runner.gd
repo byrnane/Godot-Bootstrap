@@ -163,6 +163,7 @@ func _check_scene_loading_pipeline_contract() -> void:
 			return (
 				not bool(snapshot.get("is_loading", true))
 				and not bool(snapshot.get("has_queued_transition", true))
+				and not TransitionManager.is_active()
 				and SceneRouter.current_scene_id == Scenes.MAIN_MENU
 			),
 		LOAD_TIMEOUT_SECONDS * 2.0
@@ -172,9 +173,22 @@ func _check_scene_loading_pipeline_contract() -> void:
 	_check(AppContext.state == AppState.Value.MAIN_MENU, "scene pipeline test: app state should be MAIN_MENU after queue drain");
 
 	SceneRouter.go_to(&"__smoke_unknown_scene__");
+	var fallback_loading_started: bool = await _wait_until(
+		func() -> bool:
+			return SceneRouter.is_loading() or AppContext.state == AppState.Value.LOADING,
+		TRANSITION_DELAY_SECONDS
+	);
+	_check(fallback_loading_started, "scene pipeline test: unknown scene fallback did not start loading");
+	if not fallback_loading_started:
+		return;
+
 	var fallback_loaded: bool = await _wait_until(
 		func() -> bool:
-			return SceneRouter.current_scene_id == Scenes.MAIN_MENU and not SceneRouter.is_loading(),
+			return (
+				SceneRouter.current_scene_id == Scenes.MAIN_MENU
+				and not SceneRouter.is_loading()
+				and not TransitionManager.is_active()
+			),
 		LOAD_TIMEOUT_SECONDS
 	);
 	_check(fallback_loaded, "scene pipeline test: unknown scene fallback did not resolve to default scene");
