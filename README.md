@@ -67,6 +67,7 @@ Docs:
 - [Todo / Roadmap](TODO.md)
 - [Bootstrap Checklist](docs/BOOTSTRAP_CHECKLIST.md)
 - [Extension Guide](docs/EXTENSION_GUIDE.md)
+- [Architecture Guardrails](docs/ARCHITECTURE_GUARDRAILS.md)
 - [Manual Test Plan](docs/MANUAL_TEST_PLAN.md)
 - [CI Smoke Troubleshooting](docs/CI_SMOKE_TROUBLESHOOTING.md)
 

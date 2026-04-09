@@ -191,7 +191,7 @@ Focus: make the template easy to adopt and evolve.
 
 - [x] Add project bootstrap checklist for new games.
 - [x] Add clear extension guide: where to add scenes/services/context data.
-- [ ] Add "what not to modify" architecture guardrails.
+- [x] Add "what not to modify" architecture guardrails.
 
 ### 5.2 Demo simulation scope
 
