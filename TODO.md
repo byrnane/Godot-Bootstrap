@@ -130,7 +130,7 @@ Focus: improve template UX quality and reusability without adding game mechanics
 
 - [ ] Complete migration of template screens to `shared/ui/components`, `navigation`, `motion`.
 - [ ] Remove duplicated UI logic from feature scenes where shared primitives exist.
-- [ ] Ensure consistent focus/navigation behavior for keyboard/gamepad.
+- [x] Ensure consistent focus/navigation behavior for keyboard/gamepad.
 
 ### 3.2 Feedback, loading, and modal UX
 

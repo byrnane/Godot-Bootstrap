@@ -45,3 +45,15 @@ static func find_first_focusable(node: Node) -> Control:
 			return focusable;
 
 	return null;
+
+
+static func apply_vertical_focus_cycle(buttons: Array[Button]) -> void:
+	if buttons.size() <= 1:
+		return;
+
+	for button_index: int in range(buttons.size()):
+		var current_button: Button = buttons[button_index];
+		var previous_button: Button = buttons[(button_index - 1 + buttons.size()) % buttons.size()];
+		var next_button: Button = buttons[(button_index + 1) % buttons.size()];
+		current_button.focus_neighbor_top = current_button.get_path_to(previous_button);
+		current_button.focus_neighbor_bottom = current_button.get_path_to(next_button);

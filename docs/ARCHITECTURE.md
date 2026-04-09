@@ -199,6 +199,7 @@ Global confirm, alert, and toast requests should go through `UiFeedback`.
 
 - `UiTabStrip`
 - `UiFocus`
+- `UiFocus` also provides reusable cyclic focus wiring for button stacks
 
 `shared/ui/motion/`
 

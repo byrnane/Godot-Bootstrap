@@ -1,6 +1,8 @@
 extends Control;
 class_name GameplayHud;
 
+const UI_FOCUS = preload("res://shared/ui/navigation/ui_focus.gd");
+
 signal damage_requested;
 signal heal_requested;
 signal score_requested;
@@ -34,7 +36,7 @@ func _ready() -> void:
 	pause_button.pressed.connect(_on_pause_button_pressed);
 	if not LocalizationManager.locale_changed.is_connected(_on_locale_changed):
 		LocalizationManager.locale_changed.connect(_on_locale_changed);
-	_apply_button_focus_cycle([
+	UI_FOCUS.apply_vertical_focus_cycle([
 		damage_button,
 		heal_button,
 		score_button,
@@ -64,17 +66,6 @@ func _refresh_view() -> void:
 	level_label.text = tr("UI_GAMEPLAY_LEVEL").format({"value": _get_level_label(level_id)});
 	health_label.text = tr("UI_GAMEPLAY_HEALTH").format({"value": health});
 	score_label.text = tr("UI_GAMEPLAY_SCORE").format({"value": score});
-
-
-func _apply_button_focus_cycle(buttons: Array[Button]) -> void:
-	if buttons.size() <= 1:
-		return;
-	for button_index: int in range(buttons.size()):
-		var current_button: Button = buttons[button_index];
-		var previous_button: Button = buttons[(button_index - 1 + buttons.size()) % buttons.size()];
-		var next_button: Button = buttons[(button_index + 1) % buttons.size()];
-		current_button.focus_neighbor_top = current_button.get_path_to(previous_button);
-		current_button.focus_neighbor_bottom = current_button.get_path_to(next_button);
 
 
 func _get_state_label(state_value: AppState.Value) -> String:
