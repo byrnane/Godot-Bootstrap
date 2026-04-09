@@ -16,6 +16,8 @@ var current_scene_id: StringName = &"";
 var current_scene_root: Node = null;
 var _root_container: Node = null;
 var _is_loading: bool = false;
+var _state_before_loading: AppState.Value = AppState.Value.BOOT;
+var _should_restore_state_after_loading: bool = false;
 
 
 func configure(root_container: Node) -> void:
@@ -53,6 +55,7 @@ func _go_to_async(scene_id: StringName, payload: Variant = null) -> void:
 		return;
 
 	_is_loading = true;
+	_begin_loading_state();
 	scene_load_started.emit(resolved_scene_id);
 	await TransitionManager.begin_loading({
 		"title": tr("UI_LOADING"),
@@ -101,6 +104,7 @@ func _go_to_async(scene_id: StringName, payload: Variant = null) -> void:
 	if scene_instance == null:
 		push_error("SceneRouter: failed to instantiate scene '%s'." % [scene_path]);
 		await TransitionManager.fail_loading(tr("UI_LOADING_ERROR"));
+		_restore_state_after_loading();
 		_is_loading = false;
 		return;
 
@@ -114,6 +118,7 @@ func _go_to_async(scene_id: StringName, payload: Variant = null) -> void:
 	scene_changed.emit(current_scene_id, current_scene_root);
 	TransitionManager.update_loading_progress(1.0);
 	await TransitionManager.finish_loading();
+	_restore_state_after_loading();
 	_is_loading = false;
 
 
@@ -183,4 +188,20 @@ func _fail_scene_load(scene_id: StringName, scene_path: String, reason: String) 
 	scene_load_failed.emit(scene_id, error_text);
 	push_error("SceneRouter: %s for '%s'." % [reason, scene_path]);
 	await TransitionManager.fail_loading(error_text);
+	_restore_state_after_loading();
 	_is_loading = false;
+
+
+func _begin_loading_state() -> void:
+	_should_restore_state_after_loading = AppContext.state != AppState.Value.LOADING;
+	if not _should_restore_state_after_loading:
+		return;
+	_state_before_loading = AppContext.state;
+	AppContext.set_state(AppState.Value.LOADING);
+
+
+func _restore_state_after_loading() -> void:
+	if not _should_restore_state_after_loading:
+		return;
+	AppContext.set_state(_state_before_loading);
+	_should_restore_state_after_loading = false;
