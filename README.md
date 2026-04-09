@@ -2,7 +2,7 @@
 
 Reusable Godot 4.x starter template for small and mid-sized games.
 
-Current version: `0.2.0`
+Current version: `0.3.0`
 
 ## EN
 
