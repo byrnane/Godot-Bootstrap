@@ -65,6 +65,7 @@ Docs:
 - [Code Style](docs/CODESTYLE.md)
 - [Changelog](CHANGELOG.md)
 - [Todo / Roadmap](TODO.md)
+- [Bootstrap Checklist](docs/BOOTSTRAP_CHECKLIST.md)
 - [Manual Test Plan](docs/MANUAL_TEST_PLAN.md)
 - [CI Smoke Troubleshooting](docs/CI_SMOKE_TROUBLESHOOTING.md)
 
