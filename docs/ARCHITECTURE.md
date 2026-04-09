@@ -77,6 +77,8 @@ This template is intentionally simple and predictable. It is not a universal gam
 `SettingsManager`
 
 - loads, validates, applies, and saves settings
+- keeps settings ownership split by domains (`language`, `audio`, `video`, `input`)
+- persists domain sections with backward-compatible read fallback for legacy settings files
 
 `SaveManager`
 
