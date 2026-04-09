@@ -128,8 +128,8 @@ Focus: improve template UX quality and reusability without adding game mechanics
 
 ### 3.1 Shared UI primitives adoption
 
-- [ ] Complete migration of template screens to `shared/ui/components`, `navigation`, `motion`.
-- [ ] Remove duplicated UI logic from feature scenes where shared primitives exist.
+- [x] Complete migration of template screens to `shared/ui/components`, `navigation`, `motion`.
+- [x] Remove duplicated UI logic from feature scenes where shared primitives exist.
 - [x] Ensure consistent focus/navigation behavior for keyboard/gamepad.
 
 ### 3.2 Feedback, loading, and modal UX
