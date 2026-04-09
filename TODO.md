@@ -190,7 +190,7 @@ Focus: make the template easy to adopt and evolve.
 ### 5.1 Template onboarding experience
 
 - [x] Add project bootstrap checklist for new games.
-- [ ] Add clear extension guide: where to add scenes/services/context data.
+- [x] Add clear extension guide: where to add scenes/services/context data.
 - [ ] Add "what not to modify" architecture guardrails.
 
 ### 5.2 Demo simulation scope
