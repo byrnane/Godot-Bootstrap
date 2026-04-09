@@ -8,6 +8,7 @@ signal scene_changed(scene_id: StringName, scene_root: Node);
 
 
 const EMPTY_SCENE_PATH: String = "";
+const SCENE_TRANSITION_PAYLOAD_TYPE = preload("res://core/types/scene_transition_payload.gd");
 
 @export var default_scene_id: StringName = Scenes.MAIN_MENU;
 
@@ -30,7 +31,7 @@ func has_container() -> bool:
 	return _root_container != null;
 
 
-func go_to(scene_id: StringName, payload: Variant = null) -> Node:
+func go_to(scene_id: StringName, payload: SCENE_TRANSITION_PAYLOAD_TYPE = null) -> Node:
 	if _is_loading:
 		push_warning("SceneRouter: ignored go_to('%s') while a scene is already loading." % [String(scene_id)]);
 		return null;
@@ -47,11 +48,12 @@ func is_loading() -> bool:
 	return _is_loading;
 
 
-func _go_to_async(scene_id: StringName, payload: Variant = null) -> void:
+func _go_to_async(scene_id: StringName, payload: SCENE_TRANSITION_PAYLOAD_TYPE = null) -> void:
 	var resolved_scene_id: StringName = scene_id;
 	if not Scenes.has(resolved_scene_id):
 		_warn_unknown_scene_id(resolved_scene_id);
 		resolved_scene_id = default_scene_id;
+	var transition_payload: SCENE_TRANSITION_PAYLOAD_TYPE = _resolve_transition_payload(resolved_scene_id, payload);
 
 	var scene_path: String = Scenes.get_scene_path(resolved_scene_id);
 	if scene_path == EMPTY_SCENE_PATH:
@@ -118,7 +120,7 @@ func _go_to_async(scene_id: StringName, payload: Variant = null) -> void:
 	# HUD is mounted before on_enter so scene code can push an initial snapshot
 	# into an already-existing presentation layer.
 	_mount_scene_hud(scene_instance);
-	_call_on_enter(scene_instance, payload);
+	_call_on_enter(scene_instance, transition_payload);
 	scene_changed.emit(current_scene_id, current_scene_root);
 	TransitionManager.update_loading_progress(1.0);
 	await TransitionManager.finish_loading();
@@ -126,10 +128,15 @@ func _go_to_async(scene_id: StringName, payload: Variant = null) -> void:
 	_is_loading = false;
 
 
-func reload_current_scene(payload: Variant = null) -> Node:
+func reload_current_scene(payload: SCENE_TRANSITION_PAYLOAD_TYPE = null) -> Node:
 	if current_scene_id == StringName():
-		return go_to(default_scene_id, payload);
+		var fallback_payload: SCENE_TRANSITION_PAYLOAD_TYPE = payload;
+		if fallback_payload == null:
+			fallback_payload = _create_transition_payload(default_scene_id, current_scene_id, SCENE_TRANSITION_PAYLOAD_TYPE.Kind.RELOAD);
+		return go_to(default_scene_id, fallback_payload);
 
+	if payload == null:
+		payload = _create_transition_payload(current_scene_id, current_scene_id, SCENE_TRANSITION_PAYLOAD_TYPE.Kind.RELOAD);
 	return go_to(current_scene_id, payload);
 
 
@@ -182,7 +189,7 @@ func _get_scene_hud_scene(target: Node) -> PackedScene:
 	return null;
 
 
-func _call_on_enter(target: Node, payload: Variant) -> void:
+func _call_on_enter(target: Node, payload: SCENE_TRANSITION_PAYLOAD_TYPE) -> void:
 	if target == null:
 		return;
 
@@ -254,3 +261,28 @@ func _warn_scene_contract_issue(target: Node, issue_key: String, message: String
 		return;
 	_reported_scene_contract_issues[warning_key] = true;
 	push_warning("SceneRouter: scene '%s' has invalid contract: %s." % [target_source, message]);
+
+
+func _resolve_transition_payload(scene_id: StringName, payload: SCENE_TRANSITION_PAYLOAD_TYPE) -> SCENE_TRANSITION_PAYLOAD_TYPE:
+	if payload == null:
+		return _create_transition_payload(scene_id, current_scene_id);
+
+	if payload.target_scene_id == StringName():
+		payload.target_scene_id = scene_id;
+	if payload.source_scene_id == StringName():
+		payload.source_scene_id = current_scene_id;
+	return payload;
+
+
+func _create_transition_payload(
+	target_scene_id: StringName,
+	source_scene_id: StringName,
+	kind: int = SCENE_TRANSITION_PAYLOAD_TYPE.Kind.UNSPECIFIED,
+	extra_data: Dictionary = {}
+) -> SCENE_TRANSITION_PAYLOAD_TYPE:
+	var payload: SCENE_TRANSITION_PAYLOAD_TYPE = SCENE_TRANSITION_PAYLOAD_TYPE.new();
+	payload.target_scene_id = target_scene_id;
+	payload.source_scene_id = source_scene_id;
+	payload.kind = kind;
+	payload.data = extra_data.duplicate(true);
+	return payload;

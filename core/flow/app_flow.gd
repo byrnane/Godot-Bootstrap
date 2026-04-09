@@ -5,6 +5,7 @@ extends Node;
 
 
 const MAIN_MENU_MUSIC: AudioStream = preload("res://assets/music/main_menu.mp3");
+const SCENE_TRANSITION_PAYLOAD_TYPE = preload("res://core/types/scene_transition_payload.gd");
 
 
 var _started: bool = false;
@@ -25,7 +26,7 @@ func startup() -> void:
 
 	_started = true;
 	AppContext.ensure_defaults();
-	_go_to_main_menu();
+	_go_to_main_menu(SCENE_TRANSITION_PAYLOAD_TYPE.Kind.STARTUP);
 
 
 func start_new_game() -> void:
@@ -33,7 +34,7 @@ func start_new_game() -> void:
 		return;
 	SessionContext.reset();
 	AppContext.set_state(AppState.Value.IN_GAME);
-	SceneRouter.go_to(gameplay_scene_id, SessionContext);
+	SceneRouter.go_to(gameplay_scene_id, _build_gameplay_payload(SCENE_TRANSITION_PAYLOAD_TYPE.Kind.NEW_GAME));
 
 
 func continue_game() -> void:
@@ -46,11 +47,11 @@ func continue_game() -> void:
 
 	SessionContext.apply_save_data(save_data);
 	AppContext.set_state(AppState.Value.IN_GAME);
-	SceneRouter.go_to(gameplay_scene_id, SessionContext);
+	SceneRouter.go_to(gameplay_scene_id, _build_gameplay_payload(SCENE_TRANSITION_PAYLOAD_TYPE.Kind.CONTINUE_GAME));
 
 
 func return_to_main_menu() -> void:
-	_go_to_main_menu();
+	_go_to_main_menu(SCENE_TRANSITION_PAYLOAD_TYPE.Kind.RETURN_TO_MENU);
 
 
 func request_pause() -> void:
@@ -86,12 +87,12 @@ func quit_game() -> void:
 	get_tree().quit();
 
 
-func _go_to_main_menu() -> void:
+func _go_to_main_menu(transition_kind: int = SCENE_TRANSITION_PAYLOAD_TYPE.Kind.RETURN_TO_MENU) -> void:
 	if SceneRouter.is_loading() or TransitionManager.is_active():
 		return;
 	_reset_pause_ui();
 	AppContext.set_state(AppState.Value.MAIN_MENU);
-	SceneRouter.go_to(start_scene_id, null);
+	SceneRouter.go_to(start_scene_id, _build_main_menu_payload(transition_kind));
 
 
 func _connect_ui_shell() -> void:
@@ -205,3 +206,23 @@ func _apply_tree_pause_from_state(new_state: AppState.Value) -> void:
 	if get_tree().paused == should_pause_tree:
 		return;
 	get_tree().paused = should_pause_tree;
+
+
+func _build_main_menu_payload(transition_kind: int) -> SCENE_TRANSITION_PAYLOAD_TYPE:
+	var payload: SCENE_TRANSITION_PAYLOAD_TYPE = SCENE_TRANSITION_PAYLOAD_TYPE.new();
+	payload.target_scene_id = start_scene_id;
+	payload.source_scene_id = SceneRouter.current_scene_id;
+	payload.kind = transition_kind;
+	return payload;
+
+
+func _build_gameplay_payload(transition_kind: int) -> SCENE_TRANSITION_PAYLOAD_TYPE:
+	var payload: SCENE_TRANSITION_PAYLOAD_TYPE = SCENE_TRANSITION_PAYLOAD_TYPE.new();
+	payload.target_scene_id = gameplay_scene_id;
+	payload.source_scene_id = SceneRouter.current_scene_id;
+	payload.kind = transition_kind;
+	payload.data = {
+		"level_id": String(SessionContext.current_level_id),
+		"is_new_session": SessionContext.is_new_session,
+	};
+	return payload;

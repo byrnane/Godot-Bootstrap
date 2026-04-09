@@ -1,6 +1,8 @@
 extends Control;
 class_name MainMenu;
 
+const SCENE_TRANSITION_PAYLOAD_TYPE = preload("res://core/types/scene_transition_payload.gd");
+
 signal new_game_requested;
 signal continue_requested;
 signal settings_requested;
@@ -22,7 +24,7 @@ func _ready() -> void:
 	_refresh_continue_state();
 
 
-func on_enter(_payload: Variant = null) -> void:
+func on_enter(_payload: SCENE_TRANSITION_PAYLOAD_TYPE = null) -> void:
 	_refresh_continue_state();
 	new_game_button.grab_focus();
 

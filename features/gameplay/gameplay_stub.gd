@@ -1,6 +1,8 @@
 extends Control;
 class_name GameplayStub;
 
+const SCENE_TRANSITION_PAYLOAD_TYPE = preload("res://core/types/scene_transition_payload.gd");
+
 signal pause_requested;
 signal resume_requested;
 signal back_to_menu_requested;
@@ -78,7 +80,7 @@ func unbind_hud(hud: Control) -> void:
 	_disconnect_signal_if_connected(self, &"view_changed", Callable(hud, "apply_view_model"));
 
 
-func on_enter(_payload: Variant = null) -> void:
+func on_enter(_payload: SCENE_TRANSITION_PAYLOAD_TYPE = null) -> void:
 	_refresh_view();
 	_load_level(SessionContext.current_level_id);
 
