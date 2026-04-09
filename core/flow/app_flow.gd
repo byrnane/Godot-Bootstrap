@@ -8,6 +8,7 @@ const MAIN_MENU_MUSIC: AudioStream = preload("res://assets/music/main_menu.mp3")
 
 
 var _started: bool = false;
+var _reported_missing_scene_signals: Dictionary = {};
 
 
 func _ready() -> void:
@@ -97,37 +98,27 @@ func _on_scene_changed(_scene_id: StringName, scene_root: Node) -> void:
 	if scene_root == null:
 		return;
 
-	_sync_scene_music(SceneRouter.current_scene_id);
-	_connect_main_menu(scene_root);
-	_connect_gameplay(scene_root);
+	var current_scene_id: StringName = SceneRouter.current_scene_id;
+	_sync_scene_music(current_scene_id);
+	match current_scene_id:
+		Scenes.MAIN_MENU:
+			_connect_main_menu(scene_root);
+		Scenes.GAMEPLAY:
+			_connect_gameplay(scene_root);
 
 
 func _connect_main_menu(scene_root: Node) -> void:
-	if not scene_root.has_signal("new_game_requested"):
-		return;
-
-	if not scene_root.new_game_requested.is_connected(start_new_game):
-		scene_root.new_game_requested.connect(start_new_game);
-	if not scene_root.continue_requested.is_connected(continue_game):
-		scene_root.continue_requested.connect(continue_game);
-	if not scene_root.settings_requested.is_connected(open_settings):
-		scene_root.settings_requested.connect(open_settings);
-	if not scene_root.quit_requested.is_connected(quit_game):
-		scene_root.quit_requested.connect(quit_game);
+	_connect_scene_signal(scene_root, &"new_game_requested", Callable(self, "start_new_game"));
+	_connect_scene_signal(scene_root, &"continue_requested", Callable(self, "continue_game"));
+	_connect_scene_signal(scene_root, &"settings_requested", Callable(self, "open_settings"));
+	_connect_scene_signal(scene_root, &"quit_requested", Callable(self, "quit_game"));
 
 
 func _connect_gameplay(scene_root: Node) -> void:
-	if not scene_root.has_signal("pause_requested"):
-		return;
-
-	if not scene_root.pause_requested.is_connected(request_pause):
-		scene_root.pause_requested.connect(request_pause);
-	if not scene_root.resume_requested.is_connected(request_resume):
-		scene_root.resume_requested.connect(request_resume);
-	if not scene_root.back_to_menu_requested.is_connected(return_to_main_menu):
-		scene_root.back_to_menu_requested.connect(return_to_main_menu);
-	if not scene_root.save_requested.is_connected(SaveManager.save_current_session):
-		scene_root.save_requested.connect(SaveManager.save_current_session);
+	_connect_scene_signal(scene_root, &"pause_requested", Callable(self, "request_pause"));
+	_connect_scene_signal(scene_root, &"resume_requested", Callable(self, "request_resume"));
+	_connect_scene_signal(scene_root, &"back_to_menu_requested", Callable(self, "return_to_main_menu"));
+	_connect_scene_signal(scene_root, &"save_requested", Callable(SaveManager, "save_current_session"));
 
 
 func _reset_pause_ui() -> void:
@@ -142,3 +133,26 @@ func _sync_scene_music(scene_id: StringName) -> void:
 			AudioManager.play_music(MAIN_MENU_MUSIC);
 		Scenes.GAMEPLAY:
 			pass;
+
+
+func _connect_scene_signal(scene_root: Node, signal_name: StringName, target: Callable) -> void:
+	if scene_root == null:
+		return;
+	if not scene_root.has_signal(signal_name):
+		_warn_missing_scene_signal(scene_root, signal_name);
+		return;
+	if scene_root.is_connected(signal_name, target):
+		return;
+	scene_root.connect(signal_name, target);
+
+
+func _warn_missing_scene_signal(scene_root: Node, signal_name: StringName) -> void:
+	var scene_source: String = scene_root.get_class();
+	var script_resource: Script = scene_root.get_script() as Script;
+	if script_resource != null and not script_resource.resource_path.is_empty():
+		scene_source = script_resource.resource_path;
+	var warning_key: String = "%s::%s" % [scene_source, String(signal_name)];
+	if _reported_missing_scene_signals.has(warning_key):
+		return;
+	_reported_missing_scene_signals[warning_key] = true;
+	push_warning("AppFlow: scene '%s' is missing required signal '%s'." % [scene_source, String(signal_name)]);
