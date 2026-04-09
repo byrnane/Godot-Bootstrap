@@ -113,6 +113,7 @@ This template is intentionally simple and predictable. It is not a universal gam
 - lets compatible actions share one button through conflict groups
 - emits conflict-resolution signals when a rebind clears overlapping bindings
 - exposes active rebind action/slot so UI can show precise waiting state
+- injects fixed default gamepad bindings for core UI actions
 
 `UiFeedback`
 
@@ -229,7 +230,8 @@ This gives you:
 - user rebinds are saved to `user://input_bindings.save`
 - compatible actions may share the same binding when they belong to the same conflict group
 - controls UI includes conflict feedback and a confirmed reset-to-default flow
-- gamepad support exists in the roadmap, but gamepad rebinding is intentionally postponed until the keyboard and mouse layout is stable
+- fixed gamepad defaults are always applied for core UI actions
+- gamepad rebinding is intentionally postponed until the fixed mapping is validated in real projects
 
 ### Persistence
 
