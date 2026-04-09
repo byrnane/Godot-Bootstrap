@@ -117,9 +117,9 @@ Focus: ship-grade save/settings/input/localization baseline.
 
 ### Exit criteria for Phase 2
 
-- [ ] Save/settings/input/localization are stable for daily development use.
-- [ ] Migration and fallback behavior is deterministic and tested.
-- [ ] Baseline gamepad input works with default mapping.
+- [x] Save/settings/input/localization are stable for daily development use.
+- [x] Migration and fallback behavior is deterministic and tested.
+- [x] Baseline gamepad input works with default mapping.
 
 
 ## Phase 3 - UX Infrastructure And Reusable UI Toolkit
