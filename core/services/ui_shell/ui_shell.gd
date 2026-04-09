@@ -39,10 +39,14 @@ var _loading_screen: LoadingScreen = null;
 var _debug_overlay: Control = null;
 var _modal_stack: Array[Control] = [];
 var _feedback_queue: Array[Dictionary] = [];
+var _queued_feedback_request_ids: Dictionary = {};
 var _active_feedback_kind: StringName = &"";
 var _active_feedback_request_id: int = -1;
 var _debug_refresh_elapsed: float = 0.0;
 var _reported_setup_issues: Dictionary = {};
+var _loading_visible: bool = false;
+var _loading_transition_active: bool = false;
+var _loading_request_token: int = 0;
 
 
 func _ready() -> void:
@@ -103,6 +107,7 @@ func close_pause() -> void:
 
 
 func close_all_modals() -> void:
+	_compact_modal_stack();
 	for modal: Control in _modal_stack:
 		if modal != null and modal.has_method("close_modal"):
 			modal.call("close_modal");
@@ -163,12 +168,29 @@ func show_loading_screen(data: Dictionary = {}) -> void:
 	_ensure_loading_screen();
 	if _loading_screen == null:
 		return;
+	_loading_request_token += 1;
+	var request_token: int = _loading_request_token;
+	if _loading_visible and not _loading_transition_active:
+		_refresh_debug_overlay();
+		return;
+	if _loading_transition_active:
+		await _wait_for_loading_transition();
+	if request_token != _loading_request_token:
+		return;
+	if _loading_visible:
+		_refresh_debug_overlay();
+		return;
+	_loading_transition_active = true;
 	await _loading_screen.show_screen(data);
+	_loading_transition_active = false;
+	_loading_visible = true;
 	_refresh_debug_overlay();
 
 
 func update_loading_progress(progress: float, status_text: String = "") -> void:
 	if _loading_screen == null:
+		return;
+	if not _loading_visible and not _loading_transition_active:
 		return;
 	_loading_screen.update_progress(progress, status_text);
 
@@ -176,7 +198,22 @@ func update_loading_progress(progress: float, status_text: String = "") -> void:
 func hide_loading_screen() -> void:
 	if _loading_screen == null:
 		return;
+	_loading_request_token += 1;
+	var request_token: int = _loading_request_token;
+	if not _loading_visible and not _loading_transition_active:
+		_refresh_debug_overlay();
+		return;
+	if _loading_transition_active:
+		await _wait_for_loading_transition();
+	if request_token != _loading_request_token:
+		return;
+	if not _loading_visible:
+		_refresh_debug_overlay();
+		return;
+	_loading_transition_active = true;
 	await _loading_screen.hide_screen();
+	_loading_transition_active = false;
+	_loading_visible = false;
 	_refresh_debug_overlay();
 
 
@@ -255,6 +292,7 @@ func _ensure_debug_overlay() -> void:
 func _push_modal(modal: Control) -> void:
 	if modal == null:
 		return;
+	_compact_modal_stack();
 	if _modal_stack.has(modal):
 		_modal_stack.erase(modal);
 	# Re-appending keeps stacking deterministic when one modal opens another.
@@ -268,6 +306,7 @@ func _push_modal(modal: Control) -> void:
 func _pop_modal(modal: Control) -> void:
 	if modal == null:
 		return;
+	_compact_modal_stack();
 	if _modal_stack.has(modal):
 		_modal_stack.erase(modal);
 	if modal.has_method("close_modal"):
@@ -277,6 +316,7 @@ func _pop_modal(modal: Control) -> void:
 
 
 func _refresh_modal_visibility() -> void:
+	_compact_modal_stack();
 	var top_modal: Control = _modal_stack.back() if not _modal_stack.is_empty() else null;
 	var has_visible_modals: bool = false;
 	for modal: Control in _get_managed_modals():
@@ -296,6 +336,7 @@ func _refresh_modal_visibility() -> void:
 
 
 func _focus_top_modal() -> void:
+	_compact_modal_stack();
 	if _modal_stack.is_empty():
 		return;
 	var top_modal: Control = _modal_stack.back();
@@ -306,6 +347,7 @@ func _focus_top_modal() -> void:
 
 
 func _request_close_top_modal_from_backdrop() -> void:
+	_compact_modal_stack();
 	if _modal_stack.is_empty():
 		return;
 	var top_modal: Control = _modal_stack.back();
@@ -360,12 +402,15 @@ func _sync_debug_overlay_visibility() -> void:
 func _refresh_debug_overlay() -> void:
 	if _debug_overlay == null:
 		return;
+	_compact_modal_stack();
 	var hud_name: String = "-";
 	if _current_hud != null:
 		hud_name = _current_hud.name;
 	var modal_names: Array[String] = [];
 	for modal: Control in _modal_stack:
 		if modal == null:
+			continue;
+		if not is_instance_valid(modal):
 			continue;
 		modal_names.append(modal.name);
 	_debug_overlay.apply_snapshot({
@@ -410,20 +455,12 @@ func _get_managed_modals() -> Array[Control]:
 
 
 func _on_confirm_requested(request_id: int, payload: Dictionary) -> void:
-	_feedback_queue.append({
-		"kind": &"confirm",
-		"request_id": request_id,
-		"payload": payload,
-	});
+	_enqueue_feedback_request(&"confirm", request_id, payload);
 	_try_show_next_feedback();
 
 
 func _on_alert_requested(request_id: int, payload: Dictionary) -> void:
-	_feedback_queue.append({
-		"kind": &"alert",
-		"request_id": request_id,
-		"payload": payload,
-	});
+	_enqueue_feedback_request(&"alert", request_id, payload);
 	_try_show_next_feedback();
 
 
@@ -445,18 +482,25 @@ func _try_show_next_feedback() -> void:
 		return;
 	if _active_feedback_request_id >= 0:
 		return;
-	if _feedback_queue.is_empty():
-		return;
+	while not _feedback_queue.is_empty():
+		var request: Dictionary = _feedback_queue.pop_front();
+		var request_id: int = int(request.get("request_id", -1));
+		_queued_feedback_request_ids.erase(request_id);
+		var kind: StringName = request.get("kind", &"");
+		if request_id < 0:
+			continue;
+		if kind != &"confirm" and kind != &"alert":
+			continue;
 
-	var request: Dictionary = _feedback_queue.pop_front();
-	_active_feedback_kind = request.get("kind", &"");
-	_active_feedback_request_id = int(request.get("request_id", -1));
-	var payload: Dictionary = request.get("payload", {});
-	if _active_feedback_kind == &"alert":
-		_feedback_modal.configure_alert(_active_feedback_request_id, payload);
-	else:
-		_feedback_modal.configure_confirm(_active_feedback_request_id, payload);
-	_push_modal(_feedback_modal);
+		_active_feedback_kind = kind;
+		_active_feedback_request_id = request_id;
+		var payload: Dictionary = request.get("payload", {});
+		if _active_feedback_kind == &"alert":
+			_feedback_modal.configure_alert(_active_feedback_request_id, payload);
+		else:
+			_feedback_modal.configure_confirm(_active_feedback_request_id, payload);
+		_push_modal(_feedback_modal);
+		return;
 
 
 func _on_feedback_confirmed(request_id: int) -> void:
@@ -485,6 +529,7 @@ func _on_feedback_canceled(request_id: int) -> void:
 
 func _cancel_active_feedback_request() -> void:
 	_feedback_queue.clear();
+	_queued_feedback_request_ids.clear();
 	if _active_feedback_request_id < 0:
 		return;
 	if _active_feedback_kind == &"alert":
@@ -552,3 +597,45 @@ func _warn_setup_issue(issue_key: String, message: String) -> void:
 		return;
 	_reported_setup_issues[issue_key] = true;
 	push_warning("UiShell: %s." % [message]);
+
+
+func _compact_modal_stack() -> void:
+	var compacted_stack: Array[Control] = [];
+	for modal: Control in _modal_stack:
+		if modal == null:
+			continue;
+		if not is_instance_valid(modal):
+			continue;
+		if compacted_stack.has(modal):
+			continue;
+		compacted_stack.append(modal);
+	_modal_stack = compacted_stack;
+
+
+func _wait_for_loading_transition() -> void:
+	while _loading_transition_active:
+		await get_tree().process_frame;
+
+
+func _enqueue_feedback_request(kind: StringName, request_id: int, payload: Dictionary) -> void:
+	if request_id < 0:
+		return;
+	if request_id == _active_feedback_request_id:
+		return;
+	if _queued_feedback_request_ids.has(request_id):
+		for request_index: int in range(_feedback_queue.size()):
+			var queued_request: Dictionary = _feedback_queue[request_index];
+			if int(queued_request.get("request_id", -1)) != request_id:
+				continue;
+			_feedback_queue[request_index] = {
+				"kind": kind,
+				"request_id": request_id,
+				"payload": payload,
+			};
+			return;
+	_feedback_queue.append({
+		"kind": kind,
+		"request_id": request_id,
+		"payload": payload,
+	});
+	_queued_feedback_request_ids[request_id] = true;
