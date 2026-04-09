@@ -1,0 +1,43 @@
+name: Smoke Checks
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:4.6
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run smoke scene (headless)
+        shell: bash
+        run: |
+          set -euo pipefail
+          RESULT="$HOME/.local/share/godot/app_userdata/Game Template/phase0_smoke_result.txt"
+          rm -f "$RESULT"
+          godot --headless --path . --scene res://core/debug/phase0_smoke_runner.tscn || true
+          if [[ ! -f "$RESULT" ]]; then
+            echo "Smoke result file not found: $RESULT"
+            exit 1
+          fi
+          echo "Smoke result:"
+          cat "$RESULT"
+          if ! grep -qx "PASS" "$RESULT"; then
+            echo "Smoke checks failed."
+            exit 1
+          fi
+
+      - name: Upload smoke artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-result
+          path: |
+            ~/.local/share/godot/app_userdata/Game Template/phase0_smoke_result.txt

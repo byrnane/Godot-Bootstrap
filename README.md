@@ -66,6 +66,7 @@ Docs:
 - [Changelog](CHANGELOG.md)
 - [Todo / Roadmap](TODO.md)
 - [Manual Test Plan](docs/MANUAL_TEST_PLAN.md)
+- [CI Smoke Troubleshooting](docs/CI_SMOKE_TROUBLESHOOTING.md)
 
 Smoke (one command):
 

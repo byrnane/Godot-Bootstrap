@@ -172,15 +172,15 @@ Focus: faster diagnosis and safer refactors.
 
 ### 4.3 CI quality gates
 
-- [ ] Add automated smoke run in CI (headless where possible).
-- [ ] Fail builds on critical smoke regressions.
-- [ ] Document troubleshooting playbook for CI failures.
+- [x] Add automated smoke run in CI (headless where possible).
+- [x] Fail builds on critical smoke regressions.
+- [x] Document troubleshooting playbook for CI failures.
 
 ### Exit criteria for Phase 4
 
-- [ ] Core regressions are caught automatically.
-- [ ] Debug tools accelerate local diagnosis.
-- [ ] Template updates are safer to merge and release.
+- [x] Core regressions are caught automatically.
+- [x] Debug tools accelerate local diagnosis.
+- [x] Template updates are safer to merge and release.
 
 
 ## Phase 5 - Packaging, Documentation, And Release Readiness
