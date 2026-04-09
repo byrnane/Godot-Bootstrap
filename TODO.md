@@ -48,7 +48,7 @@ Focus: remove current risks, warnings, and architectural rough edges.
 
 - [x] Harden scene signal wiring in `AppFlow` (explicit checks before every connect).
 - [x] Improve error diagnostics for failed scene/hud/modal setup.
-- [ ] Ensure all failure paths leave runtime in a recoverable state.
+- [x] Ensure all failure paths leave runtime in a recoverable state.
 
 ### Exit criteria for Phase 0
 
