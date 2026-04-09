@@ -134,7 +134,7 @@ Focus: improve template UX quality and reusability without adding game mechanics
 
 ### 3.2 Feedback, loading, and modal UX
 
-- [ ] Polish `UiFeedback` workflows (confirm/alert/toast variants and defaults).
+- [x] Polish `UiFeedback` workflows (confirm/alert/toast variants and defaults).
 - [ ] Expand loading screen metadata model (tip providers, context labels, status states).
 - [ ] Validate backdrop/cancel behavior across all modal types.
 

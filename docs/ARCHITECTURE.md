@@ -121,6 +121,7 @@ This template is intentionally simple and predictable. It is not a universal gam
 - keeps callback-based feedback requests out of feature scenes
 - lets `UiShell` stay the only place that actually hosts feedback UI
 - now uses stable payload fields such as `variant`, `title`, `message`, `duration`, `confirm_text`, `cancel_text`, `close_on_backdrop`, and `close_on_cancel`
+- normalizes feedback payload values (variant, durations, booleans, labels) before handing requests to `UiShell`
 
 `TransitionManager`
 
