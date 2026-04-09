@@ -8,7 +8,7 @@ signal outro_finished;
 const DEFAULT_PROGRESS: float = -1.0;
 const DOT_ANIMATION_STEP: float = 0.35;
 const MAX_DOT_COUNT: int = 3;
-const UiMotion = preload("res://shared/ui/motion/ui_motion.gd");
+const UI_MOTION_UTIL = preload("res://shared/ui/motion/ui_motion.gd");
 
 
 @export var fade_duration: float = 0.2;
@@ -40,7 +40,7 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS;
 	modulate.a = 0.0;
 	card.modulate.a = 0.0;
-	card.scale = UiMotion.MODAL_INITIAL_SCALE;
+	card.scale = UI_MOTION_UTIL.MODAL_INITIAL_SCALE;
 	progress_bar.visible = false;
 	progress_status_label.visible = false;
 
@@ -102,7 +102,7 @@ func _apply_content(data: Dictionary) -> void:
 
 
 func _fade_to(target_alpha: float) -> void:
-	var tween: Tween = UiMotion.play_loading_fade(self, card, target_alpha, fade_duration);
+	var tween: Tween = UI_MOTION_UTIL.play_loading_fade(self, card, target_alpha, fade_duration);
 	await tween.finished;
 
 

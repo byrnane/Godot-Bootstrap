@@ -5,7 +5,7 @@ signal expired(item: ToastItem);
 
 
 const DEFAULT_DURATION: float = 2.4;
-const UiMotion = preload("res://shared/ui/motion/ui_motion.gd");
+const UI_MOTION_UTIL = preload("res://shared/ui/motion/ui_motion.gd");
 
 
 @onready var status_badge = %StatusBadge;
@@ -19,12 +19,12 @@ func show_toast(payload: Dictionary) -> void:
 	title_label.visible = not title_label.text.is_empty();
 	message_label.text = String(payload.get("message", ""));
 
-	var enter_tween: Tween = UiMotion.play_toast_enter(self);
+	var enter_tween: Tween = UI_MOTION_UTIL.play_toast_enter(self);
 	await enter_tween.finished;
 
 	var duration: float = maxf(float(payload.get("duration", DEFAULT_DURATION)), 0.5);
 	await get_tree().create_timer(duration).timeout;
 
-	var exit_tween: Tween = UiMotion.play_toast_exit(self);
+	var exit_tween: Tween = UI_MOTION_UTIL.play_toast_exit(self);
 	await exit_tween.finished;
 	expired.emit(self);

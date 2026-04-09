@@ -4,7 +4,7 @@ class_name UiTabStrip
 signal tab_changed(tab_id: StringName, index: int);
 
 
-const UiFocus = preload("res://shared/ui/navigation/ui_focus.gd");
+const UI_FOCUS_UTIL = preload("res://shared/ui/navigation/ui_focus.gd");
 
 
 @export var tab_ids: Array[StringName] = [];
@@ -123,7 +123,7 @@ func _focus_current_page() -> void:
 	if page == null:
 		return;
 
-	var focus_target: Control = UiFocus.find_first_focusable(page);
+	var focus_target: Control = UI_FOCUS_UTIL.find_first_focusable(page);
 	if focus_target != null:
 		focus_target.grab_focus();
 
