@@ -166,7 +166,7 @@ Focus: faster diagnosis and safer refactors.
 ### 4.2 Smoke test suite
 
 - [x] Add smoke checks for scene loading pipeline and core data containers.
-- [ ] Add audio smoke checks (bus presence, one-shot playback path, music playback path).
+- [x] Add audio smoke checks (bus presence, one-shot playback path, music playback path).
 - [ ] Add localization smoke checks (key existence, locale switch sanity).
 - [ ] Define one-command local smoke run for template maintainers.
 

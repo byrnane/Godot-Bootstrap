@@ -37,6 +37,7 @@ func _run() -> void:
 	_check_default_theme_contrast();
 	_check_core_data_containers();
 	await _check_scene_loading_pipeline_contract();
+	await _check_audio_pipeline_contract();
 
 	for cycle_index: int in range(CYCLE_COUNT):
 		var cycle_number: int = cycle_index + 1;
@@ -247,6 +248,82 @@ func _check_core_data_containers() -> void:
 			resolved_session.gameplay_scene_id == GameConfig.get_gameplay_scene_id(),
 			"data container test: session params should fallback to configured gameplay scene"
 		);
+
+
+func _check_audio_pipeline_contract() -> void:
+	_check_audio_bus_layout();
+	_check_one_shot_audio_path();
+	await _check_music_audio_path();
+
+
+func _check_audio_bus_layout() -> void:
+	for bus_name: String in [
+		AudioManager.MASTER_BUS_NAME,
+		AudioManager.MUSIC_BUS_NAME,
+		AudioManager.UI_BUS_NAME,
+		AudioManager.SFX_BUS_NAME,
+	]:
+		_check(AudioServer.get_bus_index(bus_name) >= 0, "audio test: missing audio bus '%s'" % [bus_name]);
+
+	for bus_name: String in [
+		AudioManager.MUSIC_BUS_NAME,
+		AudioManager.UI_BUS_NAME,
+		AudioManager.SFX_BUS_NAME,
+	]:
+		var bus_index: int = AudioServer.get_bus_index(bus_name);
+		if bus_index < 0:
+			continue;
+		var send_bus_name: String = AudioServer.get_bus_send(bus_index);
+		_check(
+			send_bus_name == AudioManager.MASTER_BUS_NAME,
+			"audio test: bus '%s' should send to '%s'" % [bus_name, AudioManager.MASTER_BUS_NAME]
+		);
+
+
+func _check_one_shot_audio_path() -> void:
+	var player: AudioStreamPlayer = AudioManager.play_ui_click();
+	_check(player != null, "audio test: play_ui_click did not create one-shot player");
+	if player == null:
+		return;
+	_check(player.bus == AudioManager.UI_BUS_NAME, "audio test: one-shot UI click used wrong audio bus");
+	_check(player.playing, "audio test: one-shot UI click player did not start playback");
+
+
+func _check_music_audio_path() -> void:
+	var music_stream: AudioStream = GameConfig.get_main_menu_music();
+	_check(music_stream != null, "audio test: main menu music stream is missing");
+	if music_stream == null:
+		return;
+
+	AudioManager.stop_music(0.0);
+	AudioManager.play_music(music_stream, {"fade_duration": 0.0});
+	var playback_started: bool = await _wait_until(
+		func() -> bool:
+			return _find_active_music_player() != null,
+		TRANSITION_DELAY_SECONDS
+	);
+	_check(playback_started, "audio test: play_music did not start active music playback");
+	if not playback_started:
+		return;
+
+	var active_player: AudioStreamPlayer = _find_active_music_player();
+	_check(active_player != null, "audio test: active music player node was not found");
+	if active_player != null:
+		_check(active_player.bus == AudioManager.MUSIC_BUS_NAME, "audio test: active music player uses wrong bus");
+		_check(active_player.stream == music_stream, "audio test: active music player stream mismatch");
+		_check(active_player.playing, "audio test: active music player is not playing");
+	AudioManager.stop_music(0.0);
+
+
+func _find_active_music_player() -> AudioStreamPlayer:
+	for player_name: String in ["MusicPlayer0", "MusicPlayer1"]:
+		var player: AudioStreamPlayer = AudioManager.get_node_or_null(player_name) as AudioStreamPlayer;
+		if player == null:
+			continue;
+		if not player.playing:
+			continue;
+		return player;
+	return null;
 
 
 func _expect_pause_ignored_during_transition() -> void:
