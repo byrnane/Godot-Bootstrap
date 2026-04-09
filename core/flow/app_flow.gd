@@ -13,6 +13,7 @@ var _reported_missing_scene_signals: Dictionary = {};
 
 func _ready() -> void:
 	_connect_ui_shell();
+	_connect_transition_manager();
 	if not SceneRouter.scene_changed.is_connected(_on_scene_changed):
 		SceneRouter.scene_changed.connect(_on_scene_changed);
 
@@ -50,6 +51,10 @@ func return_to_main_menu() -> void:
 func request_pause() -> void:
 	if AppContext.state != AppState.Value.IN_GAME:
 		return;
+	if SceneRouter.is_loading() or TransitionManager.is_active():
+		return;
+	if get_tree().paused:
+		return;
 
 	AppContext.set_state(AppState.Value.PAUSED);
 	get_tree().paused = true;
@@ -58,6 +63,8 @@ func request_pause() -> void:
 
 func request_resume() -> void:
 	if AppContext.state != AppState.Value.PAUSED:
+		if get_tree().paused and not TransitionManager.is_active():
+			_reset_pause_ui();
 		return;
 
 	_reset_pause_ui();
@@ -92,6 +99,13 @@ func _connect_ui_shell() -> void:
 		UiShell.back_to_menu_requested.connect(return_to_main_menu);
 	if not UiShell.save_requested.is_connected(SaveManager.save_current_session):
 		UiShell.save_requested.connect(SaveManager.save_current_session);
+
+
+func _connect_transition_manager() -> void:
+	if TransitionManager == null:
+		return;
+	if not TransitionManager.transition_started.is_connected(_on_transition_started):
+		TransitionManager.transition_started.connect(_on_transition_started);
 
 
 func _on_scene_changed(_scene_id: StringName, scene_root: Node) -> void:
@@ -131,8 +145,8 @@ func _sync_scene_music(scene_id: StringName) -> void:
 	match scene_id:
 		Scenes.MAIN_MENU:
 			AudioManager.play_music(MAIN_MENU_MUSIC);
-		Scenes.GAMEPLAY:
-			pass;
+		_:
+			return;
 
 
 func _connect_scene_signal(scene_root: Node, signal_name: StringName, target: Callable) -> void:
@@ -156,3 +170,10 @@ func _warn_missing_scene_signal(scene_root: Node, signal_name: StringName) -> vo
 		return;
 	_reported_missing_scene_signals[warning_key] = true;
 	push_warning("AppFlow: scene '%s' is missing required signal '%s'." % [scene_source, String(signal_name)]);
+
+
+func _on_transition_started(_data: Dictionary) -> void:
+	# Scene transitions should always run with an unpaused tree so loading and
+	# scene lifecycle callbacks cannot be stalled by leftover pause state.
+	if get_tree().paused:
+		_reset_pause_ui();
