@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://b1rd4lscp00q4" path="res://shared/ui/loading/loading_screen.gd" id="1_script"]
 [ext_resource type="FontVariation" path="res://shared/ui/theme/heading_font_embedded.tres" id="2_heading_font"]
 [ext_resource type="PackedScene" path="res://shared/ui/components/ui_card.tscn" id="3_card"]
+[ext_resource type="PackedScene" path="res://shared/ui/components/ui_status_badge.tscn" id="4_badge"]
 
 [node name="LoadingScreen" type="Control" unique_id=134251302]
 layout_mode = 3
@@ -38,12 +39,27 @@ layout_mode = 2
 elevated = true
 inner_padding = 22
 
+[node name="StatusBadge" parent="CenterContainer/Card/ContentMargin/Content" index="0" instance=ExtResource("4_badge")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+variant = "info"
+text_key = "UI_LOADING_STATE_LOADING"
+
 [node name="TitleLabel" type="Label" parent="CenterContainer/Card/ContentMargin/Content" unique_id=485408275]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_fonts/font = ExtResource("2_heading_font")
 theme_override_font_sizes/font_size = 20
 text = "UI_LOADING"
+horizontal_alignment = 1
+
+[node name="ContextLabel" type="Label" parent="CenterContainer/Card/ContentMargin/Content" unique_id=1582221441]
+unique_name_in_owner = true
+visible = false
+modulate = Color(0.78, 0.86, 0.96, 0.88)
+layout_mode = 2
+text = "UI_LOADING_CONTEXT"
 horizontal_alignment = 1
 
 [node name="MessageLabel" type="Label" parent="CenterContainer/Card/ContentMargin/Content" unique_id=1324061874]

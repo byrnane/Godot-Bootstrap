@@ -187,12 +187,12 @@ func show_loading_screen(data: Dictionary = {}) -> void:
 	_refresh_debug_overlay();
 
 
-func update_loading_progress(progress: float, status_text: String = "") -> void:
+func update_loading_progress(progress: float, status_text: String = "", status_state: StringName = StringName()) -> void:
 	if _loading_screen == null:
 		return;
 	if not _loading_visible and not _loading_transition_active:
 		return;
-	_loading_screen.update_progress(progress, status_text);
+	_loading_screen.update_progress(progress, status_text, status_state);
 
 
 func hide_loading_screen() -> void:

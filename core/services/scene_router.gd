@@ -70,7 +70,9 @@ func _go_to_async(scene_id: StringName, payload: SCENE_TRANSITION_PAYLOAD_TYPE =
 	await TransitionManager.begin_loading({
 		"title": tr("UI_LOADING"),
 		"message": tr("UI_LOADING_MESSAGE"),
-		"tip": tr("UI_LOADING_TIP"),
+		"context": tr("UI_LOADING_CONTEXT").format({"value": _get_loading_context_label(resolved_scene_id)}),
+		"status_state": &"loading",
+		"tips_provider": Callable(self, "_build_loading_tips_for_scene").bind(resolved_scene_id),
 	});
 
 	var load_request: Error = ResourceLoader.load_threaded_request(scene_path);
@@ -127,7 +129,7 @@ func _go_to_async(scene_id: StringName, payload: SCENE_TRANSITION_PAYLOAD_TYPE =
 	_mount_scene_hud(scene_instance);
 	_call_on_enter(scene_instance, transition_payload);
 	scene_changed.emit(current_scene_id, current_scene_root);
-	TransitionManager.update_loading_progress(1.0);
+	TransitionManager.update_loading_progress(1.0, tr("UI_LOADING_READY"), &"success");
 	await TransitionManager.finish_loading();
 	_restore_state_after_loading();
 	_is_loading = false;
@@ -305,3 +307,33 @@ func _start_queued_transition_if_any() -> void:
 	_queued_scene_id = &"";
 	_queued_payload = null;
 	call_deferred("_go_to_async", queued_scene_id, queued_payload);
+
+
+func _get_loading_context_label(scene_id: StringName) -> String:
+	match scene_id:
+		Scenes.MAIN_MENU:
+			return tr("UI_STATE_MAIN_MENU");
+		Scenes.GAMEPLAY:
+			return tr("UI_STATE_IN_GAME");
+		Scenes.LEVEL_STUB_A:
+			return tr("UI_LEVEL_STUB_A_TITLE");
+		Scenes.LEVEL_STUB_B:
+			return tr("UI_LEVEL_STUB_B_TITLE");
+		_:
+			return String(scene_id);
+
+
+func _build_loading_tips_for_scene(_data: Dictionary, scene_id: StringName) -> Array[String]:
+	match scene_id:
+		Scenes.MAIN_MENU:
+			return [
+				tr("UI_LOADING_TIP_MENU_1"),
+				tr("UI_LOADING_TIP_MENU_2"),
+			];
+		Scenes.GAMEPLAY:
+			return [
+				tr("UI_LOADING_TIP_GAMEPLAY_1"),
+				tr("UI_LOADING_TIP_GAMEPLAY_2"),
+			];
+		_:
+			return [];

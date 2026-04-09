@@ -129,6 +129,7 @@ This template is intentionally simple and predictable. It is not a universal gam
 - shows loading screen
 - updates progress
 - finishes the transition cleanly
+- supports loading status states (`loading/success/error`) and status-text updates
 
 ### Scene flow
 
@@ -217,6 +218,7 @@ This gives you:
 - fewer visible hitches on heavy scene changes
 - a proper loading UI instead of an empty pause
 - a clean place for tips, progress, and loading metadata
+- per-transition context labels, status badges, and optional tip providers
 
 ### Localization
 
