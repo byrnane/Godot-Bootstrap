@@ -19,7 +19,7 @@ It focuses on:
 - Fresh run with existing user data
 - Fresh run after deleting:
 - `user://settings.cfg`
-- `user://savegame.save`
+- `user://saves/` directory
 - `user://input_bindings.save`
 
 
@@ -80,7 +80,7 @@ Expected:
 
 ### D. Save and Continue
 
-1. In gameplay, change demo state (health/score/level).
+1. In gameplay, change demo simulation state (Metric A/Counter B/level).
 2. Save session.
 3. Return to main menu.
 4. Verify `Continue` is enabled.
@@ -133,7 +133,7 @@ Expected:
 1. Verify menu music in main menu.
 2. Enter gameplay and switch level A/B to verify music changes.
 3. Press UI buttons and confirm hover/click sounds.
-4. Trigger damage/heal/score actions and verify SFX playback.
+4. Trigger simulation actions and verify SFX playback.
 5. Adjust volume sliders and verify bus effect.
 
 Expected:
@@ -145,7 +145,8 @@ Expected:
 
 1. Toggle debug overlay (`ui_debug_overlay`).
 2. Verify scene id, app state, paused/loading flags update.
-3. Open modals and transitions while overlay is visible.
+3. Verify quick actions (clear saves, jump scene, restart session) behave correctly.
+4. Open modals and transitions while overlay is visible.
 
 Expected:
 

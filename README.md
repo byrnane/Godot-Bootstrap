@@ -1,144 +1,113 @@
-# Godot Bootstrap
-
-Reusable Godot 4.x starter template for small and mid-sized games.
+# Godot Bootstrap Template
 
 Current version: `0.3.0`
 
 ## EN
 
-This template gives you project infrastructure, not gameplay systems.
+Infrastructure-first Godot 4.x template for building 2D games.
 
-Included:
+This repository is not a gameplay framework. It gives you a stable project base:
 
-- app entry point with `Main`
-- top-level flow with `AppFlow`
-- scene switching through `SceneRouter`
-- global UI shell with HUD, modal stack, and loading layer
-- `InputManager` with basic rebind support
-- `TransitionManager` with async scene loading
-- settings, save, audio, and localization services
-- starter scenes for menu, gameplay, HUD, and levels
+- app flow and scene transitions
+- save/settings/input/localization services
+- shared UI shell (HUD, modals, loading, feedback)
+- debug overlay and smoke checks
 
-Project layout:
+### Requirements
 
-- `main/` - app entry
-- `core/` - flow, services, state, scene registry
-- `features/` - concrete game and UI scenes
-- `shared/` - shared UI assets and reusable pieces
-- `translations/` - localization source
+- Godot `4.6.x`
+- Windows/macOS/Linux (tested mainly on Windows)
 
-Quick start:
+### Quick Start
 
-1. Open the project in Godot 4.x.
-2. Wait for resource import.
-3. Run the main scene.
+1. Open the project in Godot.
+2. Wait for import to finish.
+3. Run `res://main/main.tscn`.
 4. Replace demo scenes in `features/` with your own.
-5. Extend `SessionContext`, `SaveData`, and `UserSettings`.
-6. Add scene ids to `core/registry/scenes.gd`.
-7. Add translation keys to `translations/UI.csv`.
+5. Extend `SessionContext`, `SaveData`, `UserSettings` for your project.
 
-Core rules:
+### Daily Workflow
 
-- root scenes change only through `SceneRouter`
-- top-level navigation lives in `AppFlow`
-- long-lived app state lives in `AppContext`
-- current run state lives in `SessionContext`
-- feature scenes do not access the filesystem directly
-- static UI text should use translation keys in `.tscn`
+1. Implement or change your feature.
+2. Run smoke:
+   `powershell -ExecutionPolicy Bypass -File .\scripts\run_smoke.ps1`
+3. If needed, run manual checklist:
+   `docs/MANUAL_TEST_PLAN.md`
+4. Commit only after smoke is `PASS`.
 
-Input actions included by default:
-
-- `ui_pause`
-- `ui_cancel`
-
-These actions can already be rebound through settings.
-
-Project writes:
+### Files Written At Runtime
 
 - `user://settings.cfg`
-- `user://savegame.save`
+- `user://saves/slot_XX.save` and backups (`.bak`)
 - `user://input_bindings.save`
+- `user://phase0_smoke_result.txt` (after smoke run)
 
-Docs:
+### Documentation
 
-- [Architecture](docs/ARCHITECTURE.md)
-- [Code Style](docs/CODESTYLE.md)
-- [Changelog](CHANGELOG.md)
-- [Todo / Roadmap](TODO.md)
 - [Bootstrap Checklist](docs/BOOTSTRAP_CHECKLIST.md)
 - [Extension Guide](docs/EXTENSION_GUIDE.md)
-- [Architecture Guardrails](docs/ARCHITECTURE_GUARDRAILS.md)
 - [Demo Replacement Guide](docs/DEMO_REPLACEMENT.md)
-- [Release Process](docs/RELEASE_PROCESS.md)
 - [Manual Test Plan](docs/MANUAL_TEST_PLAN.md)
+- [Release Process](docs/RELEASE_PROCESS.md)
 - [CI Smoke Troubleshooting](docs/CI_SMOKE_TROUBLESHOOTING.md)
-
-Smoke (one command):
-
-- `powershell -ExecutionPolicy Bypass -File .\scripts\run_smoke.ps1`
-- Optional explicit binary: `powershell -ExecutionPolicy Bypass -File .\scripts\run_smoke.ps1 -GodotExecutable "C:\Path\To\godot.exe"`
-- Optional headless mode: `powershell -ExecutionPolicy Bypass -File .\scripts\run_smoke.ps1 -Headless`
+- [Architecture](docs/ARCHITECTURE.md)
+- [Architecture Guardrails](docs/ARCHITECTURE_GUARDRAILS.md)
+- [Localization Workflow](docs/LOCALIZATION.md)
+- [Code Style](docs/CODESTYLE.md)
+- [Changelog](CHANGELOG.md)
+- [Roadmap](TODO.md)
 
 ## RU
 
-Это стартовый шаблон на Godot 4.x для небольших и средних игр.
+Шаблон на Godot 4.x для старта 2D-игр с упором на инфраструктуру.
 
-Здесь есть именно инфраструктура проекта, а не готовый gameplay-фреймворк.
+Это не набор игровых механик. Репозиторий дает стабильную базу проекта:
 
-Что уже входит:
+- flow приложения и переходы между сценами
+- сервисы сохранений, настроек, ввода и локализации
+- общий UI-слой (HUD, модалки, загрузка, feedback)
+- debug overlay и smoke-проверки
 
-- точка входа `Main`
-- верхнеуровневый flow через `AppFlow`
-- переключение сцен через `SceneRouter`
-- общий UI-слой с HUD, модалками и экраном загрузки
-- `InputManager` с базовым ребиндом управления
-- `TransitionManager` и асинхронная загрузка сцен
-- сервисы настроек, сохранений, аудио и локализации
-- заготовки меню, gameplay-сцены, HUD и уровней
+### Требования
 
-Структура проекта:
+- Godot `4.6.x`
+- Windows/macOS/Linux (основная проверка на Windows)
 
-- `main/` - вход в приложение
-- `core/` - flow, сервисы, состояние, реестр сцен
-- `features/` - конкретные игровые и UI-сцены
-- `shared/` - общие UI-ресурсы и переиспользуемые элементы
-- `translations/` - исходники локализации
+### Быстрый старт
 
-Быстрый старт:
+1. Откройте проект в Godot.
+2. Дождитесь завершения импорта.
+3. Запустите `res://main/main.tscn`.
+4. Замените demo-сцены в `features/` на свои.
+5. Расширьте `SessionContext`, `SaveData`, `UserSettings` под ваш проект.
 
-1. Откройте проект в Godot 4.x.
-2. Дождитесь импорта ресурсов.
-3. Запустите главную сцену.
-4. Замените демо-сцены в `features/` на свои.
-5. Расширьте `SessionContext`, `SaveData` и `UserSettings`.
-6. Добавьте свои scene id в `core/registry/scenes.gd`.
-7. Добавьте ключи локализации в `translations/UI.csv`.
+### Ежедневный процесс работы
 
-Основные правила:
+1. Внесите изменения.
+2. Запустите smoke:
+   `powershell -ExecutionPolicy Bypass -File .\scripts\run_smoke.ps1`
+3. При необходимости пройдите ручной чеклист:
+   `docs/MANUAL_TEST_PLAN.md`
+4. Коммитьте изменения только после `PASS` в smoke.
 
-- корневые сцены меняются только через `SceneRouter`
-- верхнеуровневая навигация живёт в `AppFlow`
-- долгоживущее состояние хранится в `AppContext`
-- состояние текущей сессии хранится в `SessionContext`
-- feature-сцены не работают с файловой системой напрямую
-- статический UI-текст лучше задавать ключами локализации в `.tscn`
-
-Действия ввода по умолчанию:
-
-- `ui_pause`
-- `ui_cancel`
-
-Эти действия уже можно переназначать через настройки.
-
-Проект пишет файлы:
+### Какие файлы пишутся во время работы
 
 - `user://settings.cfg`
-- `user://savegame.save`
+- `user://saves/slot_XX.save` и backup-файлы (`.bak`)
 - `user://input_bindings.save`
+- `user://phase0_smoke_result.txt` (после smoke)
 
-Документация:
+### Документация
 
-- [Архитектура](docs/ARCHITECTURE.md)
-- [Стиль кода](docs/CODESTYLE.md)
-- [История изменений](CHANGELOG.md)
-- [Todo / Roadmap](TODO.md)
+- [Bootstrap Checklist](docs/BOOTSTRAP_CHECKLIST.md)
+- [Extension Guide](docs/EXTENSION_GUIDE.md)
+- [Demo Replacement Guide](docs/DEMO_REPLACEMENT.md)
+- [Manual Test Plan](docs/MANUAL_TEST_PLAN.md)
+- [Release Process](docs/RELEASE_PROCESS.md)
+- [CI Smoke Troubleshooting](docs/CI_SMOKE_TROUBLESHOOTING.md)
+- [Architecture](docs/ARCHITECTURE.md)
+- [Architecture Guardrails](docs/ARCHITECTURE_GUARDRAILS.md)
+- [Localization Workflow](docs/LOCALIZATION.md)
+- [Code Style](docs/CODESTYLE.md)
+- [Changelog](CHANGELOG.md)
+- [Roadmap](TODO.md)
