@@ -1,6 +1,7 @@
 extends Node;
 
 signal settings_applied(settings: UserSettings);
+signal settings_apply_report(report: Dictionary);
 
 
 const SETTINGS_PATH: String = "user://settings.cfg";
@@ -41,14 +42,39 @@ func save_settings() -> void:
 	config.save(SETTINGS_PATH);
 
 
-func apply_settings() -> void:
+func apply_settings() -> Dictionary:
 	AppContext.ensure_defaults();
 	_sanitize_settings(AppContext.settings);
-	_apply_language_settings(AppContext.settings);
-	_apply_audio_settings(AppContext.settings);
-	_apply_video_settings(AppContext.settings);
-	_apply_input_settings(AppContext.settings);
+	var report: Dictionary = {
+		"language": _apply_domain_with_recovery(
+			"language",
+			_apply_language_settings.bind(AppContext.settings),
+			_recover_language_settings.bind(AppContext.settings)
+		),
+		"audio": _apply_domain_with_recovery(
+			"audio",
+			_apply_audio_settings.bind(AppContext.settings),
+			_recover_audio_settings.bind(AppContext.settings)
+		),
+		"video": _apply_domain_with_recovery(
+			"video",
+			_apply_video_settings.bind(AppContext.settings),
+			_recover_video_settings.bind(AppContext.settings)
+		),
+		"input": _apply_domain_with_recovery(
+			"input",
+			_apply_input_settings.bind(AppContext.settings),
+			_recover_input_settings.bind(AppContext.settings)
+		),
+	};
+	report["ok"] = _is_apply_report_successful(report);
+	if not bool(report.get("ok", true)):
+		push_warning("SettingsManager: settings apply completed with failures: %s" % [_build_report_summary(report)]);
+	elif _has_recovered_domains(report):
+		push_warning("SettingsManager: settings apply recovered with fallback: %s" % [_build_report_summary(report)]);
 	settings_applied.emit(AppContext.settings);
+	settings_apply_report.emit(report);
+	return report;
 
 
 func _read_settings_file() -> UserSettings:
@@ -281,21 +307,111 @@ func _sanitize_input_settings(_settings: UserSettings) -> void:
 	return;
 
 
-func _apply_language_settings(_settings: UserSettings) -> void:
+func _apply_domain_with_recovery(domain_name: String, apply_step: Callable, recover_step: Callable) -> Dictionary:
+	var initial_ok: bool = bool(apply_step.call());
+	if initial_ok:
+		return {
+			"ok": true,
+			"recovered": false,
+		};
+
+	recover_step.call();
+	var recovered_ok: bool = bool(apply_step.call());
+	return {
+		"ok": recovered_ok,
+		"recovered": true,
+		"domain": domain_name,
+	};
+
+
+func _is_apply_report_successful(report: Dictionary) -> bool:
+	for domain_name: String in ["language", "audio", "video", "input"]:
+		var domain_report: Variant = report.get(domain_name, {});
+		if not (domain_report is Dictionary):
+			return false;
+		if not bool((domain_report as Dictionary).get("ok", false)):
+			return false;
+	return true;
+
+
+func _has_recovered_domains(report: Dictionary) -> bool:
+	for domain_name: String in ["language", "audio", "video", "input"]:
+		var domain_report: Variant = report.get(domain_name, {});
+		if not (domain_report is Dictionary):
+			continue;
+		if bool((domain_report as Dictionary).get("recovered", false)):
+			return true;
+	return false;
+
+
+func _build_report_summary(report: Dictionary) -> String:
+	var fragments: PackedStringArray = [];
+	for domain_name: String in ["language", "audio", "video", "input"]:
+		var domain_report: Variant = report.get(domain_name, {});
+		if not (domain_report is Dictionary):
+			fragments.append("%s=invalid" % [domain_name]);
+			continue;
+		var typed_report: Dictionary = domain_report as Dictionary;
+		var status_text: String = "ok" if bool(typed_report.get("ok", false)) else "failed";
+		if bool(typed_report.get("recovered", false)):
+			status_text += "(recovered)";
+		fragments.append("%s=%s" % [domain_name, status_text]);
+	return ", ".join(fragments);
+
+
+func _apply_language_settings(settings: UserSettings) -> bool:
 	LocalizationManager.apply_current_locale();
+	var expected_locale: String = LocalizationManager.normalize_locale(settings.language);
+	var active_locale: String = LocalizationManager.normalize_locale(TranslationServer.get_locale());
+	return active_locale == expected_locale;
 
 
-func _apply_audio_settings(_settings: UserSettings) -> void:
+func _recover_language_settings(settings: UserSettings) -> void:
+	settings.language = LocalizationManager.DEFAULT_LOCALE;
+
+
+func _apply_audio_settings(_settings: UserSettings) -> bool:
+	if AudioManager == null:
+		return false;
+	if AudioManager.has_method("_ensure_bus_layout"):
+		AudioManager.call("_ensure_bus_layout");
 	AudioManager.apply_from_settings();
+	for bus_name: String in [
+		AudioManager.MASTER_BUS_NAME,
+		AudioManager.MUSIC_BUS_NAME,
+		AudioManager.UI_BUS_NAME,
+		AudioManager.SFX_BUS_NAME,
+	]:
+		if AudioServer.get_bus_index(bus_name) < 0:
+			return false;
+	return true;
 
 
-func _apply_video_settings(settings: UserSettings) -> void:
+func _recover_audio_settings(settings: UserSettings) -> void:
+	settings.master_volume = UserSettings.DEFAULT_MASTER_VOLUME;
+	settings.music_volume = UserSettings.DEFAULT_MUSIC_VOLUME;
+	settings.ui_volume = UserSettings.DEFAULT_UI_VOLUME;
+	settings.sfx_volume = UserSettings.DEFAULT_SFX_VOLUME;
+
+
+func _apply_video_settings(settings: UserSettings) -> bool:
 	DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED if settings.vsync_enabled else DisplayServer.VSYNC_DISABLED);
 	if settings.fullscreen:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN);
 	else:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED);
+	var expected_mode: int = DisplayServer.WINDOW_MODE_FULLSCREEN if settings.fullscreen else DisplayServer.WINDOW_MODE_WINDOWED;
+	return DisplayServer.window_get_mode() == expected_mode;
 
 
-func _apply_input_settings(_settings: UserSettings) -> void:
+func _recover_video_settings(settings: UserSettings) -> void:
+	settings.fullscreen = false;
+	settings.vsync_enabled = true;
+
+
+func _apply_input_settings(_settings: UserSettings) -> bool:
+	return InputManager != null;
+
+
+func _recover_input_settings(_settings: UserSettings) -> void:
 	return;

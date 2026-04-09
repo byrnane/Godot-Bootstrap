@@ -80,6 +80,7 @@ This template is intentionally simple and predictable. It is not a universal gam
 - keeps settings ownership split by domains (`language`, `audio`, `video`, `input`)
 - persists domain sections with backward-compatible read fallback for legacy settings files
 - enforces strict type/range validation with fallback defaults for corrupted persisted values
+- applies domains through a recovery-aware pipeline and emits apply reports for diagnostics
 
 `SaveManager`
 
