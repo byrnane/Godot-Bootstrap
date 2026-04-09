@@ -11,6 +11,11 @@ const SETTINGS_SECTION_AUDIO: String = "settings_audio";
 const SETTINGS_SECTION_VIDEO: String = "settings_video";
 const SETTINGS_SECTION_INPUT: String = "settings_input";
 const INPUT_SETTINGS_DOMAIN_VERSION: int = 1;
+const BOOL_TRUE_STRINGS: PackedStringArray = ["1", "true", "yes", "on"];
+const BOOL_FALSE_STRINGS: PackedStringArray = ["0", "false", "no", "off"];
+
+
+var _reported_settings_issues: Dictionary = {};
 
 
 func _ready() -> void:
@@ -71,68 +76,83 @@ func _read_settings_file() -> UserSettings:
 
 func _read_settings_version(config: ConfigFile) -> int:
 	if config.has_section_key(SETTINGS_SECTION_META, "version"):
-		return int(config.get_value(SETTINGS_SECTION_META, "version", UserSettings.CURRENT_VERSION));
+		return _parse_int_setting(
+			config.get_value(SETTINGS_SECTION_META, "version", UserSettings.CURRENT_VERSION),
+			UserSettings.CURRENT_VERSION,
+			"%s.version" % [SETTINGS_SECTION_META]
+		);
 	if config.has_section_key(SETTINGS_SECTION_LEGACY, "version"):
-		return int(config.get_value(SETTINGS_SECTION_LEGACY, "version", UserSettings.CURRENT_VERSION));
+		return _parse_int_setting(
+			config.get_value(SETTINGS_SECTION_LEGACY, "version", UserSettings.CURRENT_VERSION),
+			UserSettings.CURRENT_VERSION,
+			"%s.version" % [SETTINGS_SECTION_LEGACY]
+		);
 	return UserSettings.CURRENT_VERSION;
 
 
 func _read_language_settings(config: ConfigFile, settings: UserSettings) -> void:
-	settings.language = String(_get_domain_value(
+	var raw_locale: Variant = _get_domain_value(
 		config,
 		SETTINGS_SECTION_LANGUAGE,
 		"locale",
 		"language",
 		settings.language
-	));
+	);
+	settings.language = _parse_locale_setting(raw_locale, settings.language, "settings.language");
 
 
 func _read_audio_settings(config: ConfigFile, settings: UserSettings) -> void:
-	settings.master_volume = float(_get_domain_value(
+	var master_volume: Variant = _get_domain_value(
 		config,
 		SETTINGS_SECTION_AUDIO,
 		"master_volume",
 		"master_volume",
 		settings.master_volume
-	));
-	settings.music_volume = float(_get_domain_value(
+	);
+	var music_volume: Variant = _get_domain_value(
 		config,
 		SETTINGS_SECTION_AUDIO,
 		"music_volume",
 		"music_volume",
 		settings.music_volume
-	));
-	settings.ui_volume = float(_get_domain_value(
+	);
+	var ui_volume: Variant = _get_domain_value(
 		config,
 		SETTINGS_SECTION_AUDIO,
 		"ui_volume",
 		"ui_volume",
 		settings.ui_volume
-	));
-	settings.sfx_volume = float(_get_domain_value(
+	);
+	var sfx_volume: Variant = _get_domain_value(
 		config,
 		SETTINGS_SECTION_AUDIO,
 		"sfx_volume",
 		"sfx_volume",
 		settings.sfx_volume
-	));
+	);
+	settings.master_volume = _parse_volume_setting(master_volume, settings.master_volume, "settings.audio.master_volume");
+	settings.music_volume = _parse_volume_setting(music_volume, settings.music_volume, "settings.audio.music_volume");
+	settings.ui_volume = _parse_volume_setting(ui_volume, settings.ui_volume, "settings.audio.ui_volume");
+	settings.sfx_volume = _parse_volume_setting(sfx_volume, settings.sfx_volume, "settings.audio.sfx_volume");
 
 
 func _read_video_settings(config: ConfigFile, settings: UserSettings) -> void:
-	settings.fullscreen = bool(_get_domain_value(
+	var fullscreen: Variant = _get_domain_value(
 		config,
 		SETTINGS_SECTION_VIDEO,
 		"fullscreen",
 		"fullscreen",
 		settings.fullscreen
-	));
-	settings.vsync_enabled = bool(_get_domain_value(
+	);
+	var vsync_enabled: Variant = _get_domain_value(
 		config,
 		SETTINGS_SECTION_VIDEO,
 		"vsync_enabled",
 		"vsync_enabled",
 		settings.vsync_enabled
-	));
+	);
+	settings.fullscreen = _parse_bool_setting(fullscreen, settings.fullscreen, "settings.video.fullscreen");
+	settings.vsync_enabled = _parse_bool_setting(vsync_enabled, settings.vsync_enabled, "settings.video.vsync_enabled");
 
 
 func _read_input_settings(_config: ConfigFile, _settings: UserSettings) -> void:
@@ -144,6 +164,66 @@ func _get_domain_value(config: ConfigFile, section: String, key: String, legacy_
 	if config.has_section_key(section, key):
 		return config.get_value(section, key, default_value);
 	return config.get_value(SETTINGS_SECTION_LEGACY, legacy_key, default_value);
+
+
+func _parse_locale_setting(value: Variant, fallback: String, issue_key: String) -> String:
+	if not (value is String):
+		_warn_settings_issue(issue_key, "expected string locale, got '%s'." % [type_string(typeof(value))]);
+		return LocalizationManager.normalize_locale(fallback);
+	var locale: String = String(value).strip_edges();
+	if locale.is_empty():
+		_warn_settings_issue(issue_key, "locale value is empty, fallback is used.");
+		return LocalizationManager.normalize_locale(fallback);
+	return LocalizationManager.normalize_locale(locale);
+
+
+func _parse_volume_setting(value: Variant, fallback: float, issue_key: String) -> float:
+	var parsed_value: float = _parse_float_setting(value, fallback, issue_key);
+	return clampf(parsed_value, 0.0, 1.0);
+
+
+func _parse_float_setting(value: Variant, fallback: float, issue_key: String) -> float:
+	if value is float:
+		return value;
+	if value is int:
+		return float(value);
+	if value is String and (value as String).is_valid_float():
+		return float(value);
+	_warn_settings_issue(issue_key, "expected float value, got '%s'." % [type_string(typeof(value))]);
+	return fallback;
+
+
+func _parse_bool_setting(value: Variant, fallback: bool, issue_key: String) -> bool:
+	if value is bool:
+		return value;
+	if value is int:
+		return value != 0;
+	if value is String:
+		var normalized_value: String = String(value).strip_edges().to_lower();
+		if BOOL_TRUE_STRINGS.has(normalized_value):
+			return true;
+		if BOOL_FALSE_STRINGS.has(normalized_value):
+			return false;
+	_warn_settings_issue(issue_key, "expected bool value, got '%s'." % [type_string(typeof(value))]);
+	return fallback;
+
+
+func _parse_int_setting(value: Variant, fallback: int, issue_key: String) -> int:
+	if value is int:
+		return value;
+	if value is float:
+		return int(value);
+	if value is String and (value as String).is_valid_int():
+		return int(value);
+	_warn_settings_issue(issue_key, "expected int value, got '%s'." % [type_string(typeof(value))]);
+	return fallback;
+
+
+func _warn_settings_issue(issue_key: String, message: String) -> void:
+	if _reported_settings_issues.has(issue_key):
+		return;
+	_reported_settings_issues[issue_key] = true;
+	push_warning("SettingsManager: %s" % [message]);
 
 
 func _write_settings_version(config: ConfigFile, settings: UserSettings) -> void:

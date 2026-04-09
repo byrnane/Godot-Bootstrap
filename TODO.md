@@ -100,7 +100,7 @@ Focus: ship-grade save/settings/input/localization baseline.
 ### 2.2 Settings system maturity
 
 - [x] Split settings by domains (audio/video/language/input) with clear ownership.
-- [ ] Add robust validation boundaries for all persisted values.
+- [x] Add robust validation boundaries for all persisted values.
 - [ ] Improve apply pipeline so partial failures are visible and recoverable.
 
 ### 2.3 Input system maturity
