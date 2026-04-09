@@ -141,7 +141,7 @@ Focus: improve template UX quality and reusability without adding game mechanics
 ### 3.3 Accessibility and readability baseline
 
 - [ ] Verify minimum contrast and text readability on default theme.
-- [ ] Ensure focus visibility and tab order quality on all template UI screens.
+- [x] Ensure focus visibility and tab order quality on all template UI screens.
 - [ ] Add localization-safe layouts for longer translated strings.
 
 ### Exit criteria for Phase 3

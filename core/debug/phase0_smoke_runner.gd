@@ -30,6 +30,7 @@ func _run() -> void:
 	);
 	_check_localization_coverage();
 	await _expect_locale_switch_updates_shared_components();
+	_validate_main_menu_focus_navigation();
 
 	for cycle_index: int in range(CYCLE_COUNT):
 		var cycle_number: int = cycle_index + 1;
@@ -40,6 +41,7 @@ func _run() -> void:
 			"cycle %d: start new game" % [cycle_number]
 		);
 		_check(not get_tree().paused, "cycle %d: tree should not stay paused after gameplay load" % [cycle_number]);
+		_validate_gameplay_hud_focus_navigation(cycle_number);
 
 		AppFlow.request_pause();
 		var paused_state_reached: bool = await _wait_until(
@@ -48,6 +50,7 @@ func _run() -> void:
 			STATE_TIMEOUT_SECONDS
 		);
 		_check(paused_state_reached, "cycle %d: pause request did not set PAUSED state" % [cycle_number]);
+		_validate_pause_modal_focus_navigation(cycle_number);
 
 		AppFlow.open_settings();
 		await get_tree().process_frame;
@@ -228,6 +231,72 @@ func _check_localization_coverage() -> void:
 		return;
 	var missing_by_locale: Dictionary = report.get("missing_by_locale", {}) as Dictionary;
 	_check(false, "localization coverage check failed: %s" % [JSON.stringify(missing_by_locale)]);
+
+
+func _validate_main_menu_focus_navigation() -> void:
+	var main_menu: MainMenu = SceneRouter.current_scene_root as MainMenu;
+	_check(main_menu != null, "focus test: main menu scene root is missing");
+	if main_menu == null:
+		return;
+	var focusable_buttons: Array[Button] = [];
+	for button_name: String in ["NewGameButton", "ContinueButton", "SettingsButton", "QuitButton"]:
+		var button: Button = main_menu.get_node_or_null("MarginContainer/VBoxContainer/MenuCard/ContentMargin/Content/%s" % [button_name]) as Button;
+		if button == null:
+			continue;
+		if button.disabled:
+			continue;
+		focusable_buttons.append(button);
+	_assert_vertical_focus_cycle(focusable_buttons, "focus test: main menu");
+
+
+func _validate_gameplay_hud_focus_navigation(cycle_number: int) -> void:
+	var hud: GameplayHud = UiShell.get_current_hud() as GameplayHud;
+	_check(hud != null, "cycle %d: focus test: gameplay HUD is missing" % [cycle_number]);
+	if hud == null:
+		return;
+	var buttons: Array[Button] = [];
+	for button_name: String in ["DamageButton", "HealButton", "ScoreButton", "LevelAButton", "LevelBButton", "PauseButton"]:
+		var button: Button = hud.get_node_or_null("%%%s" % [button_name]) as Button;
+		if button == null:
+			continue;
+		buttons.append(button);
+	_assert_vertical_focus_cycle(buttons, "cycle %d: focus test: gameplay HUD" % [cycle_number]);
+
+
+func _validate_pause_modal_focus_navigation(cycle_number: int) -> void:
+	var pause_modal: PauseModal = UiShell.get_node_or_null("ModalLayer/PauseModal") as PauseModal;
+	_check(pause_modal != null, "cycle %d: focus test: pause modal is missing" % [cycle_number]);
+	if pause_modal == null:
+		return;
+	var buttons: Array[Button] = [];
+	for button_name: String in ["ResumeButton", "SaveButton", "SettingsButton", "BackButton"]:
+		var button: Button = pause_modal.get_node_or_null(
+			"MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/PauseActionsCard/ContentMargin/Content/%s" % [button_name]
+		) as Button;
+		if button == null:
+			continue;
+		buttons.append(button);
+	_assert_vertical_focus_cycle(buttons, "cycle %d: focus test: pause modal" % [cycle_number]);
+
+
+func _assert_vertical_focus_cycle(buttons: Array[Button], label: String) -> void:
+	_check(buttons.size() > 1, "%s: not enough focusable buttons for cycle" % [label]);
+	if buttons.size() <= 1:
+		return;
+	for button_index: int in range(buttons.size()):
+		var current_button: Button = buttons[button_index];
+		var previous_button: Button = buttons[(button_index - 1 + buttons.size()) % buttons.size()];
+		var next_button: Button = buttons[(button_index + 1) % buttons.size()];
+		var expected_top: NodePath = current_button.get_path_to(previous_button);
+		var expected_bottom: NodePath = current_button.get_path_to(next_button);
+		_check(
+			current_button.focus_neighbor_top == expected_top,
+			"%s: invalid top focus neighbor for '%s'" % [label, current_button.name]
+		);
+		_check(
+			current_button.focus_neighbor_bottom == expected_bottom,
+			"%s: invalid bottom focus neighbor for '%s'" % [label, current_button.name]
+		);
 
 
 func _expect_locale_switch_updates_shared_components() -> void:
