@@ -34,25 +34,25 @@ Focus: remove current risks, warnings, and architectural rough edges.
 
 ### 0.1 Runtime warnings and script hygiene
 
-- [ ] Remove class-name shadowing warnings (`UiFocus`, `UiMotion` constants vs global classes).
+- [x] Remove class-name shadowing warnings (`UiFocus`, `UiMotion` constants vs global classes).
 - [ ] Standardize script structure and formatting where inconsistent with `docs/CODESTYLE.md`.
-- [ ] Eliminate dead/unused code paths and placeholder `pass` blocks where behavior is expected.
+- [x] Eliminate dead/unused code paths and placeholder `pass` blocks where behavior is expected.
 
 ### 0.2 State flow correctness
 
-- [ ] Integrate `AppState.LOADING` into real transition flow (set/unset in transition lifecycle).
+- [x] Integrate `AppState.LOADING` into real transition flow (set/unset in transition lifecycle).
 - [ ] Verify pause/resume/tree pause behavior across all modal and transition combinations.
-- [ ] Add guardrails for invalid scene contracts (missing signals/methods on connected scenes).
+- [x] Add guardrails for invalid scene contracts (missing signals/methods on connected scenes).
 
 ### 0.3 Integration safety
 
-- [ ] Harden scene signal wiring in `AppFlow` (explicit checks before every connect).
-- [ ] Improve error diagnostics for failed scene/hud/modal setup.
+- [x] Harden scene signal wiring in `AppFlow` (explicit checks before every connect).
+- [x] Improve error diagnostics for failed scene/hud/modal setup.
 - [ ] Ensure all failure paths leave runtime in a recoverable state.
 
 ### Exit criteria for Phase 0
 
-- [ ] Project launches without warnings.
+- [x] Project launches without warnings.
 - [ ] Main menu -> gameplay -> pause/settings -> back to menu works repeatedly without regressions.
 - [ ] No known runtime blockers in current infrastructure.
 
@@ -217,4 +217,3 @@ Focus: make the template easy to adopt and evolve.
 - [ ] Optional gamepad rebinding (only after fixed default gamepad scheme is validated in real projects).
 - [ ] Additional editor tooling and project generation helpers.
 - [ ] Optional presets for specific 2D subgenres as separate add-ons (not in core template).
-
