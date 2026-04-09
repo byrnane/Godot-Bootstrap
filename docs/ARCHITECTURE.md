@@ -131,6 +131,8 @@ Normal flow:
 5. `SceneRouter` mounts the HUD if the scene provides one.
 6. The scene starts working and talks to its HUD through explicit methods and signals.
 
+Transition payloads are passed as `SceneTransitionPayload` objects (instead of generic `Variant`), so scene enter contracts stay explicit and typed.
+
 Important points:
 
 - there is always exactly one active root scene

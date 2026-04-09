@@ -75,15 +75,15 @@ Focus: make the app skeleton strongly typed and extensible.
 
 ### 1.3 Scene and UI shell robustness
 
-- [ ] Improve `SceneRouter` and `UiShell` behavior under rapid consecutive requests.
+- [x] Improve `SceneRouter` and `UiShell` behavior under rapid consecutive requests.
 - [x] Add deterministic handling for duplicate transition requests.
-- [ ] Ensure modal stack, feedback queue, and loading layer cannot enter invalid states.
+- [x] Ensure modal stack, feedback queue, and loading layer cannot enter invalid states.
 
 ### Exit criteria for Phase 1
 
-- [ ] Transition API is typed and documented.
-- [ ] Runtime config and user settings are clearly separated.
-- [ ] Transition/UI shell edge cases are reproducible and handled.
+- [x] Transition API is typed and documented.
+- [x] Runtime config and user settings are clearly separated.
+- [x] Transition/UI shell edge cases are reproducible and handled.
 
 
 ## Phase 2 - Data And Player-Facing Infrastructure
