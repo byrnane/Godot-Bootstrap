@@ -9,6 +9,20 @@ const RESULT_PATH: String = "user://phase0_smoke_result.txt";
 const MIN_CONTRAST_RATIO: float = 4.5;
 const MIN_CONTRAST_RATIO_DISABLED: float = 2.5;
 const CONTRAST_BASE_BACKGROUND: Color = Color(0.03, 0.04, 0.06, 1.0);
+const RUNTIME_LOCALIZATION_KEYS: PackedStringArray = [
+	"UI_DEBUG_ACTIONS_HEADER",
+	"UI_DEBUG_ACTION_CLEAR_SAVE",
+	"UI_DEBUG_ACTION_JUMP_SCENE",
+	"UI_DEBUG_ACTION_RESTART_SESSION",
+	"UI_DEBUG_TOAST_SAVE_CLEARED",
+	"UI_DEBUG_TOAST_SCENE_JUMPED",
+	"UI_DEBUG_TOAST_TRANSITION_BLOCKED",
+	"UI_LOADING_STATE_LOADING",
+	"UI_LOADING_STATE_SUCCESS",
+	"UI_LOADING_STATE_ERROR",
+	"UI_FEEDBACK_CONFIRM_TITLE",
+	"UI_FEEDBACK_ALERT_TITLE",
+];
 
 
 @onready var scene_root: Node = $SceneRoot;
@@ -32,6 +46,7 @@ func _run() -> void:
 		"startup to main menu"
 	);
 	_check_localization_coverage();
+	await _check_localization_runtime_sanity();
 	await _expect_locale_switch_updates_shared_components();
 	_validate_main_menu_focus_navigation();
 	_check_default_theme_contrast();
@@ -441,6 +456,21 @@ func _check_localization_coverage() -> void:
 		return;
 	var missing_by_locale: Dictionary = report.get("missing_by_locale", {}) as Dictionary;
 	_check(false, "localization coverage check failed: %s" % [JSON.stringify(missing_by_locale)]);
+
+
+func _check_localization_runtime_sanity() -> void:
+	var initial_locale: String = LocalizationManager.get_current_locale();
+	for locale: String in LocalizationManager.get_supported_locales():
+		LocalizationManager.set_locale(locale, false);
+		await get_tree().process_frame;
+		for key: String in RUNTIME_LOCALIZATION_KEYS:
+			var localized_value: String = tr(key).strip_edges();
+			_check(
+				not localized_value.is_empty() and localized_value != key,
+				"localization runtime test: missing key '%s' for locale '%s'" % [key, locale]
+			);
+	LocalizationManager.set_locale(initial_locale, false);
+	await get_tree().process_frame;
 
 
 func _check_default_theme_contrast() -> void:
