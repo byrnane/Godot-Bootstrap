@@ -170,6 +170,10 @@ func _read_save_data(path: String) -> Dictionary:
 	file.close();
 	var save_data: SaveData = _normalize_save_data(source_data);
 	if save_data == null:
+		var incompatibility_reason: String = SaveData.get_incompatibility_reason(source_data);
+		if incompatibility_reason.is_empty():
+			incompatibility_reason = "save payload failed validation.";
+		_warn_slot_issue("read/%s" % [path], "failed to read save '%s': %s" % [path, incompatibility_reason]);
 		return {};
 	return {
 		"save_data": save_data,

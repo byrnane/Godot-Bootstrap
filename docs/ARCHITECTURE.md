@@ -228,6 +228,7 @@ This gives you:
 
 - `UserSettings` and `SaveData` are versioned
 - validation and migration stay inside managers
+- save compatibility rules are explicit: versions below minimum or above current are rejected, and slot backup recovery is used when possible
 
 ### Rules
 
