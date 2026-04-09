@@ -28,6 +28,8 @@ func _run() -> void:
 		AppState.Value.MAIN_MENU,
 		"startup to main menu"
 	);
+	_check_localization_coverage();
+	await _expect_locale_switch_updates_shared_components();
 
 	for cycle_index: int in range(CYCLE_COUNT):
 		var cycle_number: int = cycle_index + 1;
@@ -128,6 +130,53 @@ func _expect_pause_ignored_during_transition() -> void:
 		AppState.Value.MAIN_MENU,
 		"pause during transition test: return to menu"
 	);
+
+
+func _check_localization_coverage() -> void:
+	var report: Dictionary = LocalizationManager.get_static_key_coverage_report();
+	var is_complete: bool = bool(report.get("complete", false));
+	if is_complete:
+		return;
+	var missing_by_locale: Dictionary = report.get("missing_by_locale", {}) as Dictionary;
+	_check(false, "localization coverage check failed: %s" % [JSON.stringify(missing_by_locale)]);
+
+
+func _expect_locale_switch_updates_shared_components() -> void:
+	var section_header_scene: PackedScene = load("res://shared/ui/components/ui_section_header.tscn") as PackedScene;
+	if section_header_scene == null:
+		_check(false, "locale switch test: failed to load UiSectionHeader scene");
+		return;
+	var section_header: UiSectionHeader = section_header_scene.instantiate() as UiSectionHeader;
+	if section_header == null:
+		_check(false, "locale switch test: failed to instantiate UiSectionHeader");
+		return;
+	scene_root.add_child(section_header);
+	section_header.title_key = "UI_SETTINGS";
+	await get_tree().process_frame;
+	var title_label: Label = section_header.get_node_or_null("%TitleLabel") as Label;
+	if title_label == null:
+		_check(false, "locale switch test: UiSectionHeader title label is missing");
+		section_header.queue_free();
+		return;
+
+	var initial_locale: String = LocalizationManager.get_current_locale();
+	LocalizationManager.set_locale("ru", false);
+	await get_tree().process_frame;
+	_check(
+		title_label.text == tr("UI_SETTINGS"),
+		"locale switch test: UiSectionHeader text did not update for ru locale"
+	);
+
+	LocalizationManager.set_locale("en", false);
+	await get_tree().process_frame;
+	_check(
+		title_label.text == tr("UI_SETTINGS"),
+		"locale switch test: UiSectionHeader text did not update for en locale"
+	);
+
+	LocalizationManager.set_locale(initial_locale, false);
+	await get_tree().process_frame;
+	section_header.queue_free();
 
 
 func _wait_until(predicate: Callable, timeout_seconds: float) -> bool:

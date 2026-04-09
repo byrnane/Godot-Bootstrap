@@ -111,9 +111,9 @@ Focus: ship-grade save/settings/input/localization baseline.
 
 ### 2.4 Localization maturity
 
-- [ ] Add localization coverage check for all static UI keys.
-- [ ] Ensure locale switching updates all active runtime UI surfaces.
-- [ ] Document translation workflow and key naming conventions.
+- [x] Add localization coverage check for all static UI keys.
+- [x] Ensure locale switching updates all active runtime UI surfaces.
+- [x] Document translation workflow and key naming conventions.
 
 ### Exit criteria for Phase 2
 

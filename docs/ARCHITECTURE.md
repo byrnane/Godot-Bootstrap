@@ -221,6 +221,9 @@ This gives you:
 - static text: translation keys in `.tscn`
 - dynamic text: `tr()` in code
 - source: `translations/UI.csv`
+- locale switch goes through `LocalizationManager` and propagates translation-change notifications to active UI
+- static UI key coverage is available via `LocalizationManager.get_static_key_coverage_report()`
+- workflow and naming conventions live in `docs/LOCALIZATION.md`
 
 ### Input binding model
 
