@@ -140,15 +140,15 @@ Focus: improve template UX quality and reusability without adding game mechanics
 
 ### 3.3 Accessibility and readability baseline
 
-- [ ] Verify minimum contrast and text readability on default theme.
+- [x] Verify minimum contrast and text readability on default theme.
 - [x] Ensure focus visibility and tab order quality on all template UI screens.
 - [x] Add localization-safe layouts for longer translated strings.
 
 ### Exit criteria for Phase 3
 
-- [ ] UI layer is coherent, reusable, and consistent.
-- [ ] Keyboard/gamepad navigation is predictable across shared screens.
-- [ ] No major UX regressions in modals/loading/feedback flows.
+- [x] UI layer is coherent, reusable, and consistent.
+- [x] Keyboard/gamepad navigation is predictable across shared screens.
+- [x] No major UX regressions in modals/loading/feedback flows.
 
 
 ## Phase 4 - Debug Tooling, Smoke Checks, And Quality Gates

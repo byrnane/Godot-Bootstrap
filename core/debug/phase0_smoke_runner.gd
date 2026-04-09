@@ -6,6 +6,9 @@ const STATE_TIMEOUT_SECONDS: float = 4.0;
 const TRANSITION_DELAY_SECONDS: float = 2.0;
 const CYCLE_COUNT: int = 2;
 const RESULT_PATH: String = "user://phase0_smoke_result.txt";
+const MIN_CONTRAST_RATIO: float = 4.5;
+const MIN_CONTRAST_RATIO_DISABLED: float = 2.5;
+const CONTRAST_BASE_BACKGROUND: Color = Color(0.03, 0.04, 0.06, 1.0);
 
 
 @onready var scene_root: Node = $SceneRoot;
@@ -31,6 +34,7 @@ func _run() -> void:
 	_check_localization_coverage();
 	await _expect_locale_switch_updates_shared_components();
 	_validate_main_menu_focus_navigation();
+	_check_default_theme_contrast();
 
 	for cycle_index: int in range(CYCLE_COUNT):
 		var cycle_number: int = cycle_index + 1;
@@ -233,6 +237,31 @@ func _check_localization_coverage() -> void:
 	_check(false, "localization coverage check failed: %s" % [JSON.stringify(missing_by_locale)]);
 
 
+func _check_default_theme_contrast() -> void:
+	var theme: Theme = load("res://shared/ui/theme/scifi_dark_theme.tres") as Theme;
+	_check(theme != null, "contrast test: failed to load default theme");
+	if theme == null:
+		return;
+
+	_assert_theme_contrast(theme, "Button normal", "Button", "font_color", "normal", MIN_CONTRAST_RATIO);
+	_assert_theme_contrast(theme, "Button hover", "Button", "font_hover_color", "hover", MIN_CONTRAST_RATIO);
+	_assert_theme_contrast(theme, "Button pressed", "Button", "font_pressed_color", "pressed", MIN_CONTRAST_RATIO);
+	_assert_theme_contrast(theme, "Button disabled", "Button", "font_disabled_color", "disabled", MIN_CONTRAST_RATIO_DISABLED);
+	_assert_theme_contrast(theme, "Input normal", "LineEdit", "font_color", "normal", MIN_CONTRAST_RATIO);
+	_assert_theme_contrast(theme, "Input placeholder", "LineEdit", "font_placeholder_color", "normal", MIN_CONTRAST_RATIO_DISABLED);
+	_assert_theme_contrast(theme, "Tab selected", "TabBar", "font_selected_color", "tab_selected", MIN_CONTRAST_RATIO);
+	_assert_theme_contrast(theme, "Tab unselected", "TabBar", "font_unselected_color", "tab_unselected", MIN_CONTRAST_RATIO_DISABLED);
+	_assert_theme_color_on_style(
+		theme,
+		"Panel label",
+		"Label",
+		"font_color",
+		"PanelContainer",
+		"panel",
+		MIN_CONTRAST_RATIO
+	);
+
+
 func _validate_main_menu_focus_navigation() -> void:
 	var main_menu: MainMenu = SceneRouter.current_scene_root as MainMenu;
 	_check(main_menu != null, "focus test: main menu scene root is missing");
@@ -297,6 +326,81 @@ func _assert_vertical_focus_cycle(buttons: Array[Button], label: String) -> void
 			current_button.focus_neighbor_bottom == expected_bottom,
 			"%s: invalid bottom focus neighbor for '%s'" % [label, current_button.name]
 		);
+
+
+func _assert_theme_contrast(
+	theme: Theme,
+	label: String,
+	type_name: String,
+	font_color_name: String,
+	background_style_name: String,
+	minimum_ratio: float
+) -> void:
+	var foreground: Color = theme.get_color(font_color_name, type_name);
+	var style_box: StyleBoxFlat = theme.get_stylebox(background_style_name, type_name) as StyleBoxFlat;
+	_check(style_box != null, "contrast test: missing stylebox '%s/%s'" % [type_name, background_style_name]);
+	if style_box == null:
+		return;
+	var background: Color = _flatten_color(style_box.bg_color, CONTRAST_BASE_BACKGROUND);
+	var ratio: float = _contrast_ratio(_flatten_color(foreground, background), background);
+	_check(
+		ratio >= minimum_ratio,
+		"contrast test: %s ratio %.2f is below %.2f" % [label, ratio, minimum_ratio]
+	);
+
+
+func _assert_theme_color_on_style(
+	theme: Theme,
+	label: String,
+	color_type_name: String,
+	font_color_name: String,
+	style_type_name: String,
+	background_style_name: String,
+	minimum_ratio: float
+) -> void:
+	var foreground: Color = theme.get_color(font_color_name, color_type_name);
+	var style_box: StyleBoxFlat = theme.get_stylebox(background_style_name, style_type_name) as StyleBoxFlat;
+	_check(style_box != null, "contrast test: missing stylebox '%s/%s'" % [style_type_name, background_style_name]);
+	if style_box == null:
+		return;
+	var background: Color = _flatten_color(style_box.bg_color, CONTRAST_BASE_BACKGROUND);
+	var ratio: float = _contrast_ratio(_flatten_color(foreground, background), background);
+	_check(
+		ratio >= minimum_ratio,
+		"contrast test: %s ratio %.2f is below %.2f" % [label, ratio, minimum_ratio]
+	);
+
+
+func _flatten_color(color: Color, background: Color) -> Color:
+	var alpha: float = clampf(color.a, 0.0, 1.0);
+	var inverse_alpha: float = 1.0 - alpha;
+	return Color(
+		color.r * alpha + background.r * inverse_alpha,
+		color.g * alpha + background.g * inverse_alpha,
+		color.b * alpha + background.b * inverse_alpha,
+		1.0
+	);
+
+
+func _contrast_ratio(first: Color, second: Color) -> float:
+	var first_luminance: float = _relative_luminance(first);
+	var second_luminance: float = _relative_luminance(second);
+	var lighter: float = maxf(first_luminance, second_luminance);
+	var darker: float = minf(first_luminance, second_luminance);
+	return (lighter + 0.05) / (darker + 0.05);
+
+
+func _relative_luminance(color: Color) -> float:
+	var red: float = _to_linear_channel(color.r);
+	var green: float = _to_linear_channel(color.g);
+	var blue: float = _to_linear_channel(color.b);
+	return red * 0.2126 + green * 0.7152 + blue * 0.0722;
+
+
+func _to_linear_channel(channel: float) -> float:
+	if channel <= 0.04045:
+		return channel / 12.92;
+	return pow((channel + 0.055) / 1.055, 2.4);
 
 
 func _expect_locale_switch_updates_shared_components() -> void:
