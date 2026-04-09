@@ -69,36 +69,42 @@ layout_mode = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
+size_flags_horizontal = 3
 text = "UI_GAMEPLAY_DAMAGE"
 
 [node name="HealButton" type="Button" parent="MarginContainer/HBoxContainer/LeftColumnCard/ContentMargin/Content" unique_id=1581248845]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
+size_flags_horizontal = 3
 text = "UI_GAMEPLAY_HEAL"
 
 [node name="ScoreButton" type="Button" parent="MarginContainer/HBoxContainer/LeftColumnCard/ContentMargin/Content" unique_id=321680133]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
+size_flags_horizontal = 3
 text = "UI_GAMEPLAY_ADD_SCORE"
 
 [node name="LevelAButton" type="Button" parent="MarginContainer/HBoxContainer/LeftColumnCard/ContentMargin/Content" unique_id=1757008968]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
+size_flags_horizontal = 3
 text = "UI_GAMEPLAY_LEVEL_A"
 
 [node name="LevelBButton" type="Button" parent="MarginContainer/HBoxContainer/LeftColumnCard/ContentMargin/Content" unique_id=120580369]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
+size_flags_horizontal = 3
 text = "UI_GAMEPLAY_LEVEL_B"
 
 [node name="PauseButton" type="Button" parent="MarginContainer/HBoxContainer/LeftColumnCard/ContentMargin/Content" unique_id=1683489691]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
+size_flags_horizontal = 3
 text = "UI_GAMEPLAY_PAUSE"
 
 [node name="RightSpacer" type="Control" parent="MarginContainer/HBoxContainer" unique_id=505380454]

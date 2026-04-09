@@ -142,7 +142,7 @@ Focus: improve template UX quality and reusability without adding game mechanics
 
 - [ ] Verify minimum contrast and text readability on default theme.
 - [x] Ensure focus visibility and tab order quality on all template UI screens.
-- [ ] Add localization-safe layouts for longer translated strings.
+- [x] Add localization-safe layouts for longer translated strings.
 
 ### Exit criteria for Phase 3
 

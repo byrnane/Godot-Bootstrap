@@ -163,6 +163,7 @@ layout_mode = 2
 [node name="ResetBindingsButton" type="Button" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/ControlsPage/ControlsCard/ContentMargin/Content/BindingsActionBar" index="0" unique_id=1130474353]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
 text = "UI_INPUT_RESET_BINDINGS"
 
 [node name="ButtonsRow" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body" parent_id_path=PackedInt32Array(480076289) index="1" instance=ExtResource("7_action_bar")]
@@ -172,16 +173,19 @@ layout_mode = 2
 [node name="ApplyButton" type="Button" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/ButtonsRow" index="0" unique_id=543644533]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
 text = "UI_APPLY"
 
 [node name="ResetButton" type="Button" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/ButtonsRow" index="1" unique_id=168368618]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
 text = "UI_SETTINGS_RESET"
 
 [node name="CloseButton" type="Button" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/ButtonsRow" index="2" unique_id=852648993]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
 text = "UI_CLOSE"
 
 [connection signal="pressed" from="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/ButtonsRow/ApplyButton" to="." method="_on_apply_button_pressed"]

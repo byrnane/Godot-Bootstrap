@@ -197,6 +197,7 @@ Global confirm, alert, and toast requests should go through `UiFeedback`.
 - `UiFormRow`
 - `UiActionBar`
 - `UiStatusBadge`
+- action rows are configured to keep long localized button labels readable on common template screens
 
 `shared/ui/navigation/`
 

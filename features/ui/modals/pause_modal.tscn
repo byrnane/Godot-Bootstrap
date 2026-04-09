@@ -27,21 +27,25 @@ elevated = true
 [node name="ResumeButton" type="Button" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/PauseActionsCard/ContentMargin/Content" index="0" unique_id=888822576]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
 text = "UI_PAUSE_CONTINUE"
 
 [node name="SaveButton" type="Button" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/PauseActionsCard/ContentMargin/Content" index="1" unique_id=436869637]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
 text = "UI_SAVE"
 
 [node name="SettingsButton" type="Button" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/PauseActionsCard/ContentMargin/Content" index="2" unique_id=1873605972]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
 text = "UI_PAUSE_SETTINGS"
 
 [node name="BackButton" type="Button" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/PauseActionsCard/ContentMargin/Content" index="3" unique_id=1957643295]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
 text = "UI_BACK_TO_MENU"
 
 [connection signal="pressed" from="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/PauseActionsCard/ContentMargin/Content/ResumeButton" to="." method="_on_resume_button_pressed"]
