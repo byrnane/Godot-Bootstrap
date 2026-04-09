@@ -71,6 +71,8 @@ This template is intentionally simple and predictable. It is not a universal gam
 
 - runtime template config separated from `SessionContext` and user settings
 - resolves configured scene ids and default menu music with safe fallbacks
+- loads defaults from `core/config/default_game_config.tres`
+- supports optional project overrides via `core/config/game_config_override.tres`
 
 `SettingsManager`
 
