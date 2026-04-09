@@ -101,7 +101,8 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _sync_ui_state() -> void:
-	pass;
+	# Extension point for derived modals that need to refresh runtime UI state.
+	return;
 
 
 func _reset_scroll_position() -> void:
