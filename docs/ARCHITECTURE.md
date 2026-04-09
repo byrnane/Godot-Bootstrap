@@ -145,6 +145,19 @@ The idea is simple:
 - HUD stays presentation-only
 - `SceneRouter` mounts and unmounts it in a controlled way
 
+### Scene contracts
+
+Scenes can expose these optional integration methods:
+
+- `on_enter(payload: SceneTransitionPayload)`
+- `on_exit()`
+- `get_hud_scene()`
+- `bind_hud(hud)`
+- `unbind_hud(hud)`
+
+`SceneRouter` validates the HUD-related contract and warns when implementations are inconsistent.
+Contract helper constants and checks live in `core/contracts/scene_contracts.gd`.
+
 ### Modal model
 
 Modals work as a stack. Shared behavior lives in `BaseModal`, and concrete modals inherit from it.
