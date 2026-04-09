@@ -82,6 +82,7 @@ This template is intentionally simple and predictable. It is not a universal gam
 
 - loads, validates, migrates, and saves game data
 - provides minimal save slot support with legacy default-save migration
+- keeps per-slot backups and restores from backup when a save file is corrupted
 
 `AudioManager`
 

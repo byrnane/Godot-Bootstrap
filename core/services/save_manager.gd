@@ -3,6 +3,7 @@ extends Node;
 const SLOT_DIRECTORY: String = "user://saves";
 const SLOT_FILE_TEMPLATE: String = "slot_%02d.save";
 const LEGACY_SAVE_PATH: String = "user://savegame.save";
+const BACKUP_SUFFIX: String = ".bak";
 const DEFAULT_SLOT_ID: int = 0;
 const MIN_SLOT_ID: int = 0;
 const MAX_SLOT_ID: int = 99;
@@ -24,20 +25,18 @@ func load_game(slot_id: int = DEFAULT_SLOT_ID) -> SaveData:
 	if load_path.is_empty():
 		return null;
 
-	var file: FileAccess = FileAccess.open(load_path, FileAccess.READ);
-	if file == null:
+	var loaded_data: Dictionary = _load_and_recover_data(load_path, normalized_slot_id);
+	if loaded_data.is_empty():
 		return null;
-
-	var data: Variant = file.get_var(true);
-	file.close();
-
-	var save_data: SaveData = _normalize_save_data(data);
+	var save_data: SaveData = loaded_data.get("save_data", null) as SaveData;
+	var source_data: Variant = loaded_data.get("source_data", null);
+	var source_path: String = String(loaded_data.get("source_path", load_path));
 	if save_data == null:
 		return null;
 
 	# Old snapshots are normalized on load and immediately rewritten so the next
 	# boot no longer needs to pass through migration paths.
-	if _should_resave_data(data) or load_path != _get_slot_path(normalized_slot_id):
+	if _should_resave_data(source_data) or source_path != _get_slot_path(normalized_slot_id):
 		save_game(save_data, normalized_slot_id);
 	return save_data;
 
@@ -54,8 +53,10 @@ func save_game(data: SaveData, slot_id: int = DEFAULT_SLOT_ID) -> bool:
 		return false;
 
 	var save_path: String = _get_slot_path(normalized_slot_id);
+	_create_backup(save_path);
 	var file: FileAccess = FileAccess.open(save_path, FileAccess.WRITE);
 	if file == null:
+		_warn_slot_issue("write/%s" % [save_path], "failed to open save path '%s' for writing." % [save_path]);
 		return false;
 
 	file.store_var(normalized_data.to_dictionary(), true);
@@ -73,8 +74,14 @@ func delete_save(slot_id: int = DEFAULT_SLOT_ID) -> void:
 	var slot_path: String = _get_slot_path(normalized_slot_id);
 	if FileAccess.file_exists(slot_path):
 		DirAccess.remove_absolute(slot_path);
+	var slot_backup_path: String = _get_backup_path(slot_path);
+	if FileAccess.file_exists(slot_backup_path):
+		DirAccess.remove_absolute(slot_backup_path);
 	if normalized_slot_id == DEFAULT_SLOT_ID and FileAccess.file_exists(LEGACY_SAVE_PATH):
 		DirAccess.remove_absolute(LEGACY_SAVE_PATH);
+	var legacy_backup_path: String = _get_backup_path(LEGACY_SAVE_PATH);
+	if normalized_slot_id == DEFAULT_SLOT_ID and FileAccess.file_exists(legacy_backup_path):
+		DirAccess.remove_absolute(legacy_backup_path);
 
 
 func list_slots() -> Array[int]:
@@ -121,8 +128,62 @@ func _resolve_load_path(slot_id: int) -> String:
 	return "";
 
 
+func _load_and_recover_data(load_path: String, slot_id: int) -> Dictionary:
+	var loaded_data: Dictionary = _read_save_data(load_path);
+	var save_data: SaveData = loaded_data.get("save_data", null) as SaveData;
+	if save_data != null:
+		return loaded_data;
+
+	var backup_path: String = _resolve_backup_path(load_path, slot_id);
+	if backup_path.is_empty():
+		return {};
+	var backup_data: Dictionary = _read_save_data(backup_path);
+	var backup_save_data: SaveData = backup_data.get("save_data", null) as SaveData;
+	if backup_save_data == null:
+		return {};
+	_warn_slot_issue(
+		"recover/%s" % [load_path],
+		"failed to read save '%s', recovered data from backup '%s'." % [load_path, backup_path]
+	);
+	return backup_data;
+
+
+func _resolve_backup_path(load_path: String, slot_id: int) -> String:
+	var primary_backup_path: String = _get_backup_path(load_path);
+	if FileAccess.file_exists(primary_backup_path):
+		return primary_backup_path;
+	if slot_id != DEFAULT_SLOT_ID:
+		return "";
+	var legacy_backup_path: String = _get_backup_path(LEGACY_SAVE_PATH);
+	if FileAccess.file_exists(legacy_backup_path):
+		return legacy_backup_path;
+	return "";
+
+
+func _read_save_data(path: String) -> Dictionary:
+	if not FileAccess.file_exists(path):
+		return {};
+	var file: FileAccess = FileAccess.open(path, FileAccess.READ);
+	if file == null:
+		return {};
+	var source_data: Variant = file.get_var(true);
+	file.close();
+	var save_data: SaveData = _normalize_save_data(source_data);
+	if save_data == null:
+		return {};
+	return {
+		"save_data": save_data,
+		"source_data": source_data,
+		"source_path": path,
+	};
+
+
 func _get_slot_path(slot_id: int) -> String:
 	return "%s/%s" % [SLOT_DIRECTORY, SLOT_FILE_TEMPLATE % [slot_id]];
+
+
+func _get_backup_path(path: String) -> String:
+	return "%s%s" % [path, BACKUP_SUFFIX];
 
 
 func _parse_slot_id(file_name: String) -> int:
@@ -164,6 +225,28 @@ func _ensure_slot_directory() -> bool:
 		return true;
 	_warn_slot_issue("slot_dir", "failed to create slot directory at '%s'." % [SLOT_DIRECTORY]);
 	return false;
+
+
+func _create_backup(path: String) -> void:
+	if not FileAccess.file_exists(path):
+		return;
+	var backup_path: String = _get_backup_path(path);
+	if not _copy_file(path, backup_path):
+		_warn_slot_issue("backup/%s" % [path], "failed to create backup '%s'." % [backup_path]);
+
+
+func _copy_file(source_path: String, target_path: String) -> bool:
+	var source_file: FileAccess = FileAccess.open(source_path, FileAccess.READ);
+	if source_file == null:
+		return false;
+	var bytes: PackedByteArray = source_file.get_buffer(source_file.get_length());
+	source_file.close();
+	var target_file: FileAccess = FileAccess.open(target_path, FileAccess.WRITE);
+	if target_file == null:
+		return false;
+	target_file.store_buffer(bytes);
+	target_file.close();
+	return true;
 
 
 func _cleanup_legacy_save_if_needed(slot_id: int) -> void:

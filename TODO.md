@@ -93,9 +93,9 @@ Focus: ship-grade save/settings/input/localization baseline.
 ### 2.1 Save system maturity
 
 - [x] Add save slots support (at least minimal slot model).
-- [ ] Add backup/restore strategy for corrupted save data.
+- [x] Add backup/restore strategy for corrupted save data.
 - [ ] Extend migration/versioning policy with explicit compatibility rules.
-- [ ] Add helper APIs for common save operations (exists/load/save/delete/list slots).
+- [x] Add helper APIs for common save operations (exists/load/save/delete/list slots).
 
 ### 2.2 Settings system maturity
 
