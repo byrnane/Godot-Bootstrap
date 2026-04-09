@@ -29,12 +29,16 @@ func startup() -> void:
 
 
 func start_new_game() -> void:
+	if SceneRouter.is_loading() or TransitionManager.is_active():
+		return;
 	SessionContext.reset();
 	AppContext.set_state(AppState.Value.IN_GAME);
 	SceneRouter.go_to(gameplay_scene_id, SessionContext);
 
 
 func continue_game() -> void:
+	if SceneRouter.is_loading() or TransitionManager.is_active():
+		return;
 	var save_data: SaveData = SaveManager.load_game();
 	if save_data == null or not save_data.session_exists:
 		start_new_game();
@@ -51,6 +55,8 @@ func return_to_main_menu() -> void:
 
 func request_pause() -> void:
 	if AppContext.state != AppState.Value.IN_GAME:
+		return;
+	if SceneRouter.current_scene_id != gameplay_scene_id:
 		return;
 	if SceneRouter.is_loading() or TransitionManager.is_active():
 		return;
@@ -81,6 +87,8 @@ func quit_game() -> void:
 
 
 func _go_to_main_menu() -> void:
+	if SceneRouter.is_loading() or TransitionManager.is_active():
+		return;
 	_reset_pause_ui();
 	AppContext.set_state(AppState.Value.MAIN_MENU);
 	SceneRouter.go_to(start_scene_id, null);
