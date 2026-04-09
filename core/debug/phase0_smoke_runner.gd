@@ -52,6 +52,7 @@ func _run() -> void:
 		AppFlow.open_settings();
 		await get_tree().process_frame;
 		_check(get_tree().paused, "cycle %d: settings open should keep paused tree" % [cycle_number]);
+		await _expect_backdrop_behavior_while_paused(cycle_number);
 
 		AppFlow.request_resume();
 		var resumed_state_reached: bool = await _wait_until(
@@ -86,6 +87,7 @@ func _run() -> void:
 		);
 
 	await _expect_pause_ignored_during_transition();
+	await _expect_feedback_modal_backdrop_behavior();
 	_finish();
 
 
@@ -130,6 +132,93 @@ func _expect_pause_ignored_during_transition() -> void:
 		AppState.Value.MAIN_MENU,
 		"pause during transition test: return to menu"
 	);
+
+
+func _expect_backdrop_behavior_while_paused(cycle_number: int) -> void:
+	var settings_modal: BaseModal = UiShell.get_node_or_null("ModalLayer/SettingsModal") as BaseModal;
+	var pause_modal: BaseModal = UiShell.get_node_or_null("ModalLayer/PauseModal") as BaseModal;
+	_check(settings_modal != null, "cycle %d: settings modal node is missing" % [cycle_number]);
+	_check(pause_modal != null, "cycle %d: pause modal node is missing" % [cycle_number]);
+	if settings_modal == null or pause_modal == null:
+		return;
+
+	_check(not pause_modal.can_close_from_backdrop(), "cycle %d: pause modal should not close from backdrop" % [cycle_number]);
+	_check(settings_modal.can_close_from_backdrop(), "cycle %d: settings modal should close from backdrop" % [cycle_number]);
+
+	var settings_visible: bool = await _wait_until(
+		func() -> bool:
+			return settings_modal.visible,
+		STATE_TIMEOUT_SECONDS
+	);
+	_check(settings_visible, "cycle %d: settings modal did not open" % [cycle_number]);
+	if not settings_visible:
+		return;
+
+	_click_modal_backdrop();
+	var settings_closed: bool = await _wait_until(
+		func() -> bool:
+			return not settings_modal.visible,
+		STATE_TIMEOUT_SECONDS
+	);
+	_check(settings_closed, "cycle %d: settings modal did not close from backdrop click" % [cycle_number]);
+	_check(pause_modal.visible, "cycle %d: pause modal should remain visible after settings closes from backdrop" % [cycle_number]);
+
+	_click_modal_backdrop();
+	await get_tree().process_frame;
+	_check(pause_modal.visible, "cycle %d: pause modal should ignore backdrop close" % [cycle_number]);
+
+
+func _expect_feedback_modal_backdrop_behavior() -> void:
+	var feedback_modal: FeedbackModal = UiShell.get_node_or_null("ModalLayer/FeedbackModal") as FeedbackModal;
+	_check(feedback_modal != null, "feedback modal test: feedback modal node is missing");
+	if feedback_modal == null:
+		return;
+
+	UiFeedback.confirm("smoke confirm", Callable(), Callable(), {"close_on_backdrop": false});
+	var confirm_visible: bool = await _wait_until(
+		func() -> bool:
+			return feedback_modal.visible,
+		STATE_TIMEOUT_SECONDS
+	);
+	_check(confirm_visible, "feedback modal test: confirm dialog did not open");
+	if not confirm_visible:
+		return;
+
+	_click_modal_backdrop();
+	await get_tree().process_frame;
+	_check(feedback_modal.visible, "feedback modal test: confirm dialog should ignore backdrop when close_on_backdrop=false");
+	feedback_modal.request_close();
+	var confirm_closed: bool = await _wait_until(
+		func() -> bool:
+			return not feedback_modal.visible,
+		STATE_TIMEOUT_SECONDS
+	);
+	_check(confirm_closed, "feedback modal test: confirm dialog did not close after request_close");
+
+	UiFeedback.alert("smoke alert", Callable(), {"close_on_backdrop": true});
+	var alert_visible: bool = await _wait_until(
+		func() -> bool:
+			return feedback_modal.visible,
+		STATE_TIMEOUT_SECONDS
+	);
+	_check(alert_visible, "feedback modal test: alert dialog did not open");
+	if not alert_visible:
+		return;
+
+	_click_modal_backdrop();
+	var alert_closed: bool = await _wait_until(
+		func() -> bool:
+			return not feedback_modal.visible,
+		STATE_TIMEOUT_SECONDS
+	);
+	_check(alert_closed, "feedback modal test: alert dialog did not close from backdrop click");
+
+
+func _click_modal_backdrop() -> void:
+	var click_event: InputEventMouseButton = InputEventMouseButton.new();
+	click_event.button_index = MOUSE_BUTTON_LEFT;
+	click_event.pressed = true;
+	UiShell.call("_on_modal_backdrop_gui_input", click_event);
 
 
 func _check_localization_coverage() -> void:

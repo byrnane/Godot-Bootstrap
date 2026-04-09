@@ -136,7 +136,7 @@ Focus: improve template UX quality and reusability without adding game mechanics
 
 - [x] Polish `UiFeedback` workflows (confirm/alert/toast variants and defaults).
 - [x] Expand loading screen metadata model (tip providers, context labels, status states).
-- [ ] Validate backdrop/cancel behavior across all modal types.
+- [x] Validate backdrop/cancel behavior across all modal types.
 
 ### 3.3 Accessibility and readability baseline
 

@@ -183,6 +183,7 @@ Contract helper constants and checks live in `core/contracts/scene_contracts.gd`
 Modals work as a stack. Shared behavior lives in `BaseModal`, and concrete modals inherit from it.
 
 That keeps modal behavior consistent and makes new windows easier to build.
+Backdrop behavior is explicit per modal (`close_on_backdrop`), and cancel-close behavior is explicit via `close_on_cancel`.
 
 Global confirm, alert, and toast requests should go through `UiFeedback`.
 `UiShell` still owns the actual presentation layer and stacking.
