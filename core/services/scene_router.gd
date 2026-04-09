@@ -18,6 +18,7 @@ var _root_container: Node = null;
 var _is_loading: bool = false;
 var _state_before_loading: AppState.Value = AppState.Value.BOOT;
 var _should_restore_state_after_loading: bool = false;
+var _reported_unknown_scene_ids: Dictionary = {};
 
 
 func configure(root_container: Node) -> void:
@@ -30,6 +31,7 @@ func has_container() -> bool:
 
 func go_to(scene_id: StringName, payload: Variant = null) -> Node:
 	if _is_loading:
+		push_warning("SceneRouter: ignored go_to('%s') while a scene is already loading." % [String(scene_id)]);
 		return null;
 
 	if not has_container():
@@ -47,6 +49,7 @@ func is_loading() -> bool:
 func _go_to_async(scene_id: StringName, payload: Variant = null) -> void:
 	var resolved_scene_id: StringName = scene_id;
 	if not Scenes.has(resolved_scene_id):
+		_warn_unknown_scene_id(resolved_scene_id);
 		resolved_scene_id = default_scene_id;
 
 	var scene_path: String = Scenes.get_scene_path(resolved_scene_id);
@@ -205,3 +208,11 @@ func _restore_state_after_loading() -> void:
 		return;
 	AppContext.set_state(_state_before_loading);
 	_should_restore_state_after_loading = false;
+
+
+func _warn_unknown_scene_id(scene_id: StringName) -> void:
+	var warning_key: String = String(scene_id);
+	if _reported_unknown_scene_ids.has(warning_key):
+		return;
+	_reported_unknown_scene_ids[warning_key] = true;
+	push_warning("SceneRouter: unknown scene id '%s', fallback to default scene '%s'." % [warning_key, String(default_scene_id)]);
