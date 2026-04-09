@@ -13,6 +13,7 @@ var _reported_missing_scene_signals: Dictionary = {};
 
 func _ready() -> void:
 	_connect_ui_shell();
+	_connect_app_context();
 	_connect_transition_manager();
 	if not SceneRouter.scene_changed.is_connected(_on_scene_changed):
 		SceneRouter.scene_changed.connect(_on_scene_changed);
@@ -108,6 +109,14 @@ func _connect_transition_manager() -> void:
 		TransitionManager.transition_started.connect(_on_transition_started);
 
 
+func _connect_app_context() -> void:
+	if AppContext == null:
+		return;
+	if not AppContext.state_changed.is_connected(_on_app_state_changed):
+		AppContext.state_changed.connect(_on_app_state_changed);
+	_apply_tree_pause_from_state(AppContext.state);
+
+
 func _on_scene_changed(_scene_id: StringName, scene_root: Node) -> void:
 	if scene_root == null:
 		return;
@@ -177,3 +186,14 @@ func _on_transition_started(_data: Dictionary) -> void:
 	# scene lifecycle callbacks cannot be stalled by leftover pause state.
 	if get_tree().paused:
 		_reset_pause_ui();
+
+
+func _on_app_state_changed(new_state: AppState.Value) -> void:
+	_apply_tree_pause_from_state(new_state);
+
+
+func _apply_tree_pause_from_state(new_state: AppState.Value) -> void:
+	var should_pause_tree: bool = new_state == AppState.Value.PAUSED;
+	if get_tree().paused == should_pause_tree:
+		return;
+	get_tree().paused = should_pause_tree;
