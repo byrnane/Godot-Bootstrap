@@ -76,7 +76,7 @@ Focus: make the app skeleton strongly typed and extensible.
 ### 1.3 Scene and UI shell robustness
 
 - [ ] Improve `SceneRouter` and `UiShell` behavior under rapid consecutive requests.
-- [ ] Add deterministic handling for duplicate transition requests.
+- [x] Add deterministic handling for duplicate transition requests.
 - [ ] Ensure modal stack, feedback queue, and loading layer cannot enter invalid states.
 
 ### Exit criteria for Phase 1

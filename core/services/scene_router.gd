@@ -22,6 +22,9 @@ var _state_before_loading: AppState.Value = AppState.Value.BOOT;
 var _should_restore_state_after_loading: bool = false;
 var _reported_unknown_scene_ids: Dictionary = {};
 var _reported_scene_contract_issues: Dictionary = {};
+var _has_queued_transition: bool = false;
+var _queued_scene_id: StringName = &"";
+var _queued_payload: SCENE_TRANSITION_PAYLOAD_TYPE = null;
 
 
 func configure(root_container: Node) -> void:
@@ -34,7 +37,7 @@ func has_container() -> bool:
 
 func go_to(scene_id: StringName, payload: SCENE_TRANSITION_PAYLOAD_TYPE = null) -> Node:
 	if _is_loading:
-		push_warning("SceneRouter: ignored go_to('%s') while a scene is already loading." % [String(scene_id)]);
+		_queue_transition(scene_id, payload);
 		return null;
 
 	if not has_container():
@@ -106,6 +109,7 @@ func _go_to_async(scene_id: StringName, payload: SCENE_TRANSITION_PAYLOAD_TYPE =
 		await TransitionManager.fail_loading(tr("UI_LOADING_ERROR"));
 		_restore_state_after_loading();
 		_is_loading = false;
+		_start_queued_transition_if_any();
 		return;
 
 	# Exit hooks run before the node is freed so the outgoing scene can detach
@@ -127,6 +131,7 @@ func _go_to_async(scene_id: StringName, payload: SCENE_TRANSITION_PAYLOAD_TYPE =
 	await TransitionManager.finish_loading();
 	_restore_state_after_loading();
 	_is_loading = false;
+	_start_queued_transition_if_any();
 
 
 func reload_current_scene(payload: SCENE_TRANSITION_PAYLOAD_TYPE = null) -> Node:
@@ -213,6 +218,7 @@ func _fail_scene_load(scene_id: StringName, scene_path: String, reason: String) 
 	await TransitionManager.fail_loading(error_text);
 	_restore_state_after_loading();
 	_is_loading = false;
+	_start_queued_transition_if_any();
 
 
 func _begin_loading_state() -> void:
@@ -281,3 +287,21 @@ func _create_transition_payload(
 	payload.kind = kind;
 	payload.data = extra_data.duplicate(true);
 	return payload;
+
+
+func _queue_transition(scene_id: StringName, payload: SCENE_TRANSITION_PAYLOAD_TYPE) -> void:
+	_has_queued_transition = true;
+	_queued_scene_id = scene_id;
+	_queued_payload = payload;
+	push_warning("SceneRouter: queued go_to('%s') while loading. The latest queued request will run next." % [String(scene_id)]);
+
+
+func _start_queued_transition_if_any() -> void:
+	if _is_loading or not _has_queued_transition:
+		return;
+	var queued_scene_id: StringName = _queued_scene_id;
+	var queued_payload: SCENE_TRANSITION_PAYLOAD_TYPE = _queued_payload;
+	_has_queued_transition = false;
+	_queued_scene_id = &"";
+	_queued_payload = null;
+	call_deferred("_go_to_async", queued_scene_id, queued_payload);
