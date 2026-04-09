@@ -97,13 +97,6 @@ func _go_to_async(scene_id: StringName, payload: Variant = null) -> void:
 		await _fail_scene_load(resolved_scene_id, scene_path, "failed to load scene");
 		return;
 
-	# Exit hooks run before the node is freed so the outgoing scene can detach
-	# from services while its tree is still intact.
-	scene_will_change.emit(resolved_scene_id);
-	_call_on_exit(current_scene_root);
-	_unmount_scene_hud(current_scene_root);
-	_clear_container();
-
 	var scene_instance: Node = packed_scene.instantiate();
 	if scene_instance == null:
 		push_error("SceneRouter: failed to instantiate scene '%s'." % [scene_path]);
@@ -111,6 +104,13 @@ func _go_to_async(scene_id: StringName, payload: Variant = null) -> void:
 		_restore_state_after_loading();
 		_is_loading = false;
 		return;
+
+	# Exit hooks run before the node is freed so the outgoing scene can detach
+	# from services while its tree is still intact.
+	scene_will_change.emit(resolved_scene_id);
+	_call_on_exit(current_scene_root);
+	_unmount_scene_hud(current_scene_root);
+	_clear_container();
 
 	_root_container.add_child(scene_instance);
 	current_scene_id = resolved_scene_id;
@@ -140,6 +140,8 @@ func _clear_container() -> void:
 	for child: Node in _root_container.get_children():
 		_root_container.remove_child(child);
 		child.queue_free();
+	current_scene_id = &"";
+	current_scene_root = null;
 
 
 func _mount_scene_hud(target: Node) -> void:
