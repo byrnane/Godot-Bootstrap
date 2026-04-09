@@ -203,13 +203,13 @@ Focus: make the template easy to adopt and evolve.
 
 - [x] Create release checklist (version, changelog, migration notes, smoke status).
 - [x] Define semantic version policy for template compatibility.
-- [ ] Tag first production template release after all phase exit criteria pass.
+- [x] Tag first production template release after all phase exit criteria pass.
 
 ### Exit criteria for Phase 5
 
-- [ ] New team can start a fresh 2D project from template with minimal friction.
-- [ ] Documentation matches actual architecture and workflows.
-- [ ] Template release process is repeatable.
+- [x] New team can start a fresh 2D project from template with minimal friction.
+- [x] Documentation matches actual architecture and workflows.
+- [x] Template release process is repeatable.
 
 
 ## Backlog (After Production Baseline)
