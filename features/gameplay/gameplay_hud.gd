@@ -1,9 +1,11 @@
 extends Control;
 class_name GameplayHud;
 
-signal damage_requested;
-signal heal_requested;
-signal score_requested;
+const UI_FOCUS = preload("res://shared/ui/navigation/ui_focus.gd");
+
+signal primary_metric_decrease_requested;
+signal primary_metric_increase_requested;
+signal secondary_metric_increment_requested;
 signal level_a_requested;
 signal level_b_requested;
 signal pause_toggle_requested;
@@ -34,6 +36,14 @@ func _ready() -> void:
 	pause_button.pressed.connect(_on_pause_button_pressed);
 	if not LocalizationManager.locale_changed.is_connected(_on_locale_changed):
 		LocalizationManager.locale_changed.connect(_on_locale_changed);
+	UI_FOCUS.apply_vertical_focus_cycle([
+		damage_button,
+		heal_button,
+		score_button,
+		level_a_button,
+		level_b_button,
+		pause_button,
+	]);
 	_refresh_view();
 
 
@@ -85,15 +95,15 @@ func _get_level_label(level_scene_id: StringName) -> String:
 
 
 func _on_damage_button_pressed() -> void:
-	damage_requested.emit();
+	primary_metric_decrease_requested.emit();
 
 
 func _on_heal_button_pressed() -> void:
-	heal_requested.emit();
+	primary_metric_increase_requested.emit();
 
 
 func _on_score_button_pressed() -> void:
-	score_requested.emit();
+	secondary_metric_increment_requested.emit();
 
 
 func _on_level_a_button_pressed() -> void:

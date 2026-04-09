@@ -77,10 +77,16 @@ This template is intentionally simple and predictable. It is not a universal gam
 `SettingsManager`
 
 - loads, validates, applies, and saves settings
+- keeps settings ownership split by domains (`language`, `audio`, `video`, `input`)
+- persists domain sections with backward-compatible read fallback for legacy settings files
+- enforces strict type/range validation with fallback defaults for corrupted persisted values
+- applies domains through a recovery-aware pipeline and emits apply reports for diagnostics
 
 `SaveManager`
 
 - loads, validates, migrates, and saves game data
+- provides minimal save slot support with legacy default-save migration
+- keeps per-slot backups and restores from backup when a save file is corrupted
 
 `AudioManager`
 
@@ -105,6 +111,9 @@ This template is intentionally simple and predictable. It is not a universal gam
 - edits Godot `InputMap` instead of replacing it
 - keeps keyboard and mouse rebinding rules in one place
 - lets compatible actions share one button through conflict groups
+- emits conflict-resolution signals when a rebind clears overlapping bindings
+- exposes active rebind action/slot so UI can show precise waiting state
+- injects fixed default gamepad bindings for core UI actions
 
 `UiFeedback`
 
@@ -112,6 +121,7 @@ This template is intentionally simple and predictable. It is not a universal gam
 - keeps callback-based feedback requests out of feature scenes
 - lets `UiShell` stay the only place that actually hosts feedback UI
 - now uses stable payload fields such as `variant`, `title`, `message`, `duration`, `confirm_text`, `cancel_text`, `close_on_backdrop`, and `close_on_cancel`
+- normalizes feedback payload values (variant, durations, booleans, labels) before handing requests to `UiShell`
 
 `TransitionManager`
 
@@ -119,6 +129,7 @@ This template is intentionally simple and predictable. It is not a universal gam
 - shows loading screen
 - updates progress
 - finishes the transition cleanly
+- supports loading status states (`loading/success/error`) and status-text updates
 
 ### Scene flow
 
@@ -172,6 +183,7 @@ Contract helper constants and checks live in `core/contracts/scene_contracts.gd`
 Modals work as a stack. Shared behavior lives in `BaseModal`, and concrete modals inherit from it.
 
 That keeps modal behavior consistent and makes new windows easier to build.
+Backdrop behavior is explicit per modal (`close_on_backdrop`), and cancel-close behavior is explicit via `close_on_cancel`.
 
 Global confirm, alert, and toast requests should go through `UiFeedback`.
 `UiShell` still owns the actual presentation layer and stacking.
@@ -185,11 +197,13 @@ Global confirm, alert, and toast requests should go through `UiFeedback`.
 - `UiFormRow`
 - `UiActionBar`
 - `UiStatusBadge`
+- action rows are configured to keep long localized button labels readable on common template screens
 
 `shared/ui/navigation/`
 
 - `UiTabStrip`
 - `UiFocus`
+- `UiFocus` also provides reusable cyclic focus wiring for button stacks
 
 `shared/ui/motion/`
 
@@ -206,12 +220,16 @@ This gives you:
 - fewer visible hitches on heavy scene changes
 - a proper loading UI instead of an empty pause
 - a clean place for tips, progress, and loading metadata
+- per-transition context labels, status badges, and optional tip providers
 
 ### Localization
 
 - static text: translation keys in `.tscn`
 - dynamic text: `tr()` in code
 - source: `translations/UI.csv`
+- locale switch goes through `LocalizationManager` and propagates translation-change notifications to active UI
+- static UI key coverage is available via `LocalizationManager.get_static_key_coverage_report()`
+- workflow and naming conventions live in `docs/LOCALIZATION.md`
 
 ### Input binding model
 
@@ -220,12 +238,15 @@ This gives you:
 - `InputManager` only manages which keyboard and mouse events are assigned to those native actions
 - user rebinds are saved to `user://input_bindings.save`
 - compatible actions may share the same binding when they belong to the same conflict group
-- gamepad support exists in the roadmap, but gamepad rebinding is intentionally postponed until the keyboard and mouse layout is stable
+- controls UI includes conflict feedback and a confirmed reset-to-default flow
+- fixed gamepad defaults are always applied for core UI actions
+- gamepad rebinding is intentionally postponed until the fixed mapping is validated in real projects
 
 ### Persistence
 
 - `UserSettings` and `SaveData` are versioned
 - validation and migration stay inside managers
+- save compatibility rules are explicit: versions below minimum or above current are rejected, and slot backup recovery is used when possible
 
 ### Rules
 

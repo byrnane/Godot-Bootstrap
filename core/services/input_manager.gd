@@ -4,6 +4,7 @@ signal bindings_changed(action_name: StringName);
 signal rebind_started(action_name: StringName);
 signal rebind_completed(action_name: StringName);
 signal rebind_canceled(action_name: StringName);
+signal rebind_conflicts_resolved(action_name: StringName, replaced_actions: Array[StringName]);
 
 
 const INPUT_SETTINGS_PATH: String = "user://input_bindings.save";
@@ -21,6 +22,17 @@ const DEFAULT_KEY_LEFT: Key = KEY_LEFT as Key;
 const DEFAULT_KEY_A: Key = KEY_A as Key;
 const DEFAULT_KEY_RIGHT: Key = KEY_RIGHT as Key;
 const DEFAULT_KEY_D: Key = KEY_D as Key;
+const DEFAULT_GAMEPAD_ACCEPT: JoyButton = JOY_BUTTON_A as JoyButton;
+const DEFAULT_GAMEPAD_CANCEL: JoyButton = JOY_BUTTON_B as JoyButton;
+const DEFAULT_GAMEPAD_PAUSE: JoyButton = JOY_BUTTON_START as JoyButton;
+const DEFAULT_GAMEPAD_DPAD_UP: JoyButton = JOY_BUTTON_DPAD_UP as JoyButton;
+const DEFAULT_GAMEPAD_DPAD_DOWN: JoyButton = JOY_BUTTON_DPAD_DOWN as JoyButton;
+const DEFAULT_GAMEPAD_DPAD_LEFT: JoyButton = JOY_BUTTON_DPAD_LEFT as JoyButton;
+const DEFAULT_GAMEPAD_DPAD_RIGHT: JoyButton = JOY_BUTTON_DPAD_RIGHT as JoyButton;
+const DEFAULT_GAMEPAD_AXIS_HORIZONTAL: JoyAxis = JOY_AXIS_LEFT_X as JoyAxis;
+const DEFAULT_GAMEPAD_AXIS_VERTICAL: JoyAxis = JOY_AXIS_LEFT_Y as JoyAxis;
+const GAMEPAD_AXIS_NEGATIVE: float = -1.0;
+const GAMEPAD_AXIS_POSITIVE: float = 1.0;
 const MAX_BINDINGS_PER_ACTION: int = 2;
 const ACTION_GROUP_ORDER: Array[StringName] = [
 	&"UI_INPUT_GROUP_NAVIGATION",
@@ -29,6 +41,7 @@ const ACTION_GROUP_ORDER: Array[StringName] = [
 ];
 # `InputManager` owns metadata for the actions the settings UI is allowed to edit.
 # The actual runtime bindings still live in Godot's `InputMap`.
+# Gamepad defaults are fixed in code and intentionally excluded from UI rebinding.
 const ACTION_METADATA: Dictionary = {
 	&"ui_accept": {
 		"label_key": "UI_INPUT_ACTION_ACCEPT",
@@ -162,6 +175,14 @@ func is_rebinding_action(action_name: StringName) -> bool:
 
 func is_rebinding_slot(action_name: StringName, binding_slot: int) -> bool:
 	return _pending_rebind_action == action_name and _pending_rebind_slot == binding_slot;
+
+
+func get_pending_rebind_action() -> StringName:
+	return _pending_rebind_action;
+
+
+func get_pending_rebind_slot() -> int:
+	return _pending_rebind_slot;
 
 
 func start_rebind(action_name: StringName, binding_slot: int = 0) -> bool:
@@ -331,6 +352,8 @@ func _is_supported_rebind_event(event: InputEvent) -> bool:
 
 
 func _is_supported_stored_event(event: InputEvent) -> bool:
+	# Only keyboard/mouse bindings are user-editable and persisted.
+	# Fixed gamepad defaults are injected separately in `_set_action_events`.
 	return event is InputEventKey or event is InputEventMouseButton;
 
 
@@ -341,12 +364,16 @@ func _apply_rebind(action_name: StringName, event: InputEvent) -> void:
 
 	# We edit the shared Godot `InputMap` in place, so gameplay and UI keep using
 	# the native `Input.is_action_*` API without knowing about `InputManager`.
+	var replaced_actions: Array[StringName] = [];
 	for other_action_name: StringName in REBINDABLE_ACTIONS:
 		if other_action_name == action_name:
 			continue;
 		if _can_actions_share_binding(action_name, other_action_name):
 			continue;
+		if not _action_has_matching_event(other_action_name, event):
+			continue;
 		InputMap.action_erase_event(other_action_name, event);
+		replaced_actions.append(other_action_name);
 		bindings_changed.emit(other_action_name);
 
 	var updated_events: Array[InputEvent] = _build_rebound_event_list(action_name, event, _pending_rebind_slot);
@@ -355,6 +382,8 @@ func _apply_rebind(action_name: StringName, event: InputEvent) -> void:
 	_pending_rebind_action = &"";
 	_pending_rebind_slot = -1;
 	bindings_changed.emit(action_name);
+	if not replaced_actions.is_empty():
+		rebind_conflicts_resolved.emit(action_name, replaced_actions);
 	rebind_completed.emit(action_name);
 
 
@@ -396,14 +425,71 @@ func _remove_matching_event(events: Array[InputEvent], event: InputEvent) -> voi
 			events.remove_at(event_index);
 
 
+func _action_has_matching_event(action_name: StringName, event: InputEvent) -> bool:
+	for existing_event: InputEvent in get_action_events(action_name):
+		if existing_event != null and existing_event.is_match(event):
+			return true;
+	return false;
+
+
 func _set_action_events(action_name: StringName, events: Array[InputEvent]) -> void:
 	if not InputMap.has_action(action_name):
 		InputMap.add_action(action_name);
 	InputMap.action_erase_events(action_name);
-	for input_event: InputEvent in events:
+	var merged_events: Array[InputEvent] = _duplicate_events(events);
+	_append_fixed_gamepad_events(action_name, merged_events);
+	for input_event: InputEvent in merged_events:
 		if input_event == null:
 			continue;
 		InputMap.action_add_event(action_name, input_event);
+
+
+func _append_fixed_gamepad_events(action_name: StringName, events: Array[InputEvent]) -> void:
+	for gamepad_event: InputEvent in _get_fixed_gamepad_events(action_name):
+		if _has_matching_event(events, gamepad_event):
+			continue;
+		events.append(gamepad_event);
+
+
+func _get_fixed_gamepad_events(action_name: StringName) -> Array[InputEvent]:
+	match action_name:
+		&"ui_accept":
+			return [_create_joypad_button_event(DEFAULT_GAMEPAD_ACCEPT)];
+		&"ui_cancel":
+			return [_create_joypad_button_event(DEFAULT_GAMEPAD_CANCEL)];
+		&"ui_pause":
+			return [_create_joypad_button_event(DEFAULT_GAMEPAD_PAUSE)];
+		&"ui_up":
+			return [
+				_create_joypad_button_event(DEFAULT_GAMEPAD_DPAD_UP),
+				_create_joypad_motion_event(DEFAULT_GAMEPAD_AXIS_VERTICAL, GAMEPAD_AXIS_NEGATIVE),
+			];
+		&"ui_down":
+			return [
+				_create_joypad_button_event(DEFAULT_GAMEPAD_DPAD_DOWN),
+				_create_joypad_motion_event(DEFAULT_GAMEPAD_AXIS_VERTICAL, GAMEPAD_AXIS_POSITIVE),
+			];
+		&"ui_left":
+			return [
+				_create_joypad_button_event(DEFAULT_GAMEPAD_DPAD_LEFT),
+				_create_joypad_motion_event(DEFAULT_GAMEPAD_AXIS_HORIZONTAL, GAMEPAD_AXIS_NEGATIVE),
+			];
+		&"ui_right":
+			return [
+				_create_joypad_button_event(DEFAULT_GAMEPAD_DPAD_RIGHT),
+				_create_joypad_motion_event(DEFAULT_GAMEPAD_AXIS_HORIZONTAL, GAMEPAD_AXIS_POSITIVE),
+			];
+		_:
+			return [];
+
+
+func _has_matching_event(events: Array[InputEvent], candidate: InputEvent) -> bool:
+	for existing_event: InputEvent in events:
+		if existing_event == null or candidate == null:
+			continue;
+		if existing_event.is_match(candidate):
+			return true;
+	return false;
 
 
 func _get_event_display_text(event: InputEvent) -> String:
@@ -485,3 +571,17 @@ func _create_key_event(keycode: Key) -> InputEventKey:
 	key_event.keycode = keycode;
 	key_event.key_label = keycode;
 	return key_event;
+
+
+func _create_joypad_button_event(button_index: JoyButton) -> InputEventJoypadButton:
+	var button_event: InputEventJoypadButton = InputEventJoypadButton.new();
+	button_event.button_index = button_index;
+	button_event.pressed = true;
+	return button_event;
+
+
+func _create_joypad_motion_event(axis: JoyAxis, axis_value: float) -> InputEventJoypadMotion:
+	var motion_event: InputEventJoypadMotion = InputEventJoypadMotion.new();
+	motion_event.axis = axis;
+	motion_event.axis_value = axis_value;
+	return motion_event;

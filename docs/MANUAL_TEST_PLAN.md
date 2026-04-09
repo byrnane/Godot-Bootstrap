@@ -28,6 +28,8 @@ It focuses on:
 Run smoke scene:
 
 - `res://core/debug/phase0_smoke_runner.tscn`
+- `powershell -ExecutionPolicy Bypass -File .\scripts\run_smoke.ps1`
+- (optional) `powershell -ExecutionPolicy Bypass -File .\scripts\run_smoke.ps1 -Headless`
 
 Expected:
 

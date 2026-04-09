@@ -2,7 +2,7 @@
 
 Reusable Godot 4.x starter template for small and mid-sized games.
 
-Current version: `0.2.0`
+Current version: `0.3.0`
 
 ## EN
 
@@ -65,7 +65,19 @@ Docs:
 - [Code Style](docs/CODESTYLE.md)
 - [Changelog](CHANGELOG.md)
 - [Todo / Roadmap](TODO.md)
+- [Bootstrap Checklist](docs/BOOTSTRAP_CHECKLIST.md)
+- [Extension Guide](docs/EXTENSION_GUIDE.md)
+- [Architecture Guardrails](docs/ARCHITECTURE_GUARDRAILS.md)
+- [Demo Replacement Guide](docs/DEMO_REPLACEMENT.md)
+- [Release Process](docs/RELEASE_PROCESS.md)
 - [Manual Test Plan](docs/MANUAL_TEST_PLAN.md)
+- [CI Smoke Troubleshooting](docs/CI_SMOKE_TROUBLESHOOTING.md)
+
+Smoke (one command):
+
+- `powershell -ExecutionPolicy Bypass -File .\scripts\run_smoke.ps1`
+- Optional explicit binary: `powershell -ExecutionPolicy Bypass -File .\scripts\run_smoke.ps1 -GodotExecutable "C:\Path\To\godot.exe"`
+- Optional headless mode: `powershell -ExecutionPolicy Bypass -File .\scripts\run_smoke.ps1 -Headless`
 
 ## RU
 

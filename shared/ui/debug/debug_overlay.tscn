@@ -21,7 +21,7 @@ anchor_bottom = 0.0
 offset_left = 16.0
 offset_top = 16.0
 offset_right = 376.0
-offset_bottom = 248.0
+offset_bottom = 436.0
 theme_override_constants/margin_left = 0
 theme_override_constants/margin_top = 0
 theme_override_constants/margin_right = 0
@@ -94,3 +94,58 @@ text = "Modals"
 unique_name_in_owner = true
 layout_mode = 2
 text = "Debug"
+
+[node name="RouterLabel" type="Label" parent="MarginContainer/Panel/Content/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Router"
+
+[node name="LoadingStateLabel" type="Label" parent="MarginContainer/Panel/Content/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "LoadingState"
+
+[node name="ModalStateLabel" type="Label" parent="MarginContainer/Panel/Content/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "ModalState"
+
+[node name="InputStateLabel" type="Label" parent="MarginContainer/Panel/Content/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "InputState"
+
+[node name="ActionsSeparator" type="HSeparator" parent="MarginContainer/Panel/Content/Rows"]
+layout_mode = 2
+
+[node name="ActionsLabel" type="Label" parent="MarginContainer/Panel/Content/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_heading_font")
+theme_override_font_sizes/font_size = 13
+text = "Actions"
+
+[node name="ClearSaveButton" type="Button" parent="MarginContainer/Panel/Content/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Clear Save"
+
+[node name="SceneJumpRow" type="HBoxContainer" parent="MarginContainer/Panel/Content/Rows"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="SceneOptionButton" type="OptionButton" parent="MarginContainer/Panel/Content/Rows/SceneJumpRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Scene"
+
+[node name="JumpSceneButton" type="Button" parent="MarginContainer/Panel/Content/Rows/SceneJumpRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Jump"
+
+[node name="RestartSessionButton" type="Button" parent="MarginContainer/Panel/Content/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Restart Session"

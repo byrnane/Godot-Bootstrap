@@ -18,10 +18,10 @@ func begin_loading(data: Dictionary = {}) -> void:
 		await UiShell.show_loading_screen(data);
 
 
-func update_loading_progress(progress: float, status_text: String = "") -> void:
+func update_loading_progress(progress: float, status_text: String = "", status_state: StringName = StringName()) -> void:
 	if UiShell == null:
 		return;
-	UiShell.update_loading_progress(progress, status_text);
+	UiShell.update_loading_progress(progress, status_text, status_state);
 
 
 func finish_loading() -> void:
@@ -35,7 +35,7 @@ func fail_loading(error_text: String = "") -> void:
 func _finish_transition(error_text: String) -> void:
 	if UiShell != null:
 		if not error_text.is_empty():
-			UiShell.update_loading_progress(0.0, error_text);
+			UiShell.update_loading_progress(0.0, error_text, &"error");
 		await UiShell.hide_loading_screen();
 	_is_active = false;
 	transition_finished.emit();

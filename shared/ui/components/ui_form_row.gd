@@ -21,6 +21,11 @@ func _ready() -> void:
 	_refresh();
 
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED:
+		_refresh();
+
+
 func _refresh() -> void:
 	if not is_node_ready():
 		return;

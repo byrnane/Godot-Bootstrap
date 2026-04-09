@@ -19,9 +19,19 @@ UI_ENGINE_VERSION,Версия движка Godot: {string},Godot engine version
 UI_LOADING,Загрузка...,Loading...
 UI_LOADING_MESSAGE,Подготавливаем следующую сцену,Preparing the next scene
 UI_LOADING_TIP,Здесь позже можно показывать подсказки, советы и служебную информацию,This area can later show tips hints and useful loading info
+UI_LOADING_CONTEXT,Контекст: {value},Context: {value}
+UI_LOADING_READY,Сцена готова,Scene is ready
+UI_LOADING_STATE_LOADING,ЗАГРУЗКА,LOADING
+UI_LOADING_STATE_SUCCESS,ГОТОВО,DONE
+UI_LOADING_STATE_ERROR,ОШИБКА,ERROR
+UI_LOADING_STATE_WARNING,ВНИМАНИЕ,WARNING
 UI_LOADING_TIP_1,Подготавливаем следующую сцену и подключаем UI,Preparing the next scene and mounting the UI
 UI_LOADING_TIP_2,Здесь удобно показывать подсказки по управлению или полезные советы,This is a good place for controls hints or useful tips
 UI_LOADING_TIP_3,Тяжёлые сцены лучше грузить через асинхронный переход,Heavy scenes feel better with async transitions
+UI_LOADING_TIP_MENU_1,Возврат в меню завершит текущую игровую сессию,Returning to menu ends the active gameplay session
+UI_LOADING_TIP_MENU_2,Через меню удобно быстро проверить настройки и локализацию,Main menu is useful for quick settings and localization checks
+UI_LOADING_TIP_GAMEPLAY_1,HUD и игровая сцена загружаются раздельно для гибкой замены экранов,HUD and world scene are loaded separately for easier screen replacement
+UI_LOADING_TIP_GAMEPLAY_2,Сохранения и состояние сессии применяются до первого кадра gameplay,Save data and session state are applied before the first gameplay frame
 UI_LOADING_PROGRESS,Загружено: {percent}%,Loaded: {percent}%
 UI_LOADING_ERROR,Не удалось загрузить сцену,Failed to load the scene
 UI_DEBUG_HEADER,Отладочный оверлей,Debug Overlay
@@ -34,6 +44,20 @@ UI_DEBUG_LOADING,Идёт загрузка: {value},Loading active: {value}
 UI_DEBUG_HUD,HUD: {value},HUD: {value}
 UI_DEBUG_MODALS,Модалки: {value},Modals: {value}
 UI_DEBUG_ENABLED,Debug режим: {value},Debug mode: {value}
+UI_DEBUG_ROUTER,Router: loading={loading} queued={queued} target={target},Router: loading={loading} queued={queued} target={target}
+UI_DEBUG_LOADING_LAYER,Loading layer: visible={visible} transition={transition} token={token},Loading layer: visible={visible} transition={transition} token={token}
+UI_DEBUG_MODAL_LAYER,Modal layer: depth={depth} feedback={feedback} backdrop={backdrop},Modal layer: depth={depth} feedback={feedback} backdrop={backdrop}
+UI_DEBUG_INPUT,Input: rebind={rebind} action={action} slot={slot},Input: rebind={rebind} action={action} slot={slot}
+UI_DEBUG_ACTIONS_HEADER,Быстрые действия,Quick actions
+UI_DEBUG_ACTION_CLEAR_SAVE,Очистить сохранения,Clear saves
+UI_DEBUG_ACTION_SCENE_TARGET,Сцена для перехода,Scene jump target
+UI_DEBUG_ACTION_JUMP_SCENE,Перейти,Jump
+UI_DEBUG_ACTION_RESTART_SESSION,Рестарт сессии,Restart session
+UI_DEBUG_TOAST_SAVE_CLEARED,Сохранения очищены (слотов: {count}),Saves cleared (slots: {count})
+UI_DEBUG_TOAST_SCENE_UNKNOWN,Неизвестная сцена: {value},Unknown scene: {value}
+UI_DEBUG_TOAST_TRANSITION_BLOCKED,Переход заблокирован: дождитесь завершения текущей загрузки,Transition blocked: wait for current loading to finish
+UI_DEBUG_TOAST_SCENE_JUMPED,Переход к сцене: {value},Jumped to scene: {value}
+UI_DEBUG_TOAST_SESSION_RESTARTED,Сессия перезапущена,Session restarted
 ,,
 Settings,,
 UI_SETTINGS_HEADER,Настройки игры,Game settings
@@ -59,7 +83,14 @@ UI_SETTINGS_RESET,Сбросить настройки,Reset settings
 UI_SETTINGS_BACK,Применить и вернуться,Apply and return
 UI_INPUT_BINDINGS_HINT,Выберите действие и нажмите новую кнопку или клавишу,Choose an action and press a new key or button
 UI_INPUT_REBIND_HINT,Ожидание нового ввода для выбранного действия,Waiting for a new input for the selected action
+UI_INPUT_REBIND_HINT_ACTION,Ожидание нового ввода для действия: {action},Waiting for new input for action: {action}
 UI_INPUT_RESET_BINDINGS,Сбросить управление,Reset controls
+UI_INPUT_RESET_BINDINGS_CONFIRM_TITLE,Сбросить управление?,Reset controls?
+UI_INPUT_RESET_BINDINGS_CONFIRM_MESSAGE,Все назначения клавиш будут возвращены к значениям по умолчанию. Продолжить?,All key bindings will be restored to defaults. Continue?
+UI_INPUT_RESET_BINDINGS_CONFIRM,Сбросить,Reset
+UI_INPUT_RESET_BINDINGS_CANCEL,Отмена,Cancel
+UI_INPUT_BINDINGS_RESET_DONE,Управление сброшено к значениям по умолчанию,Controls were reset to defaults
+UI_INPUT_CONFLICT_RESOLVED,Действие {action} переназначено. Очищены конфликты: {replaced_actions},Action {action} was rebound. Conflicts cleared: {replaced_actions}
 UI_INPUT_UNBOUND,Не назначено,Unbound
 UI_INPUT_WAITING,Нажмите кнопку...,Press a button...
 UI_INPUT_GROUP_NAVIGATION,Навигация,Navigation
@@ -124,13 +155,13 @@ UI_PAUSE_SAVE_AND_QUIT,Сохранить и выйти,Save and quit
 Template Gameplay,,
 UI_GAMEPLAY_STATE,Состояние: {value},State: {value}
 UI_GAMEPLAY_LEVEL,Уровень: {value},Level: {value}
-UI_GAMEPLAY_HEALTH,Здоровье: {value},Health: {value}
-UI_GAMEPLAY_SCORE,Счет: {value},Score: {value}
-UI_GAMEPLAY_DAMAGE,- Здоровье,- Health
-UI_GAMEPLAY_HEAL,+ Здоровье,+ Health
-UI_GAMEPLAY_ADD_SCORE,+ Счет,+ Score
-UI_TOAST_DAMAGE_RECEIVED,-{value} здоровья,-{value} health
-UI_TOAST_SCORE_GAINED,+{value} очков,+{value} score
+UI_GAMEPLAY_HEALTH,Параметр A: {value},Metric A: {value}
+UI_GAMEPLAY_SCORE,Счетчик B: {value},Counter B: {value}
+UI_GAMEPLAY_DAMAGE,Понизить параметр A,Decrease metric A
+UI_GAMEPLAY_HEAL,Повысить параметр A,Increase metric A
+UI_GAMEPLAY_ADD_SCORE,Увеличить счетчик B,Increment counter B
+UI_TOAST_DAMAGE_RECEIVED,Параметр A: -{value},Metric A: -{value}
+UI_TOAST_SCORE_GAINED,Счетчик B: +{value},Counter B: +{value}
 UI_GAMEPLAY_LEVEL_A,Загрузить уровень A,Load Level A
 UI_GAMEPLAY_LEVEL_B,Загрузить уровень B,Load Level B
 UI_GAMEPLAY_SAVE,Сохранить,Save

@@ -2,6 +2,7 @@ extends Control;
 class_name MainMenu;
 
 const SCENE_TRANSITION_PAYLOAD_TYPE = preload("res://core/types/scene_transition_payload.gd");
+const UI_FOCUS = preload("res://shared/ui/navigation/ui_focus.gd");
 
 signal new_game_requested;
 signal continue_requested;
@@ -31,6 +32,16 @@ func on_enter(_payload: SCENE_TRANSITION_PAYLOAD_TYPE = null) -> void:
 
 func _refresh_continue_state() -> void:
 	continue_button.disabled = not SaveManager.has_save();
+	UI_FOCUS.apply_vertical_focus_cycle(_collect_focusable_buttons());
+
+
+func _collect_focusable_buttons() -> Array[Button]:
+	var buttons: Array[Button] = [new_game_button];
+	if not continue_button.disabled:
+		buttons.append(continue_button);
+	buttons.append(settings_button);
+	buttons.append(quit_button);
+	return buttons;
 
 
 func _on_continue_button_pressed() -> void:

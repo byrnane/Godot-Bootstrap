@@ -92,34 +92,34 @@ Focus: ship-grade save/settings/input/localization baseline.
 
 ### 2.1 Save system maturity
 
-- [ ] Add save slots support (at least minimal slot model).
-- [ ] Add backup/restore strategy for corrupted save data.
-- [ ] Extend migration/versioning policy with explicit compatibility rules.
-- [ ] Add helper APIs for common save operations (exists/load/save/delete/list slots).
+- [x] Add save slots support (at least minimal slot model).
+- [x] Add backup/restore strategy for corrupted save data.
+- [x] Extend migration/versioning policy with explicit compatibility rules.
+- [x] Add helper APIs for common save operations (exists/load/save/delete/list slots).
 
 ### 2.2 Settings system maturity
 
-- [ ] Split settings by domains (audio/video/language/input) with clear ownership.
-- [ ] Add robust validation boundaries for all persisted values.
-- [ ] Improve apply pipeline so partial failures are visible and recoverable.
+- [x] Split settings by domains (audio/video/language/input) with clear ownership.
+- [x] Add robust validation boundaries for all persisted values.
+- [x] Improve apply pipeline so partial failures are visible and recoverable.
 
 ### 2.3 Input system maturity
 
-- [ ] Finish keyboard/mouse rebinding polish (UI clarity, conflict resolution UX, reset flows).
-- [ ] Add baseline gamepad support with fixed default mapping.
-- [ ] Keep gamepad rebinding postponed until fixed mapping is validated.
+- [x] Finish keyboard/mouse rebinding polish (UI clarity, conflict resolution UX, reset flows).
+- [x] Add baseline gamepad support with fixed default mapping.
+- [x] Keep gamepad rebinding postponed until fixed mapping is validated.
 
 ### 2.4 Localization maturity
 
-- [ ] Add localization coverage check for all static UI keys.
-- [ ] Ensure locale switching updates all active runtime UI surfaces.
-- [ ] Document translation workflow and key naming conventions.
+- [x] Add localization coverage check for all static UI keys.
+- [x] Ensure locale switching updates all active runtime UI surfaces.
+- [x] Document translation workflow and key naming conventions.
 
 ### Exit criteria for Phase 2
 
-- [ ] Save/settings/input/localization are stable for daily development use.
-- [ ] Migration and fallback behavior is deterministic and tested.
-- [ ] Baseline gamepad input works with default mapping.
+- [x] Save/settings/input/localization are stable for daily development use.
+- [x] Migration and fallback behavior is deterministic and tested.
+- [x] Baseline gamepad input works with default mapping.
 
 
 ## Phase 3 - UX Infrastructure And Reusable UI Toolkit
@@ -128,27 +128,27 @@ Focus: improve template UX quality and reusability without adding game mechanics
 
 ### 3.1 Shared UI primitives adoption
 
-- [ ] Complete migration of template screens to `shared/ui/components`, `navigation`, `motion`.
-- [ ] Remove duplicated UI logic from feature scenes where shared primitives exist.
-- [ ] Ensure consistent focus/navigation behavior for keyboard/gamepad.
+- [x] Complete migration of template screens to `shared/ui/components`, `navigation`, `motion`.
+- [x] Remove duplicated UI logic from feature scenes where shared primitives exist.
+- [x] Ensure consistent focus/navigation behavior for keyboard/gamepad.
 
 ### 3.2 Feedback, loading, and modal UX
 
-- [ ] Polish `UiFeedback` workflows (confirm/alert/toast variants and defaults).
-- [ ] Expand loading screen metadata model (tip providers, context labels, status states).
-- [ ] Validate backdrop/cancel behavior across all modal types.
+- [x] Polish `UiFeedback` workflows (confirm/alert/toast variants and defaults).
+- [x] Expand loading screen metadata model (tip providers, context labels, status states).
+- [x] Validate backdrop/cancel behavior across all modal types.
 
 ### 3.3 Accessibility and readability baseline
 
-- [ ] Verify minimum contrast and text readability on default theme.
-- [ ] Ensure focus visibility and tab order quality on all template UI screens.
-- [ ] Add localization-safe layouts for longer translated strings.
+- [x] Verify minimum contrast and text readability on default theme.
+- [x] Ensure focus visibility and tab order quality on all template UI screens.
+- [x] Add localization-safe layouts for longer translated strings.
 
 ### Exit criteria for Phase 3
 
-- [ ] UI layer is coherent, reusable, and consistent.
-- [ ] Keyboard/gamepad navigation is predictable across shared screens.
-- [ ] No major UX regressions in modals/loading/feedback flows.
+- [x] UI layer is coherent, reusable, and consistent.
+- [x] Keyboard/gamepad navigation is predictable across shared screens.
+- [x] No major UX regressions in modals/loading/feedback flows.
 
 
 ## Phase 4 - Debug Tooling, Smoke Checks, And Quality Gates
@@ -157,30 +157,30 @@ Focus: faster diagnosis and safer refactors.
 
 ### 4.1 Debug overlay and quick actions
 
-- [ ] Extend `DebugOverlay` with quick actions:
-- [ ] clear save;
-- [ ] jump to scene;
-- [ ] restart session.
-- [ ] Add runtime snapshots for scene/router/loading/modal/input state.
+- [x] Extend `DebugOverlay` with quick actions:
+- [x] clear save;
+- [x] jump to scene;
+- [x] restart session.
+- [x] Add runtime snapshots for scene/router/loading/modal/input state.
 
 ### 4.2 Smoke test suite
 
-- [ ] Add smoke checks for scene loading pipeline and core data containers.
-- [ ] Add audio smoke checks (bus presence, one-shot playback path, music playback path).
-- [ ] Add localization smoke checks (key existence, locale switch sanity).
-- [ ] Define one-command local smoke run for template maintainers.
+- [x] Add smoke checks for scene loading pipeline and core data containers.
+- [x] Add audio smoke checks (bus presence, one-shot playback path, music playback path).
+- [x] Add localization smoke checks (key existence, locale switch sanity).
+- [x] Define one-command local smoke run for template maintainers.
 
 ### 4.3 CI quality gates
 
-- [ ] Add automated smoke run in CI (headless where possible).
-- [ ] Fail builds on critical smoke regressions.
-- [ ] Document troubleshooting playbook for CI failures.
+- [x] Add automated smoke run in CI (headless where possible).
+- [x] Fail builds on critical smoke regressions.
+- [x] Document troubleshooting playbook for CI failures.
 
 ### Exit criteria for Phase 4
 
-- [ ] Core regressions are caught automatically.
-- [ ] Debug tools accelerate local diagnosis.
-- [ ] Template updates are safer to merge and release.
+- [x] Core regressions are caught automatically.
+- [x] Debug tools accelerate local diagnosis.
+- [x] Template updates are safer to merge and release.
 
 
 ## Phase 5 - Packaging, Documentation, And Release Readiness
@@ -189,20 +189,20 @@ Focus: make the template easy to adopt and evolve.
 
 ### 5.1 Template onboarding experience
 
-- [ ] Add project bootstrap checklist for new games.
-- [ ] Add clear extension guide: where to add scenes/services/context data.
-- [ ] Add "what not to modify" architecture guardrails.
+- [x] Add project bootstrap checklist for new games.
+- [x] Add clear extension guide: where to add scenes/services/context data.
+- [x] Add "what not to modify" architecture guardrails.
 
 ### 5.2 Demo simulation scope
 
-- [ ] Keep demo scenes simulation-only (state/view/input/save demonstration).
-- [ ] Remove any remaining mechanic-like behavior that is not template infrastructure.
-- [ ] Ensure demo content is easy to replace in first integration pass.
+- [x] Keep demo scenes simulation-only (state/view/input/save demonstration).
+- [x] Remove any remaining mechanic-like behavior that is not template infrastructure.
+- [x] Ensure demo content is easy to replace in first integration pass.
 
 ### 5.3 Release process
 
-- [ ] Create release checklist (version, changelog, migration notes, smoke status).
-- [ ] Define semantic version policy for template compatibility.
+- [x] Create release checklist (version, changelog, migration notes, smoke status).
+- [x] Define semantic version policy for template compatibility.
 - [ ] Tag first production template release after all phase exit criteria pass.
 
 ### Exit criteria for Phase 5

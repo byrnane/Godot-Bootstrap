@@ -1,7 +1,8 @@
-[gd_scene format=3 uid="uid://diib6xodew6sm"]
+[gd_scene load_steps=4 format=3 uid="uid://diib6xodew6sm"]
 
 [ext_resource type="Script" uid="uid://doi0ws4i0t3xn" path="res://features/gameplay/gameplay_hud.gd" id="1_script"]
-[ext_resource type="Font" path="res://shared/ui/theme/heading_font_embedded.tres" id="2_heading_font"]
+[ext_resource type="PackedScene" path="res://shared/ui/components/ui_card.tscn" id="2_card"]
+[ext_resource type="PackedScene" path="res://shared/ui/components/ui_section_header.tscn" id="3_header"]
 
 [node name="GameplayHud" type="Control" unique_id=125153433]
 layout_mode = 3
@@ -30,88 +31,81 @@ theme_override_constants/margin_bottom = 24
 layout_mode = 2
 theme_override_constants/separation = 24
 
-[node name="LeftColumn" type="PanelContainer" parent="MarginContainer/HBoxContainer" unique_id=1705660539]
+[node name="LeftColumnCard" parent="MarginContainer/HBoxContainer" index="0" instance=ExtResource("2_card")]
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
+elevated = true
+inner_padding = 20
 
-[node name="ContentMargin" type="MarginContainer" parent="MarginContainer/HBoxContainer/LeftColumn" unique_id=275492846]
+[node name="PreviewHeader" parent="MarginContainer/HBoxContainer/LeftColumnCard/ContentMargin/Content" index="0" instance=ExtResource("3_header")]
 layout_mode = 2
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 20
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 20
+title_key = "UI_GAMEPLAY_PREVIEW"
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/LeftColumn/ContentMargin" unique_id=950584608]
-layout_mode = 2
-theme_override_constants/separation = 12
-
-[node name="PreviewLabel" type="Label" parent="MarginContainer/HBoxContainer/LeftColumn/ContentMargin/VBoxContainer" unique_id=533313792]
-layout_mode = 2
-theme_override_fonts/font = ExtResource("2_heading_font")
-theme_override_font_sizes/font_size = 18
-text = "UI_GAMEPLAY_PREVIEW"
-
-[node name="StateLabel" type="Label" parent="MarginContainer/HBoxContainer/LeftColumn/ContentMargin/VBoxContainer" unique_id=1105424066]
+[node name="StateLabel" type="Label" parent="MarginContainer/HBoxContainer/LeftColumnCard/ContentMargin/Content" unique_id=1105424066]
 unique_name_in_owner = true
 layout_mode = 2
 text = "UI_GAMEPLAY_STATE"
 
-[node name="LevelLabel" type="Label" parent="MarginContainer/HBoxContainer/LeftColumn/ContentMargin/VBoxContainer" unique_id=1385178790]
+[node name="LevelLabel" type="Label" parent="MarginContainer/HBoxContainer/LeftColumnCard/ContentMargin/Content" unique_id=1385178790]
 unique_name_in_owner = true
 layout_mode = 2
 text = "UI_GAMEPLAY_LEVEL"
 
-[node name="HealthLabel" type="Label" parent="MarginContainer/HBoxContainer/LeftColumn/ContentMargin/VBoxContainer" unique_id=1678394364]
+[node name="HealthLabel" type="Label" parent="MarginContainer/HBoxContainer/LeftColumnCard/ContentMargin/Content" unique_id=1678394364]
 unique_name_in_owner = true
 layout_mode = 2
 text = "UI_GAMEPLAY_HEALTH"
 
-[node name="ScoreLabel" type="Label" parent="MarginContainer/HBoxContainer/LeftColumn/ContentMargin/VBoxContainer" unique_id=1727548771]
+[node name="ScoreLabel" type="Label" parent="MarginContainer/HBoxContainer/LeftColumnCard/ContentMargin/Content" unique_id=1727548771]
 unique_name_in_owner = true
 layout_mode = 2
 text = "UI_GAMEPLAY_SCORE"
 
-[node name="ButtonsSpacer" type="Control" parent="MarginContainer/HBoxContainer/LeftColumn/ContentMargin/VBoxContainer" unique_id=298539315]
+[node name="ButtonsSpacer" type="Control" parent="MarginContainer/HBoxContainer/LeftColumnCard/ContentMargin/Content" unique_id=298539315]
 custom_minimum_size = Vector2(0, 8)
 layout_mode = 2
 
-[node name="DamageButton" type="Button" parent="MarginContainer/HBoxContainer/LeftColumn/ContentMargin/VBoxContainer" unique_id=127198125]
+[node name="DamageButton" type="Button" parent="MarginContainer/HBoxContainer/LeftColumnCard/ContentMargin/Content" unique_id=127198125]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
+size_flags_horizontal = 3
 text = "UI_GAMEPLAY_DAMAGE"
 
-[node name="HealButton" type="Button" parent="MarginContainer/HBoxContainer/LeftColumn/ContentMargin/VBoxContainer" unique_id=1581248845]
+[node name="HealButton" type="Button" parent="MarginContainer/HBoxContainer/LeftColumnCard/ContentMargin/Content" unique_id=1581248845]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
+size_flags_horizontal = 3
 text = "UI_GAMEPLAY_HEAL"
 
-[node name="ScoreButton" type="Button" parent="MarginContainer/HBoxContainer/LeftColumn/ContentMargin/VBoxContainer" unique_id=321680133]
+[node name="ScoreButton" type="Button" parent="MarginContainer/HBoxContainer/LeftColumnCard/ContentMargin/Content" unique_id=321680133]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
+size_flags_horizontal = 3
 text = "UI_GAMEPLAY_ADD_SCORE"
 
-[node name="LevelAButton" type="Button" parent="MarginContainer/HBoxContainer/LeftColumn/ContentMargin/VBoxContainer" unique_id=1757008968]
+[node name="LevelAButton" type="Button" parent="MarginContainer/HBoxContainer/LeftColumnCard/ContentMargin/Content" unique_id=1757008968]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
+size_flags_horizontal = 3
 text = "UI_GAMEPLAY_LEVEL_A"
 
-[node name="LevelBButton" type="Button" parent="MarginContainer/HBoxContainer/LeftColumn/ContentMargin/VBoxContainer" unique_id=120580369]
+[node name="LevelBButton" type="Button" parent="MarginContainer/HBoxContainer/LeftColumnCard/ContentMargin/Content" unique_id=120580369]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
+size_flags_horizontal = 3
 text = "UI_GAMEPLAY_LEVEL_B"
 
-
-[node name="PauseButton" type="Button" parent="MarginContainer/HBoxContainer/LeftColumn/ContentMargin/VBoxContainer" unique_id=1683489691]
+[node name="PauseButton" type="Button" parent="MarginContainer/HBoxContainer/LeftColumnCard/ContentMargin/Content" unique_id=1683489691]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
+size_flags_horizontal = 3
 text = "UI_GAMEPLAY_PAUSE"
-
 
 [node name="RightSpacer" type="Control" parent="MarginContainer/HBoxContainer" unique_id=505380454]
 layout_mode = 2

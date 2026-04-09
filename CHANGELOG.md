@@ -11,6 +11,28 @@ Sections:
 - `Fixed`
 - `Removed`
 
+## [0.3.0] - 2026-04-09
+
+Template hardening and production-readiness update focused on debug tooling, smoke quality gates, and onboarding docs.
+
+### Added
+
+- extended `DebugOverlay` with quick actions (clear saves, jump scene, restart session)
+- runtime snapshots in debug overlay for router/loading/modal/input state
+- expanded smoke checks for scene pipeline, core data containers, audio paths, and runtime localization keys
+- one-command local smoke script: `scripts/run_smoke.ps1`
+- CI smoke workflow and troubleshooting playbook
+- bootstrap checklist, extension guide, architecture guardrails, demo replacement guide, and release process docs
+
+### Changed
+
+- demo gameplay surface is explicitly simulation-only (no mechanic-oriented framing)
+- roadmap progress updated through Phase 5.3 documentation tasks
+
+### Fixed
+
+- removed a race condition in smoke transition fallback checks for unknown scenes
+
 ## [0.2.0] - 2026-03-17
 
 First production-ready template version with input rebinding and scene transition flow.

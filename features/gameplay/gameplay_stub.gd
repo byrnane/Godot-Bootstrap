@@ -11,13 +11,13 @@ signal view_changed(view_model: Dictionary);
 
 
 const GAMEPLAY_HUD_SCENE: PackedScene = preload("res://features/gameplay/gameplay_hud.tscn");
-const HEALTH_STEP: int = 5;
-const SCORE_STEP: int = 10;
+const PRIMARY_METRIC_STEP: int = 5;
+const SECONDARY_METRIC_STEP: int = 10;
 const LEVEL_A_MUSIC: AudioStream = preload("res://assets/music/level_a.mp3");
 const LEVEL_B_MUSIC: AudioStream = preload("res://assets/music/level_b.mp3");
-const DAMAGE_SFX: AudioStream = preload("res://assets/sfx/damage.ogg");
-const HEAL_SFX: AudioStream = preload("res://assets/sfx/heal.ogg");
-const SCORE_SFX: AudioStream = preload("res://assets/sfx/score.ogg");
+const PRIMARY_DECREASE_SFX: AudioStream = preload("res://assets/sfx/damage.ogg");
+const PRIMARY_INCREASE_SFX: AudioStream = preload("res://assets/sfx/heal.ogg");
+const SECONDARY_INCREMENT_SFX: AudioStream = preload("res://assets/sfx/score.ogg");
 
 
 @export var pause_action_name: StringName = &"ui_pause";
@@ -51,11 +51,11 @@ func get_hud_scene() -> PackedScene:
 func bind_hud(hud: Control) -> void:
 	if hud == null:
 		return;
-	# The gameplay scene owns the state; HUD only emits user intent and renders
-	# the latest snapshot pushed from here.
-	_connect_signal_if_needed(hud, &"damage_requested", Callable(self, "apply_damage"));
-	_connect_signal_if_needed(hud, &"heal_requested", Callable(self, "apply_heal"));
-	_connect_signal_if_needed(hud, &"score_requested", Callable(self, "add_score_points"));
+	# Template demo is simulation-only: HUD emits generic intent and gameplay
+	# scene applies deterministic state mutations for save/settings checks.
+	_connect_signal_if_needed(hud, &"primary_metric_decrease_requested", Callable(self, "simulate_primary_metric_decrease"));
+	_connect_signal_if_needed(hud, &"primary_metric_increase_requested", Callable(self, "simulate_primary_metric_increase"));
+	_connect_signal_if_needed(hud, &"secondary_metric_increment_requested", Callable(self, "simulate_secondary_metric_increment"));
 	_connect_signal_if_needed(hud, &"level_a_requested", Callable(self, "load_level_a"));
 	_connect_signal_if_needed(hud, &"level_b_requested", Callable(self, "load_level_b"));
 	_connect_signal_if_needed(hud, &"pause_toggle_requested", Callable(self, "_toggle_pause"));
@@ -69,9 +69,9 @@ func bind_hud(hud: Control) -> void:
 func unbind_hud(hud: Control) -> void:
 	if hud == null:
 		return;
-	_disconnect_signal_if_connected(hud, &"damage_requested", Callable(self, "apply_damage"));
-	_disconnect_signal_if_connected(hud, &"heal_requested", Callable(self, "apply_heal"));
-	_disconnect_signal_if_connected(hud, &"score_requested", Callable(self, "add_score_points"));
+	_disconnect_signal_if_connected(hud, &"primary_metric_decrease_requested", Callable(self, "simulate_primary_metric_decrease"));
+	_disconnect_signal_if_connected(hud, &"primary_metric_increase_requested", Callable(self, "simulate_primary_metric_increase"));
+	_disconnect_signal_if_connected(hud, &"secondary_metric_increment_requested", Callable(self, "simulate_secondary_metric_increment"));
 	_disconnect_signal_if_connected(hud, &"level_a_requested", Callable(self, "load_level_a"));
 	_disconnect_signal_if_connected(hud, &"level_b_requested", Callable(self, "load_level_b"));
 	_disconnect_signal_if_connected(hud, &"pause_toggle_requested", Callable(self, "_toggle_pause"));
@@ -85,23 +85,23 @@ func on_enter(_payload: SCENE_TRANSITION_PAYLOAD_TYPE = null) -> void:
 	_load_level(SessionContext.current_level_id);
 
 
-func apply_damage() -> void:
-	SessionContext.player_health = max(SessionContext.player_health - HEALTH_STEP, 0);
-	AudioManager.play_sfx(DAMAGE_SFX);
-	UiFeedback.toast(tr("UI_TOAST_DAMAGE_RECEIVED").format({"value": HEALTH_STEP}));
+func simulate_primary_metric_decrease() -> void:
+	SessionContext.player_health = max(SessionContext.player_health - PRIMARY_METRIC_STEP, 0);
+	AudioManager.play_sfx(PRIMARY_DECREASE_SFX);
+	UiFeedback.toast(tr("UI_TOAST_DAMAGE_RECEIVED").format({"value": PRIMARY_METRIC_STEP}));
 	_refresh_view();
 
 
-func apply_heal() -> void:
-	SessionContext.player_health += HEALTH_STEP;
-	AudioManager.play_sfx(HEAL_SFX);
+func simulate_primary_metric_increase() -> void:
+	SessionContext.player_health += PRIMARY_METRIC_STEP;
+	AudioManager.play_sfx(PRIMARY_INCREASE_SFX);
 	_refresh_view();
 
 
-func add_score_points() -> void:
-	SessionContext.score += SCORE_STEP;
-	AudioManager.play_sfx(SCORE_SFX);
-	UiFeedback.toast(tr("UI_TOAST_SCORE_GAINED").format({"value": SCORE_STEP}));
+func simulate_secondary_metric_increment() -> void:
+	SessionContext.score += SECONDARY_METRIC_STEP;
+	AudioManager.play_sfx(SECONDARY_INCREMENT_SFX);
+	UiFeedback.toast(tr("UI_TOAST_SCORE_GAINED").format({"value": SECONDARY_METRIC_STEP}));
 	_refresh_view();
 
 

@@ -53,6 +53,11 @@ func _ready() -> void:
 	_refresh();
 
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED:
+		_refresh();
+
+
 func set_badge_text(text: String, translate_text: bool = false) -> void:
 	_custom_text = text;
 	_use_translation = translate_text;

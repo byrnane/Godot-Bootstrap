@@ -24,6 +24,11 @@ func _ready() -> void:
 	_apply_current_tab(false);
 
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED:
+		refresh_titles();
+
+
 func refresh_titles() -> void:
 	for button_index: int in range(_tab_buttons.size()):
 		_tab_buttons[button_index].text = _get_tab_title(button_index);
