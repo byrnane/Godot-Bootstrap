@@ -195,8 +195,8 @@ Focus: make the template easy to adopt and evolve.
 
 ### 5.2 Demo simulation scope
 
-- [ ] Keep demo scenes simulation-only (state/view/input/save demonstration).
-- [ ] Remove any remaining mechanic-like behavior that is not template infrastructure.
+- [x] Keep demo scenes simulation-only (state/view/input/save demonstration).
+- [x] Remove any remaining mechanic-like behavior that is not template infrastructure.
 - [ ] Ensure demo content is easy to replace in first integration pass.
 
 ### 5.3 Release process

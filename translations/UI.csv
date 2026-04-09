@@ -155,13 +155,13 @@ UI_PAUSE_SAVE_AND_QUIT,Сохранить и выйти,Save and quit
 Template Gameplay,,
 UI_GAMEPLAY_STATE,Состояние: {value},State: {value}
 UI_GAMEPLAY_LEVEL,Уровень: {value},Level: {value}
-UI_GAMEPLAY_HEALTH,Здоровье: {value},Health: {value}
-UI_GAMEPLAY_SCORE,Счет: {value},Score: {value}
-UI_GAMEPLAY_DAMAGE,- Здоровье,- Health
-UI_GAMEPLAY_HEAL,+ Здоровье,+ Health
-UI_GAMEPLAY_ADD_SCORE,+ Счет,+ Score
-UI_TOAST_DAMAGE_RECEIVED,-{value} здоровья,-{value} health
-UI_TOAST_SCORE_GAINED,+{value} очков,+{value} score
+UI_GAMEPLAY_HEALTH,Параметр A: {value},Metric A: {value}
+UI_GAMEPLAY_SCORE,Счетчик B: {value},Counter B: {value}
+UI_GAMEPLAY_DAMAGE,Понизить параметр A,Decrease metric A
+UI_GAMEPLAY_HEAL,Повысить параметр A,Increase metric A
+UI_GAMEPLAY_ADD_SCORE,Увеличить счетчик B,Increment counter B
+UI_TOAST_DAMAGE_RECEIVED,Параметр A: -{value},Metric A: -{value}
+UI_TOAST_SCORE_GAINED,Счетчик B: +{value},Counter B: +{value}
 UI_GAMEPLAY_LEVEL_A,Загрузить уровень A,Load Level A
 UI_GAMEPLAY_LEVEL_B,Загрузить уровень B,Load Level B
 UI_GAMEPLAY_SAVE,Сохранить,Save

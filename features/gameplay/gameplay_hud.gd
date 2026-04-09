@@ -3,9 +3,9 @@ class_name GameplayHud;
 
 const UI_FOCUS = preload("res://shared/ui/navigation/ui_focus.gd");
 
-signal damage_requested;
-signal heal_requested;
-signal score_requested;
+signal primary_metric_decrease_requested;
+signal primary_metric_increase_requested;
+signal secondary_metric_increment_requested;
 signal level_a_requested;
 signal level_b_requested;
 signal pause_toggle_requested;
@@ -95,15 +95,15 @@ func _get_level_label(level_scene_id: StringName) -> String:
 
 
 func _on_damage_button_pressed() -> void:
-	damage_requested.emit();
+	primary_metric_decrease_requested.emit();
 
 
 func _on_heal_button_pressed() -> void:
-	heal_requested.emit();
+	primary_metric_increase_requested.emit();
 
 
 func _on_score_button_pressed() -> void:
-	score_requested.emit();
+	secondary_metric_increment_requested.emit();
 
 
 func _on_level_a_button_pressed() -> void:
