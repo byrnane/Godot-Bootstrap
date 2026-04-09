@@ -2,8 +2,8 @@ extends PanelContainer;
 class_name BaseModal;
 
 
-const UiFocus = preload("res://shared/ui/navigation/ui_focus.gd");
-const UiMotion = preload("res://shared/ui/motion/ui_motion.gd");
+const UI_FOCUS_UTIL = preload("res://shared/ui/navigation/ui_focus.gd");
+const UI_MOTION_UTIL = preload("res://shared/ui/motion/ui_motion.gd");
 
 
 signal close_requested;
@@ -46,7 +46,7 @@ func open_modal() -> void:
 	focus_default_control();
 	call_deferred("_reset_scroll_position");
 	if motion_target != null:
-		_motion_tween = UiMotion.play_modal_open(self, motion_target);
+		_motion_tween = UI_MOTION_UTIL.play_modal_open(self, motion_target);
 	opened.emit();
 
 
@@ -57,7 +57,7 @@ func close_modal() -> void:
 	_is_closing = true;
 	_stop_motion_tween();
 	if motion_target != null:
-		_motion_tween = UiMotion.play_modal_close(self, motion_target);
+		_motion_tween = UI_MOTION_UTIL.play_modal_close(self, motion_target);
 		await _motion_tween.finished;
 
 	visible = false;
@@ -84,10 +84,10 @@ func can_close_from_cancel() -> bool:
 
 
 func focus_default_control() -> void:
-	if UiFocus.grab_path(self, default_focus_path):
+	if UI_FOCUS_UTIL.grab_path(self, default_focus_path):
 		return;
 
-	var fallback_control: Control = UiFocus.find_first_focusable(self);
+	var fallback_control: Control = UI_FOCUS_UTIL.find_first_focusable(self);
 	if fallback_control != null:
 		fallback_control.grab_focus();
 
@@ -101,7 +101,8 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _sync_ui_state() -> void:
-	pass;
+	# Extension point for derived modals that need to refresh runtime UI state.
+	return;
 
 
 func _reset_scroll_position() -> void:
@@ -117,11 +118,11 @@ func _apply_layout_mode() -> void:
 
 
 func _remember_focus_owner() -> void:
-	_previous_focus_owner = UiFocus.capture(get_viewport());
+	_previous_focus_owner = UI_FOCUS_UTIL.capture(get_viewport());
 
 
 func _restore_previous_focus() -> void:
-	if UiFocus.restore(_previous_focus_owner):
+	if UI_FOCUS_UTIL.restore(_previous_focus_owner):
 		_previous_focus_owner = null;
 		return;
 

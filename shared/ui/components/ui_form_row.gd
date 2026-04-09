@@ -1,5 +1,5 @@
-extends VBoxContainer
-class_name UiFormRow
+extends VBoxContainer;
+class_name UiFormRow;
 
 
 @export var title_key: String = "":

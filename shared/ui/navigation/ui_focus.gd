@@ -1,5 +1,5 @@
-extends RefCounted
-class_name UiFocus
+extends RefCounted;
+class_name UiFocus;
 
 
 static func capture(viewport: Viewport) -> Control:
@@ -8,17 +8,20 @@ static func capture(viewport: Viewport) -> Control:
 	return viewport.gui_get_focus_owner() as Control;
 
 
-static func restore(control: Control) -> bool:
+static func restore(control: Variant) -> bool:
+	if not (control is Control):
+		return false;
+	var focus_target: Control = control as Control;
 	if not is_instance_valid(control):
 		return false;
-	if not control.is_inside_tree():
+	if not focus_target.is_inside_tree():
 		return false;
-	if not control.visible:
+	if not focus_target.visible:
 		return false;
-	if control.focus_mode == Control.FOCUS_NONE:
+	if focus_target.focus_mode == Control.FOCUS_NONE:
 		return false;
 
-	control.grab_focus();
+	focus_target.grab_focus();
 	return true;
 
 

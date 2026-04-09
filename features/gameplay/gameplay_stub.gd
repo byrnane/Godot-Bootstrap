@@ -64,6 +64,20 @@ func bind_hud(hud: Control) -> void:
 		hud.call("apply_view_model", _build_view_model());
 
 
+func unbind_hud(hud: Control) -> void:
+	if hud == null:
+		return;
+	_disconnect_signal_if_connected(hud, &"damage_requested", Callable(self, "apply_damage"));
+	_disconnect_signal_if_connected(hud, &"heal_requested", Callable(self, "apply_heal"));
+	_disconnect_signal_if_connected(hud, &"score_requested", Callable(self, "add_score_points"));
+	_disconnect_signal_if_connected(hud, &"level_a_requested", Callable(self, "load_level_a"));
+	_disconnect_signal_if_connected(hud, &"level_b_requested", Callable(self, "load_level_b"));
+	_disconnect_signal_if_connected(hud, &"pause_toggle_requested", Callable(self, "_toggle_pause"));
+	_disconnect_signal_if_connected(hud, &"save_requested", Callable(self, "_request_save"));
+	_disconnect_signal_if_connected(hud, &"back_to_menu_requested", Callable(self, "_request_back_to_menu"));
+	_disconnect_signal_if_connected(self, &"view_changed", Callable(hud, "apply_view_model"));
+
+
 func on_enter(_payload: Variant = null) -> void:
 	_refresh_view();
 	_load_level(SessionContext.current_level_id);
@@ -140,6 +154,14 @@ func _connect_signal_if_needed(source: Object, signal_name: StringName, target: 
 	if source.is_connected(signal_name, target):
 		return;
 	source.connect(signal_name, target);
+
+
+func _disconnect_signal_if_connected(source: Object, signal_name: StringName, target: Callable) -> void:
+	if source == null or not source.has_signal(signal_name):
+		return;
+	if not source.is_connected(signal_name, target):
+		return;
+	source.disconnect(signal_name, target);
 
 
 func _toggle_pause() -> void:

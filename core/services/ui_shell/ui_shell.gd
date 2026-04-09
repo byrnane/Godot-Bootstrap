@@ -42,6 +42,7 @@ var _feedback_queue: Array[Dictionary] = [];
 var _active_feedback_kind: StringName = &"";
 var _active_feedback_request_id: int = -1;
 var _debug_refresh_elapsed: float = 0.0;
+var _reported_setup_issues: Dictionary = {};
 
 
 func _ready() -> void:
@@ -55,6 +56,7 @@ func _ready() -> void:
 		_debug_layer.z_as_relative = false;
 		_debug_layer.z_index = DEBUG_LAYER_Z_INDEX;
 	_modal_backdrop = get_node_or_null(modal_backdrop_path) as Control;
+	_validate_shell_setup();
 	if _modal_backdrop != null and not _modal_backdrop.gui_input.is_connected(_on_modal_backdrop_gui_input):
 		_modal_backdrop.gui_input.connect(_on_modal_backdrop_gui_input);
 	_ensure_loading_screen();
@@ -180,6 +182,7 @@ func hide_loading_screen() -> void:
 
 func _ensure_modals() -> void:
 	if _modal_layer == null:
+		_warn_setup_issue("modal_layer_missing", "modal_layer_path is not configured or points to a missing node");
 		return;
 	if pause_modal_scene != null and _pause_modal == null:
 		_pause_modal = pause_modal_scene.instantiate() as PauseModal;
@@ -207,10 +210,22 @@ func _ensure_modals() -> void:
 			_bind_modal_lifecycle(_feedback_modal);
 			_feedback_modal.confirmed.connect(_on_feedback_confirmed);
 			_feedback_modal.canceled.connect(_on_feedback_canceled);
+	if pause_modal_scene == null:
+		_warn_setup_issue("pause_modal_scene_missing", "pause_modal_scene is not assigned");
+	if settings_modal_scene == null:
+		_warn_setup_issue("settings_modal_scene_missing", "settings_modal_scene is not assigned");
+	if feedback_modal_scene == null:
+		_warn_setup_issue("feedback_modal_scene_missing", "feedback_modal_scene is not assigned");
 
 
 func _ensure_loading_screen() -> void:
-	if _loading_layer == null or loading_screen_scene == null or _loading_screen != null:
+	if _loading_layer == null:
+		_warn_setup_issue("loading_layer_missing", "loading_layer_path is not configured or points to a missing node");
+		return;
+	if loading_screen_scene == null:
+		_warn_setup_issue("loading_screen_scene_missing", "loading_screen_scene is not assigned");
+		return;
+	if _loading_screen != null:
 		return;
 	_loading_screen = loading_screen_scene.instantiate() as LoadingScreen;
 	if _loading_screen == null:
@@ -220,7 +235,13 @@ func _ensure_loading_screen() -> void:
 
 
 func _ensure_debug_overlay() -> void:
-	if _debug_layer == null or debug_overlay_scene == null or _debug_overlay != null:
+	if _debug_layer == null:
+		_warn_setup_issue("debug_layer_missing", "debug_layer_path is not configured or points to a missing node");
+		return;
+	if debug_overlay_scene == null:
+		_warn_setup_issue("debug_overlay_scene_missing", "debug_overlay_scene is not assigned");
+		return;
+	if _debug_overlay != null:
 		return;
 	_debug_overlay = debug_overlay_scene.instantiate() as Control;
 	if _debug_overlay == null:
@@ -507,3 +528,27 @@ func _on_modal_visibility_changed() -> void:
 	_refresh_debug_overlay();
 	if not _modal_stack.is_empty():
 		call_deferred("_focus_top_modal");
+
+
+func _validate_shell_setup() -> void:
+	if _hud_layer == null:
+		_warn_setup_issue("hud_layer_missing", "hud_layer_path is not configured or points to a missing node");
+	if _modal_layer == null:
+		_warn_setup_issue("modal_layer_missing", "modal_layer_path is not configured or points to a missing node");
+	if _loading_layer == null:
+		_warn_setup_issue("loading_layer_missing", "loading_layer_path is not configured or points to a missing node");
+	if _debug_layer == null:
+		_warn_setup_issue("debug_layer_missing", "debug_layer_path is not configured or points to a missing node");
+	if _toast_stack == null:
+		_warn_setup_issue("toast_stack_missing", "toast_stack_path is not configured or points to a missing node");
+	if _modal_backdrop == null:
+		_warn_setup_issue("modal_backdrop_missing", "modal_backdrop_path is not configured or points to a missing node");
+	if toast_item_scene == null:
+		_warn_setup_issue("toast_item_scene_missing", "toast_item_scene is not assigned");
+
+
+func _warn_setup_issue(issue_key: String, message: String) -> void:
+	if _reported_setup_issues.has(issue_key):
+		return;
+	_reported_setup_issues[issue_key] = true;
+	push_warning("UiShell: %s." % [message]);
