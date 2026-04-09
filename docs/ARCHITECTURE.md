@@ -46,6 +46,7 @@ This template is intentionally simple and predictable. It is not a universal gam
 
 - owns top-level application flow
 - decides where the app should go next
+- exposes explicit startup/session contracts via `AppStartupParams` and `SessionStartParams`
 
 `SceneRouter`
 
@@ -65,6 +66,13 @@ This template is intentionally simple and predictable. It is not a universal gam
 `SessionContext`
 
 - current run state
+
+`GameConfig`
+
+- runtime template config separated from `SessionContext` and user settings
+- resolves configured scene ids and default menu music with safe fallbacks
+- loads defaults from `core/config/default_game_config.tres`
+- supports optional project overrides via `core/config/game_config_override.tres`
 
 `SettingsManager`
 
@@ -123,6 +131,8 @@ Normal flow:
 5. `SceneRouter` mounts the HUD if the scene provides one.
 6. The scene starts working and talks to its HUD through explicit methods and signals.
 
+Transition payloads are passed as `SceneTransitionPayload` objects (instead of generic `Variant`), so scene enter contracts stay explicit and typed.
+
 Important points:
 
 - there is always exactly one active root scene
@@ -143,6 +153,19 @@ The idea is simple:
 - gameplay logic stays in the world scene
 - HUD stays presentation-only
 - `SceneRouter` mounts and unmounts it in a controlled way
+
+### Scene contracts
+
+Scenes can expose these optional integration methods:
+
+- `on_enter(payload: SceneTransitionPayload)`
+- `on_exit()`
+- `get_hud_scene()`
+- `bind_hud(hud)`
+- `unbind_hud(hud)`
+
+`SceneRouter` validates the HUD-related contract and warns when implementations are inconsistent.
+Contract helper constants and checks live in `core/contracts/scene_contracts.gd`.
 
 ### Modal model
 

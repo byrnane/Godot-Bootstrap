@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="GameConfigData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://core/types/game_config_data.gd" id="1_script"]
+[ext_resource type="AudioStream" path="res://assets/music/main_menu.mp3" id="2_music"]
+
+[resource]
+script = ExtResource("1_script")
+start_scene_id = &"main_menu"
+gameplay_scene_id = &"gameplay"
+main_menu_music = ExtResource("2_music")

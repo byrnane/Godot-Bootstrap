@@ -63,27 +63,27 @@ Focus: make the app skeleton strongly typed and extensible.
 
 ### 1.1 Typed transitions and startup contracts
 
-- [ ] Replace generic scene `Variant` payload usage with typed transition payload objects.
-- [ ] Introduce explicit startup/session parameters API in `AppFlow`.
-- [ ] Define and document scene contract interfaces (`on_enter`, `on_exit`, HUD binding contract).
+- [x] Replace generic scene `Variant` payload usage with typed transition payload objects.
+- [x] Introduce explicit startup/session parameters API in `AppFlow`.
+- [x] Define and document scene contract interfaces (`on_enter`, `on_exit`, HUD binding contract).
 
 ### 1.2 Runtime configuration layer
 
-- [ ] Add `GameConfig` as a dedicated runtime entity (separate from user settings/session data).
-- [ ] Define config source strategy (defaults + optional project override).
-- [ ] Route non-user, game-level constants through `GameConfig`.
+- [x] Add `GameConfig` as a dedicated runtime entity (separate from user settings/session data).
+- [x] Define config source strategy (defaults + optional project override).
+- [x] Route non-user, game-level constants through `GameConfig`.
 
 ### 1.3 Scene and UI shell robustness
 
-- [ ] Improve `SceneRouter` and `UiShell` behavior under rapid consecutive requests.
-- [ ] Add deterministic handling for duplicate transition requests.
-- [ ] Ensure modal stack, feedback queue, and loading layer cannot enter invalid states.
+- [x] Improve `SceneRouter` and `UiShell` behavior under rapid consecutive requests.
+- [x] Add deterministic handling for duplicate transition requests.
+- [x] Ensure modal stack, feedback queue, and loading layer cannot enter invalid states.
 
 ### Exit criteria for Phase 1
 
-- [ ] Transition API is typed and documented.
-- [ ] Runtime config and user settings are clearly separated.
-- [ ] Transition/UI shell edge cases are reproducible and handled.
+- [x] Transition API is typed and documented.
+- [x] Runtime config and user settings are clearly separated.
+- [x] Transition/UI shell edge cases are reproducible and handled.
 
 
 ## Phase 2 - Data And Player-Facing Infrastructure
