@@ -105,7 +105,7 @@ Focus: ship-grade save/settings/input/localization baseline.
 
 ### 2.3 Input system maturity
 
-- [ ] Finish keyboard/mouse rebinding polish (UI clarity, conflict resolution UX, reset flows).
+- [x] Finish keyboard/mouse rebinding polish (UI clarity, conflict resolution UX, reset flows).
 - [ ] Add baseline gamepad support with fixed default mapping.
 - [ ] Keep gamepad rebinding postponed until fixed mapping is validated.
 

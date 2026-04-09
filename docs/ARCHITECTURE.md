@@ -111,6 +111,8 @@ This template is intentionally simple and predictable. It is not a universal gam
 - edits Godot `InputMap` instead of replacing it
 - keeps keyboard and mouse rebinding rules in one place
 - lets compatible actions share one button through conflict groups
+- emits conflict-resolution signals when a rebind clears overlapping bindings
+- exposes active rebind action/slot so UI can show precise waiting state
 
 `UiFeedback`
 
@@ -226,6 +228,7 @@ This gives you:
 - `InputManager` only manages which keyboard and mouse events are assigned to those native actions
 - user rebinds are saved to `user://input_bindings.save`
 - compatible actions may share the same binding when they belong to the same conflict group
+- controls UI includes conflict feedback and a confirmed reset-to-default flow
 - gamepad support exists in the roadmap, but gamepad rebinding is intentionally postponed until the keyboard and mouse layout is stable
 
 ### Persistence

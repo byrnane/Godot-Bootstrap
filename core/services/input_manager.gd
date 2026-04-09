@@ -4,6 +4,7 @@ signal bindings_changed(action_name: StringName);
 signal rebind_started(action_name: StringName);
 signal rebind_completed(action_name: StringName);
 signal rebind_canceled(action_name: StringName);
+signal rebind_conflicts_resolved(action_name: StringName, replaced_actions: Array[StringName]);
 
 
 const INPUT_SETTINGS_PATH: String = "user://input_bindings.save";
@@ -162,6 +163,14 @@ func is_rebinding_action(action_name: StringName) -> bool:
 
 func is_rebinding_slot(action_name: StringName, binding_slot: int) -> bool:
 	return _pending_rebind_action == action_name and _pending_rebind_slot == binding_slot;
+
+
+func get_pending_rebind_action() -> StringName:
+	return _pending_rebind_action;
+
+
+func get_pending_rebind_slot() -> int:
+	return _pending_rebind_slot;
 
 
 func start_rebind(action_name: StringName, binding_slot: int = 0) -> bool:
@@ -341,12 +350,16 @@ func _apply_rebind(action_name: StringName, event: InputEvent) -> void:
 
 	# We edit the shared Godot `InputMap` in place, so gameplay and UI keep using
 	# the native `Input.is_action_*` API without knowing about `InputManager`.
+	var replaced_actions: Array[StringName] = [];
 	for other_action_name: StringName in REBINDABLE_ACTIONS:
 		if other_action_name == action_name:
 			continue;
 		if _can_actions_share_binding(action_name, other_action_name):
 			continue;
+		if not _action_has_matching_event(other_action_name, event):
+			continue;
 		InputMap.action_erase_event(other_action_name, event);
+		replaced_actions.append(other_action_name);
 		bindings_changed.emit(other_action_name);
 
 	var updated_events: Array[InputEvent] = _build_rebound_event_list(action_name, event, _pending_rebind_slot);
@@ -355,6 +368,8 @@ func _apply_rebind(action_name: StringName, event: InputEvent) -> void:
 	_pending_rebind_action = &"";
 	_pending_rebind_slot = -1;
 	bindings_changed.emit(action_name);
+	if not replaced_actions.is_empty():
+		rebind_conflicts_resolved.emit(action_name, replaced_actions);
 	rebind_completed.emit(action_name);
 
 
@@ -394,6 +409,13 @@ func _remove_matching_event(events: Array[InputEvent], event: InputEvent) -> voi
 	for event_index: int in range(events.size() - 1, -1, -1):
 		if events[event_index] != null and events[event_index].is_match(event):
 			events.remove_at(event_index);
+
+
+func _action_has_matching_event(action_name: StringName, event: InputEvent) -> bool:
+	for existing_event: InputEvent in get_action_events(action_name):
+		if existing_event != null and existing_event.is_match(event):
+			return true;
+	return false;
 
 
 func _set_action_events(action_name: StringName, events: Array[InputEvent]) -> void:

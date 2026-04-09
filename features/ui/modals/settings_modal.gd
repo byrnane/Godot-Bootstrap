@@ -10,6 +10,8 @@ const UI_FORM_ROW_SCENE: PackedScene = preload("res://shared/ui/components/ui_fo
 var _is_syncing_controls: bool = false;
 var _is_dirty: bool = false;
 var _is_close_confirmation_pending: bool = false;
+var _is_reset_bindings_confirmation_pending: bool = false;
+var _pending_conflict_status_text: String = "";
 var _binding_buttons: Dictionary = {};
 
 
@@ -48,6 +50,8 @@ func _ready() -> void:
 		InputManager.rebind_completed.connect(_on_rebind_finished);
 	if not InputManager.rebind_canceled.is_connected(_on_rebind_finished):
 		InputManager.rebind_canceled.connect(_on_rebind_finished);
+	if not InputManager.rebind_conflicts_resolved.is_connected(_on_rebind_conflicts_resolved):
+		InputManager.rebind_conflicts_resolved.connect(_on_rebind_conflicts_resolved);
 	_build_bindings_ui();
 	_populate_locales();
 	_refresh_tab_titles();
@@ -65,6 +69,8 @@ func _exit_tree() -> void:
 		InputManager.rebind_completed.disconnect(_on_rebind_finished);
 	if InputManager.rebind_canceled.is_connected(_on_rebind_finished):
 		InputManager.rebind_canceled.disconnect(_on_rebind_finished);
+	if InputManager.rebind_conflicts_resolved.is_connected(_on_rebind_conflicts_resolved):
+		InputManager.rebind_conflicts_resolved.disconnect(_on_rebind_conflicts_resolved);
 
 
 func open_modal() -> void:
@@ -229,7 +235,11 @@ func _refresh_bindings_ui() -> void:
 			button.disabled = InputManager.is_rebinding() and not InputManager.is_rebinding_slot(action_name, binding_slot);
 
 	if InputManager.is_rebinding():
-		bindings_status_label.text = tr("UI_INPUT_REBIND_HINT");
+		var pending_action: StringName = InputManager.get_pending_rebind_action();
+		var action_label: String = tr(InputManager.get_action_label_key(pending_action));
+		bindings_status_label.text = tr("UI_INPUT_REBIND_HINT_ACTION").format({
+			"action": action_label,
+		});
 	else:
 		bindings_status_label.text = tr("UI_INPUT_BINDINGS_HINT");
 	reset_bindings_button.disabled = InputManager.is_rebinding();
@@ -272,8 +282,21 @@ func _on_binding_button_pressed(action_name: StringName, binding_slot: int) -> v
 
 
 func _on_reset_bindings_button_pressed() -> void:
-	InputManager.reset_to_defaults();
-	_refresh_bindings_ui();
+	if _is_reset_bindings_confirmation_pending:
+		return;
+	_is_reset_bindings_confirmation_pending = true;
+	UiFeedback.confirm(
+		tr("UI_INPUT_RESET_BINDINGS_CONFIRM_MESSAGE"),
+		_on_confirm_reset_bindings,
+		_on_cancel_reset_bindings,
+		{
+			"title": tr("UI_INPUT_RESET_BINDINGS_CONFIRM_TITLE"),
+			"confirm_text": tr("UI_INPUT_RESET_BINDINGS_CONFIRM"),
+			"cancel_text": tr("UI_INPUT_RESET_BINDINGS_CANCEL"),
+			"close_on_backdrop": true,
+			"close_on_cancel": true,
+		}
+	);
 
 
 func _on_bindings_changed(_action_name: StringName) -> void:
@@ -286,6 +309,44 @@ func _on_rebind_started(_action_name: StringName) -> void:
 
 func _on_rebind_finished(_action_name: StringName) -> void:
 	_refresh_bindings_ui();
+	if not _pending_conflict_status_text.is_empty():
+		bindings_status_label.text = _pending_conflict_status_text;
+		_pending_conflict_status_text = "";
+
+
+func _on_rebind_conflicts_resolved(action_name: StringName, replaced_actions: Array[StringName]) -> void:
+	var formatted_actions: String = _format_action_labels(replaced_actions);
+	var status_text: String = tr("UI_INPUT_CONFLICT_RESOLVED").format({
+		"action": tr(InputManager.get_action_label_key(action_name)),
+		"replaced_actions": formatted_actions,
+	});
+	_pending_conflict_status_text = status_text;
+	UiFeedback.toast(status_text, {
+		"variant": "warning",
+		"duration": 3.0,
+	});
+
+
+func _on_confirm_reset_bindings() -> void:
+	_is_reset_bindings_confirmation_pending = false;
+	InputManager.reset_to_defaults();
+	_refresh_bindings_ui();
+	UiFeedback.toast(tr("UI_INPUT_BINDINGS_RESET_DONE"), {
+		"variant": "success",
+		"duration": 2.4,
+	});
+
+
+func _on_cancel_reset_bindings() -> void:
+	_is_reset_bindings_confirmation_pending = false;
+	_refresh_bindings_ui();
+
+
+func _format_action_labels(actions: Array[StringName]) -> String:
+	var labels: PackedStringArray = [];
+	for action_name: StringName in actions:
+		labels.append(tr(InputManager.get_action_label_key(action_name)));
+	return ", ".join(labels);
 
 
 func _on_confirm_close_with_unsaved_changes() -> void:

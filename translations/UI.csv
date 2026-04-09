@@ -59,7 +59,14 @@ UI_SETTINGS_RESET,Сбросить настройки,Reset settings
 UI_SETTINGS_BACK,Применить и вернуться,Apply and return
 UI_INPUT_BINDINGS_HINT,Выберите действие и нажмите новую кнопку или клавишу,Choose an action and press a new key or button
 UI_INPUT_REBIND_HINT,Ожидание нового ввода для выбранного действия,Waiting for a new input for the selected action
+UI_INPUT_REBIND_HINT_ACTION,Ожидание нового ввода для действия: {action},Waiting for new input for action: {action}
 UI_INPUT_RESET_BINDINGS,Сбросить управление,Reset controls
+UI_INPUT_RESET_BINDINGS_CONFIRM_TITLE,Сбросить управление?,Reset controls?
+UI_INPUT_RESET_BINDINGS_CONFIRM_MESSAGE,Все назначения клавиш будут возвращены к значениям по умолчанию. Продолжить?,All key bindings will be restored to defaults. Continue?
+UI_INPUT_RESET_BINDINGS_CONFIRM,Сбросить,Reset
+UI_INPUT_RESET_BINDINGS_CANCEL,Отмена,Cancel
+UI_INPUT_BINDINGS_RESET_DONE,Управление сброшено к значениям по умолчанию,Controls were reset to defaults
+UI_INPUT_CONFLICT_RESOLVED,Действие {action} переназначено. Очищены конфликты: {replaced_actions},Action {action} was rebound. Conflicts cleared: {replaced_actions}
 UI_INPUT_UNBOUND,Не назначено,Unbound
 UI_INPUT_WAITING,Нажмите кнопку...,Press a button...
 UI_INPUT_GROUP_NAVIGATION,Навигация,Navigation
