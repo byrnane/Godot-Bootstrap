@@ -5,6 +5,9 @@ signal resume_requested;
 signal settings_requested;
 signal back_to_menu_requested;
 signal save_requested;
+signal debug_clear_save_requested;
+signal debug_jump_scene_requested(scene_id: StringName);
+signal debug_restart_session_requested;
 
 
 const DEBUG_LAYER_Z_INDEX: int = 1000;
@@ -36,7 +39,7 @@ var _pause_modal: PauseModal = null;
 var _settings_modal: SettingsModal = null;
 var _feedback_modal: FeedbackModal = null;
 var _loading_screen: LoadingScreen = null;
-var _debug_overlay: Control = null;
+var _debug_overlay: DebugOverlay = null;
 var _modal_stack: Array[Control] = [];
 var _feedback_queue: Array[Dictionary] = [];
 var _queued_feedback_request_ids: Dictionary = {};
@@ -280,13 +283,20 @@ func _ensure_debug_overlay() -> void:
 		return;
 	if _debug_overlay != null:
 		return;
-	_debug_overlay = debug_overlay_scene.instantiate() as Control;
+	_debug_overlay = debug_overlay_scene.instantiate() as DebugOverlay;
 	if _debug_overlay == null:
 		return;
 	_debug_layer.add_child(_debug_overlay);
 	_debug_overlay.process_mode = Node.PROCESS_MODE_ALWAYS;
 	_debug_overlay.z_as_relative = false;
 	_debug_overlay.z_index = DEBUG_OVERLAY_Z_INDEX;
+	if not _debug_overlay.clear_save_requested.is_connected(_on_debug_clear_save_requested):
+		_debug_overlay.clear_save_requested.connect(_on_debug_clear_save_requested);
+	if not _debug_overlay.jump_to_scene_requested.is_connected(_on_debug_jump_scene_requested):
+		_debug_overlay.jump_to_scene_requested.connect(_on_debug_jump_scene_requested);
+	if not _debug_overlay.restart_session_requested.is_connected(_on_debug_restart_session_requested):
+		_debug_overlay.restart_session_requested.connect(_on_debug_restart_session_requested);
+	_debug_overlay.set_scene_targets(Scenes.list_ids(), SceneRouter.current_scene_id);
 
 
 func _push_modal(modal: Control) -> void:
@@ -413,6 +423,8 @@ func _refresh_debug_overlay() -> void:
 		if not is_instance_valid(modal):
 			continue;
 		modal_names.append(modal.name);
+	_debug_overlay.set_scene_targets(Scenes.list_ids(), SceneRouter.current_scene_id);
+	var router_snapshot: Dictionary = SceneRouter.get_debug_snapshot();
 	_debug_overlay.apply_snapshot({
 		"app_state": AppContext.state,
 		"scene_id": String(SceneRouter.current_scene_id),
@@ -421,6 +433,19 @@ func _refresh_debug_overlay() -> void:
 		"hud_name": hud_name,
 		"modal_names": ", ".join(modal_names) if not modal_names.is_empty() else "-",
 		"debug_enabled": AppContext.debug_enabled,
+		"router": router_snapshot,
+		"loading_layer": {
+			"visible": _loading_visible,
+			"transition_active": _loading_transition_active,
+			"request_token": _loading_request_token,
+		},
+		"modal_layer": {
+			"stack_depth": _modal_stack.size(),
+			"feedback_queue_size": _feedback_queue.size(),
+			"active_feedback_kind": String(_active_feedback_kind),
+			"backdrop_visible": _modal_backdrop != null and _modal_backdrop.visible,
+		},
+		"input": _collect_input_debug_snapshot(),
 	});
 
 
@@ -444,6 +469,18 @@ func _on_scene_load_started(_scene_id: StringName) -> void:
 
 func _on_scene_load_failed(_scene_id: StringName, _error_text: String) -> void:
 	_refresh_debug_overlay();
+
+
+func _on_debug_clear_save_requested() -> void:
+	debug_clear_save_requested.emit();
+
+
+func _on_debug_jump_scene_requested(scene_id: StringName) -> void:
+	debug_jump_scene_requested.emit(scene_id);
+
+
+func _on_debug_restart_session_requested() -> void:
+	debug_restart_session_requested.emit();
 
 
 func _get_managed_modals() -> Array[Control]:
@@ -639,3 +676,17 @@ func _enqueue_feedback_request(kind: StringName, request_id: int, payload: Dicti
 		"payload": payload,
 	});
 	_queued_feedback_request_ids[request_id] = true;
+
+
+func _collect_input_debug_snapshot() -> Dictionary:
+	if InputManager == null:
+		return {
+			"is_rebinding": false,
+			"pending_action": "",
+			"pending_slot": -1,
+		};
+	return {
+		"is_rebinding": InputManager.is_rebinding(),
+		"pending_action": String(InputManager.get_pending_rebind_action()),
+		"pending_slot": InputManager.get_pending_rebind_slot(),
+	};

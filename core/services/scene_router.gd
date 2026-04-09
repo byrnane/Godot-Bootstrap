@@ -51,6 +51,17 @@ func go_to(scene_id: StringName, payload: SCENE_TRANSITION_PAYLOAD_TYPE = null) 
 func is_loading() -> bool:
 	return _is_loading;
 
+func get_debug_snapshot() -> Dictionary:
+	return {
+		"is_loading": _is_loading,
+		"has_container": has_container(),
+		"current_scene_id": String(current_scene_id),
+		"has_queued_transition": _has_queued_transition,
+		"queued_scene_id": String(_queued_scene_id),
+		"restore_state_pending": _should_restore_state_after_loading,
+		"state_before_loading": int(_state_before_loading),
+	};
+
 
 func _go_to_async(scene_id: StringName, payload: SCENE_TRANSITION_PAYLOAD_TYPE = null) -> void:
 	var resolved_scene_id: StringName = scene_id;

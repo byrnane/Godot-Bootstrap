@@ -83,6 +83,18 @@ func delete_save(slot_id: int = DEFAULT_SLOT_ID) -> void:
 	if normalized_slot_id == DEFAULT_SLOT_ID and FileAccess.file_exists(legacy_backup_path):
 		DirAccess.remove_absolute(legacy_backup_path);
 
+func clear_all_saves() -> int:
+	var cleared_slot_ids: Dictionary = {};
+	for slot_id: int in list_slots():
+		delete_save(slot_id);
+		cleared_slot_ids[slot_id] = true;
+	if not cleared_slot_ids.has(DEFAULT_SLOT_ID):
+		var had_default_save: bool = has_save(DEFAULT_SLOT_ID);
+		delete_save(DEFAULT_SLOT_ID);
+		if had_default_save:
+			cleared_slot_ids[DEFAULT_SLOT_ID] = true;
+	return cleared_slot_ids.size();
+
 
 func list_slots() -> Array[int]:
 	var slot_ids: Array[int] = [];

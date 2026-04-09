@@ -157,11 +157,11 @@ Focus: faster diagnosis and safer refactors.
 
 ### 4.1 Debug overlay and quick actions
 
-- [ ] Extend `DebugOverlay` with quick actions:
-- [ ] clear save;
-- [ ] jump to scene;
-- [ ] restart session.
-- [ ] Add runtime snapshots for scene/router/loading/modal/input state.
+- [x] Extend `DebugOverlay` with quick actions:
+- [x] clear save;
+- [x] jump to scene;
+- [x] restart session.
+- [x] Add runtime snapshots for scene/router/loading/modal/input state.
 
 ### 4.2 Smoke test suite
 

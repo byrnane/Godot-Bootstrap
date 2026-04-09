@@ -44,6 +44,20 @@ UI_DEBUG_LOADING,Идёт загрузка: {value},Loading active: {value}
 UI_DEBUG_HUD,HUD: {value},HUD: {value}
 UI_DEBUG_MODALS,Модалки: {value},Modals: {value}
 UI_DEBUG_ENABLED,Debug режим: {value},Debug mode: {value}
+UI_DEBUG_ROUTER,Router: loading={loading} queued={queued} target={target},Router: loading={loading} queued={queued} target={target}
+UI_DEBUG_LOADING_LAYER,Loading layer: visible={visible} transition={transition} token={token},Loading layer: visible={visible} transition={transition} token={token}
+UI_DEBUG_MODAL_LAYER,Modal layer: depth={depth} feedback={feedback} backdrop={backdrop},Modal layer: depth={depth} feedback={feedback} backdrop={backdrop}
+UI_DEBUG_INPUT,Input: rebind={rebind} action={action} slot={slot},Input: rebind={rebind} action={action} slot={slot}
+UI_DEBUG_ACTIONS_HEADER,Быстрые действия,Quick actions
+UI_DEBUG_ACTION_CLEAR_SAVE,Очистить сохранения,Clear saves
+UI_DEBUG_ACTION_SCENE_TARGET,Сцена для перехода,Scene jump target
+UI_DEBUG_ACTION_JUMP_SCENE,Перейти,Jump
+UI_DEBUG_ACTION_RESTART_SESSION,Рестарт сессии,Restart session
+UI_DEBUG_TOAST_SAVE_CLEARED,Сохранения очищены (слотов: {count}),Saves cleared (slots: {count})
+UI_DEBUG_TOAST_SCENE_UNKNOWN,Неизвестная сцена: {value},Unknown scene: {value}
+UI_DEBUG_TOAST_TRANSITION_BLOCKED,Переход заблокирован: дождитесь завершения текущей загрузки,Transition blocked: wait for current loading to finish
+UI_DEBUG_TOAST_SCENE_JUMPED,Переход к сцене: {value},Jumped to scene: {value}
+UI_DEBUG_TOAST_SESSION_RESTARTED,Сессия перезапущена,Session restarted
 ,,
 Settings,,
 UI_SETTINGS_HEADER,Настройки игры,Game settings

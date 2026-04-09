@@ -39,6 +39,10 @@ func continue_game() -> void:
 	start_session(_create_session_start_params(SESSION_START_PARAMS_TYPE.Mode.CONTINUE_OR_NEW));
 
 
+func restart_session() -> void:
+	start_session(_create_session_start_params(SESSION_START_PARAMS_TYPE.Mode.NEW_GAME));
+
+
 func start_session(params: SESSION_START_PARAMS_TYPE = null) -> void:
 	if _is_transition_blocked():
 		return;
@@ -135,6 +139,12 @@ func _connect_ui_shell() -> void:
 		UiShell.back_to_menu_requested.connect(return_to_main_menu);
 	if not UiShell.save_requested.is_connected(SaveManager.save_current_session):
 		UiShell.save_requested.connect(SaveManager.save_current_session);
+	if not UiShell.debug_clear_save_requested.is_connected(_on_debug_clear_save_requested):
+		UiShell.debug_clear_save_requested.connect(_on_debug_clear_save_requested);
+	if not UiShell.debug_jump_scene_requested.is_connected(_on_debug_jump_scene_requested):
+		UiShell.debug_jump_scene_requested.connect(_on_debug_jump_scene_requested);
+	if not UiShell.debug_restart_session_requested.is_connected(_on_debug_restart_session_requested):
+		UiShell.debug_restart_session_requested.connect(_on_debug_restart_session_requested);
 
 
 func _connect_transition_manager() -> void:
@@ -177,6 +187,62 @@ func _connect_gameplay(scene_root: Node) -> void:
 	_connect_scene_signal(scene_root, &"resume_requested", Callable(self, "request_resume"));
 	_connect_scene_signal(scene_root, &"back_to_menu_requested", Callable(self, "return_to_main_menu"));
 	_connect_scene_signal(scene_root, &"save_requested", Callable(SaveManager, "save_current_session"));
+
+
+func _on_debug_clear_save_requested() -> void:
+	var cleared_slot_count: int = SaveManager.clear_all_saves();
+	UiFeedback.toast(
+		tr("UI_DEBUG_TOAST_SAVE_CLEARED").format({"count": cleared_slot_count}),
+		{
+			"variant": "warning",
+			"duration": 2.8,
+		}
+	);
+
+
+func _on_debug_jump_scene_requested(scene_id: StringName) -> void:
+	if not Scenes.has(scene_id):
+		UiFeedback.toast(
+			tr("UI_DEBUG_TOAST_SCENE_UNKNOWN").format({"value": String(scene_id)}),
+			{"variant": "error"}
+		);
+		return;
+	if _is_transition_blocked():
+		UiFeedback.toast(tr("UI_DEBUG_TOAST_TRANSITION_BLOCKED"), {"variant": "warning"});
+		return;
+
+	_reset_pause_ui();
+	var transition_kind: int = SCENE_TRANSITION_PAYLOAD_TYPE.Kind.UNSPECIFIED;
+	if scene_id == _get_start_scene_id():
+		AppContext.set_state(AppState.Value.MAIN_MENU);
+		transition_kind = SCENE_TRANSITION_PAYLOAD_TYPE.Kind.RETURN_TO_MENU;
+	elif scene_id == _get_gameplay_scene_id():
+		SessionContext.reset();
+		AppContext.set_state(AppState.Value.IN_GAME);
+		transition_kind = SCENE_TRANSITION_PAYLOAD_TYPE.Kind.NEW_GAME;
+	else:
+		AppContext.set_state(AppState.Value.IN_GAME);
+
+	var payload: SCENE_TRANSITION_PAYLOAD_TYPE = SCENE_TRANSITION_PAYLOAD_TYPE.new();
+	payload.target_scene_id = scene_id;
+	payload.source_scene_id = SceneRouter.current_scene_id;
+	payload.kind = transition_kind;
+	payload.data = {
+		"debug_jump": true,
+	};
+	SceneRouter.go_to(scene_id, payload);
+	UiFeedback.toast(
+		tr("UI_DEBUG_TOAST_SCENE_JUMPED").format({"value": String(scene_id)}),
+		{"variant": "info"}
+	);
+
+
+func _on_debug_restart_session_requested() -> void:
+	if _is_transition_blocked():
+		UiFeedback.toast(tr("UI_DEBUG_TOAST_TRANSITION_BLOCKED"), {"variant": "warning"});
+		return;
+	restart_session();
+	UiFeedback.toast(tr("UI_DEBUG_TOAST_SESSION_RESTARTED"), {"variant": "success"});
 
 
 func _reset_pause_ui() -> void:
