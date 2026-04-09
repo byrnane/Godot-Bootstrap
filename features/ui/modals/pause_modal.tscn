@@ -1,7 +1,8 @@
-[gd_scene format=3 uid="uid://dv87t8fj5xqj1"]
+[gd_scene load_steps=3 format=3 uid="uid://dv87t8fj5xqj1"]
 
 [ext_resource type="PackedScene" path="res://features/ui/modals/base_modal.tscn" id="1_base"]
 [ext_resource type="Script" uid="uid://b7jeo28o6yphy" path="res://features/ui/modals/pause_modal.gd" id="2_script"]
+[ext_resource type="PackedScene" path="res://shared/ui/components/ui_card.tscn" id="3_card"]
 
 [node name="PauseModal" unique_id=1481707140 instance=ExtResource("1_base")]
 visible = true
@@ -14,32 +15,36 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("2_script")
 close_on_backdrop = false
-default_focus_path = NodePath("MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/ResumeButton")
+default_focus_path = NodePath("MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/PauseActionsCard/ContentMargin/Content/ResumeButton")
 
 [node name="TitleLabel" parent="MarginContainer/VBoxContainer" index="0"]
 text = "UI_PAUSE_TITLE"
 
-[node name="ResumeButton" type="Button" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body" index="0" unique_id=888822576]
+[node name="PauseActionsCard" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body" index="0" instance=ExtResource("3_card")]
+layout_mode = 2
+elevated = true
+
+[node name="ResumeButton" type="Button" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/PauseActionsCard/ContentMargin/Content" index="0" unique_id=888822576]
 unique_name_in_owner = true
 layout_mode = 2
 text = "UI_PAUSE_CONTINUE"
 
-[node name="SaveButton" type="Button" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body" index="1" unique_id=436869637]
+[node name="SaveButton" type="Button" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/PauseActionsCard/ContentMargin/Content" index="1" unique_id=436869637]
 unique_name_in_owner = true
 layout_mode = 2
 text = "UI_SAVE"
 
-[node name="SettingsButton" type="Button" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body" index="2" unique_id=1873605972]
+[node name="SettingsButton" type="Button" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/PauseActionsCard/ContentMargin/Content" index="2" unique_id=1873605972]
 unique_name_in_owner = true
 layout_mode = 2
 text = "UI_PAUSE_SETTINGS"
 
-[node name="BackButton" type="Button" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body" index="3" unique_id=1957643295]
+[node name="BackButton" type="Button" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/PauseActionsCard/ContentMargin/Content" index="3" unique_id=1957643295]
 unique_name_in_owner = true
 layout_mode = 2
 text = "UI_BACK_TO_MENU"
 
-[connection signal="pressed" from="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/ResumeButton" to="." method="_on_resume_button_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SaveButton" to="." method="_on_save_button_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsButton" to="." method="_on_settings_button_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/BackButton" to="." method="_on_back_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/PauseActionsCard/ContentMargin/Content/ResumeButton" to="." method="_on_resume_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/PauseActionsCard/ContentMargin/Content/SaveButton" to="." method="_on_save_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/PauseActionsCard/ContentMargin/Content/SettingsButton" to="." method="_on_settings_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/PauseActionsCard/ContentMargin/Content/BackButton" to="." method="_on_back_button_pressed"]
