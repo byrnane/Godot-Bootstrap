@@ -19,6 +19,7 @@ var _is_loading: bool = false;
 var _state_before_loading: AppState.Value = AppState.Value.BOOT;
 var _should_restore_state_after_loading: bool = false;
 var _reported_unknown_scene_ids: Dictionary = {};
+var _reported_scene_contract_issues: Dictionary = {};
 
 
 func configure(root_container: Node) -> void:
@@ -144,6 +145,7 @@ func _clear_container() -> void:
 func _mount_scene_hud(target: Node) -> void:
 	if target == null or UiShell == null:
 		return;
+	_validate_scene_hud_contract(target);
 	var hud_scene: PackedScene = _get_scene_hud_scene(target);
 	if hud_scene == null:
 		UiShell.clear_hud();
@@ -158,6 +160,7 @@ func _mount_scene_hud(target: Node) -> void:
 func _unmount_scene_hud(target: Node) -> void:
 	if UiShell == null:
 		return;
+	_validate_scene_hud_contract(target);
 	var hud_instance: Control = UiShell.get_current_hud();
 	if target != null and hud_instance != null and target.has_method("unbind_hud"):
 		target.call("unbind_hud", hud_instance);
@@ -167,7 +170,14 @@ func _unmount_scene_hud(target: Node) -> void:
 func _get_scene_hud_scene(target: Node) -> PackedScene:
 	if target == null or not target.has_method("get_hud_scene"):
 		return null;
-	return target.call("get_hud_scene") as PackedScene;
+	var hud_scene_candidate: Variant = target.call("get_hud_scene");
+	if hud_scene_candidate == null:
+		return null;
+	var hud_scene: PackedScene = hud_scene_candidate as PackedScene;
+	if hud_scene != null:
+		return hud_scene;
+	_warn_scene_contract_issue(target, "get_hud_scene", "must return PackedScene or null");
+	return null;
 
 
 func _call_on_enter(target: Node, payload: Variant) -> void:
@@ -216,3 +226,29 @@ func _warn_unknown_scene_id(scene_id: StringName) -> void:
 		return;
 	_reported_unknown_scene_ids[warning_key] = true;
 	push_warning("SceneRouter: unknown scene id '%s', fallback to default scene '%s'." % [warning_key, String(default_scene_id)]);
+
+
+func _validate_scene_hud_contract(target: Node) -> void:
+	if target == null:
+		return;
+	var has_get_hud_scene: bool = target.has_method("get_hud_scene");
+	var has_bind_hud: bool = target.has_method("bind_hud");
+	var has_unbind_hud: bool = target.has_method("unbind_hud");
+	if (has_bind_hud or has_unbind_hud) and not has_get_hud_scene:
+		_warn_scene_contract_issue(target, "hud_contract", "bind_hud/unbind_hud require get_hud_scene");
+	if has_bind_hud != has_unbind_hud:
+		_warn_scene_contract_issue(target, "hud_contract", "bind_hud and unbind_hud should be implemented together");
+
+
+func _warn_scene_contract_issue(target: Node, issue_key: String, message: String) -> void:
+	if target == null:
+		return;
+	var target_source: String = target.get_class();
+	var script_resource: Script = target.get_script() as Script;
+	if script_resource != null and not script_resource.resource_path.is_empty():
+		target_source = script_resource.resource_path;
+	var warning_key: String = "%s::%s" % [target_source, issue_key];
+	if _reported_scene_contract_issues.has(warning_key):
+		return;
+	_reported_scene_contract_issues[warning_key] = true;
+	push_warning("SceneRouter: scene '%s' has invalid contract: %s." % [target_source, message]);
