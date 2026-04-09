@@ -201,8 +201,8 @@ Focus: make the template easy to adopt and evolve.
 
 ### 5.3 Release process
 
-- [ ] Create release checklist (version, changelog, migration notes, smoke status).
-- [ ] Define semantic version policy for template compatibility.
+- [x] Create release checklist (version, changelog, migration notes, smoke status).
+- [x] Define semantic version policy for template compatibility.
 - [ ] Tag first production template release after all phase exit criteria pass.
 
 ### Exit criteria for Phase 5

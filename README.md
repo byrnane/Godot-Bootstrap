@@ -69,6 +69,7 @@ Docs:
 - [Extension Guide](docs/EXTENSION_GUIDE.md)
 - [Architecture Guardrails](docs/ARCHITECTURE_GUARDRAILS.md)
 - [Demo Replacement Guide](docs/DEMO_REPLACEMENT.md)
+- [Release Process](docs/RELEASE_PROCESS.md)
 - [Manual Test Plan](docs/MANUAL_TEST_PLAN.md)
 - [CI Smoke Troubleshooting](docs/CI_SMOKE_TROUBLESHOOTING.md)
 
