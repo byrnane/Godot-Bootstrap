@@ -4,9 +4,6 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-if (Get-Variable -Name PSNativeCommandUseErrorActionPreference -ErrorAction SilentlyContinue) {
-	$PSNativeCommandUseErrorActionPreference = $false
-}
 
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $smokeScene = "res://core/debug/phase0_smoke_runner.tscn"
@@ -52,7 +49,10 @@ function Main {
 		$arguments = @("--headless") + $arguments
 	}
 
-	& $resolvedExecutable @arguments
+	# Use Start-Process to avoid host-specific native-command exit handling.
+	$process = Start-Process -FilePath $resolvedExecutable -ArgumentList $arguments -Wait -PassThru -NoNewWindow
+	$godotExitCode = $process.ExitCode
+	Write-Host "Godot exit code: $godotExitCode"
 
 	if (-not (Test-Path $resultPath)) {
 		throw "Smoke result file was not generated: $resultPath"

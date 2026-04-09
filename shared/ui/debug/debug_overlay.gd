@@ -171,19 +171,10 @@ func _get_selected_scene_id() -> StringName:
 	return StringName(scene_id_text);
 
 func _get_state_label(state_value: AppState.Value) -> String:
-	match state_value:
-		AppState.Value.BOOT:
-			return tr("UI_STATE_BOOT");
-		AppState.Value.MAIN_MENU:
-			return tr("UI_STATE_MAIN_MENU");
-		AppState.Value.LOADING:
-			return tr("UI_STATE_LOADING");
-		AppState.Value.IN_GAME:
-			return tr("UI_STATE_IN_GAME");
-		AppState.Value.PAUSED:
-			return tr("UI_STATE_PAUSED");
-		_:
-			return str(state_value);
+	var state_key: String = AppState.to_ui_key(state_value);
+	if state_key.is_empty():
+		return str(state_value);
+	return tr(state_key);
 
 func _format_bool(value: Variant) -> String:
 	return "ON" if bool(value) else "OFF";

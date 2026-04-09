@@ -195,6 +195,8 @@ func _check_scene_loading_pipeline_contract() -> void:
 
 
 func _check_core_data_containers() -> void:
+	# Intentionally feed partially invalid payloads to verify migration and
+	# fallback contracts of persistence/runtime parameter containers.
 	var migrated_save: SaveData = SaveData.from_variant({
 		"version": SaveData.CURRENT_VERSION - 1,
 		"session_exists": true,
@@ -316,6 +318,9 @@ func _check_one_shot_audio_path() -> void:
 		return;
 	_check(player.bus == AudioManager.UI_BUS_NAME, "audio test: one-shot UI click used wrong audio bus");
 	_check(player.playing, "audio test: one-shot UI click player did not start playback");
+	if player.get_parent() != null:
+		player.get_parent().remove_child(player);
+	player.queue_free();
 
 
 func _check_music_audio_path() -> void:
@@ -711,14 +716,20 @@ func _finish() -> void:
 	if _failures.is_empty():
 		_write_result_file(true, []);
 		print("[PHASE0_SMOKE] PASS");
-		get_tree().quit(0);
+		call_deferred("_quit_smoke", 0);
 		return;
 
 	_write_result_file(false, _failures);
 	push_error("[PHASE0_SMOKE] FAILURES: %d" % [_failures.size()]);
 	for failure: String in _failures:
 		push_error("[PHASE0_SMOKE] - %s" % [failure]);
-	get_tree().quit(1);
+	call_deferred("_quit_smoke", 1);
+
+
+func _quit_smoke(exit_code: int) -> void:
+	# Let queued frees from smoke helpers flush before shutdown to keep output clean.
+	await get_tree().process_frame;
+	get_tree().quit(exit_code);
 
 
 func _write_result_file(is_success: bool, failures: Array[String]) -> void:

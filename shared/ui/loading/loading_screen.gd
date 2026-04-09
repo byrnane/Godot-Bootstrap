@@ -38,7 +38,6 @@ const STATUS_BADGE_TEXT_KEYS: Dictionary = {
 @export var tip_cycle_interval: float = 2.5;
 
 
-@onready var backdrop: ColorRect = %Backdrop;
 @onready var card: Control = %Card;
 @onready var status_badge: UiStatusBadge = %StatusBadge;
 @onready var title_label: Label = %TitleLabel;
