@@ -35,6 +35,8 @@ func _run() -> void:
 	await _expect_locale_switch_updates_shared_components();
 	_validate_main_menu_focus_navigation();
 	_check_default_theme_contrast();
+	_check_core_data_containers();
+	await _check_scene_loading_pipeline_contract();
 
 	for cycle_index: int in range(CYCLE_COUNT):
 		var cycle_number: int = cycle_index + 1;
@@ -118,6 +120,133 @@ func _expect_transition(action: Callable, expected_scene_id: StringName, expecte
 	_check(AppContext.state == expected_state, "%s: app state mismatch after transition" % [label]);
 	_check(not TransitionManager.is_active(), "%s: transition manager still active" % [label]);
 	_check(not get_tree().paused, "%s: tree remained paused after transition" % [label]);
+
+
+func _check_scene_loading_pipeline_contract() -> void:
+	SceneRouter.go_to(Scenes.GAMEPLAY);
+	var loading_started: bool = await _wait_until(
+		func() -> bool:
+			return SceneRouter.is_loading(),
+		TRANSITION_DELAY_SECONDS
+	);
+	_check(loading_started, "scene pipeline test: gameplay transition did not enter loading state");
+	if not loading_started:
+		return;
+
+	SceneRouter.go_to(Scenes.MAIN_MENU);
+	var queued_detected: bool = await _wait_until(
+		func() -> bool:
+			return bool(SceneRouter.get_debug_snapshot().get("has_queued_transition", false)),
+		TRANSITION_DELAY_SECONDS
+	);
+	_check(queued_detected, "scene pipeline test: queued transition was not detected");
+
+	var queue_drained: bool = await _wait_until(
+		func() -> bool:
+			var snapshot: Dictionary = SceneRouter.get_debug_snapshot();
+			return (
+				not bool(snapshot.get("is_loading", true))
+				and not bool(snapshot.get("has_queued_transition", true))
+				and SceneRouter.current_scene_id == Scenes.MAIN_MENU
+			),
+		LOAD_TIMEOUT_SECONDS * 2.0
+	);
+	_check(queue_drained, "scene pipeline test: queued transition did not resolve to main menu");
+	_check(not TransitionManager.is_active(), "scene pipeline test: transition manager stayed active after queue drain");
+	_check(AppContext.state == AppState.Value.MAIN_MENU, "scene pipeline test: app state should be MAIN_MENU after queue drain");
+
+	SceneRouter.go_to(&"__smoke_unknown_scene__");
+	var fallback_loaded: bool = await _wait_until(
+		func() -> bool:
+			return SceneRouter.current_scene_id == Scenes.MAIN_MENU and not SceneRouter.is_loading(),
+		LOAD_TIMEOUT_SECONDS
+	);
+	_check(fallback_loaded, "scene pipeline test: unknown scene fallback did not resolve to default scene");
+
+
+func _check_core_data_containers() -> void:
+	var migrated_save: SaveData = SaveData.from_variant({
+		"version": SaveData.CURRENT_VERSION - 1,
+		"session_exists": true,
+		"current_level_id": "__missing_level__",
+		"player_health": -24,
+		"score": -13,
+	});
+	_check(migrated_save != null, "data container test: SaveData migration returned null for compatible payload");
+	if migrated_save != null:
+		_check(
+			migrated_save.version == SaveData.CURRENT_VERSION,
+			"data container test: SaveData migration should normalize to current version"
+		);
+		_check(
+			migrated_save.current_level_id == SaveData.DEFAULT_LEVEL_ID,
+			"data container test: SaveData should fallback to default level id"
+		);
+		_check(migrated_save.player_health == 0, "data container test: SaveData should clamp negative health to zero");
+		_check(migrated_save.score == 0, "data container test: SaveData should clamp negative score to zero");
+
+	var incompatible_save: SaveData = SaveData.from_variant({
+		"version": SaveData.CURRENT_VERSION + 1,
+		"session_exists": true,
+	});
+	_check(incompatible_save == null, "data container test: SaveData should reject too-new payload versions");
+	_check(
+		not SaveData.get_incompatibility_reason({"version": SaveData.CURRENT_VERSION + 1}).is_empty(),
+		"data container test: SaveData should provide incompatibility reason for too-new versions"
+	);
+
+	var sanitized_settings: UserSettings = UserSettings.new();
+	sanitized_settings.language = "pt_BR";
+	sanitized_settings.master_volume = 1.3;
+	sanitized_settings.music_volume = -0.2;
+	sanitized_settings.ui_volume = 9.0;
+	sanitized_settings.sfx_volume = -5.0;
+	sanitized_settings.version = -99;
+	SettingsManager.call("_sanitize_settings", sanitized_settings);
+	_check(
+		sanitized_settings.version == UserSettings.CURRENT_VERSION,
+		"data container test: UserSettings version should normalize to current value"
+	);
+	_check(
+		sanitized_settings.language == LocalizationManager.DEFAULT_LOCALE,
+		"data container test: UserSettings locale should normalize to default supported locale"
+	);
+	_check(
+		is_equal_approx(sanitized_settings.master_volume, 1.0),
+		"data container test: UserSettings master volume should clamp to 1.0"
+	);
+	_check(
+		is_equal_approx(sanitized_settings.music_volume, 0.0),
+		"data container test: UserSettings music volume should clamp to 0.0"
+	);
+	_check(
+		is_equal_approx(sanitized_settings.ui_volume, 1.0),
+		"data container test: UserSettings UI volume should clamp to 1.0"
+	);
+	_check(
+		is_equal_approx(sanitized_settings.sfx_volume, 0.0),
+		"data container test: UserSettings SFX volume should clamp to 0.0"
+	);
+
+	var startup_params: AppStartupParams = AppStartupParams.new();
+	startup_params.main_menu_scene_id = &"__unknown_menu_scene__";
+	var resolved_startup: AppStartupParams = AppFlow.call("_resolve_startup_params", startup_params) as AppStartupParams;
+	_check(resolved_startup != null, "data container test: startup params resolution returned null");
+	if resolved_startup != null:
+		_check(
+			resolved_startup.main_menu_scene_id == GameConfig.get_start_scene_id(),
+			"data container test: startup params should fallback to configured start scene"
+		);
+
+	var session_params: SessionStartParams = SessionStartParams.new();
+	session_params.gameplay_scene_id = &"__unknown_gameplay_scene__";
+	var resolved_session: SessionStartParams = AppFlow.call("_resolve_session_start_params", session_params) as SessionStartParams;
+	_check(resolved_session != null, "data container test: session params resolution returned null");
+	if resolved_session != null:
+		_check(
+			resolved_session.gameplay_scene_id == GameConfig.get_gameplay_scene_id(),
+			"data container test: session params should fallback to configured gameplay scene"
+		);
 
 
 func _expect_pause_ignored_during_transition() -> void:
