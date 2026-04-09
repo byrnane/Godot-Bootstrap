@@ -31,6 +31,27 @@ func on_enter(_payload: SCENE_TRANSITION_PAYLOAD_TYPE = null) -> void:
 
 func _refresh_continue_state() -> void:
 	continue_button.disabled = not SaveManager.has_save();
+	_apply_button_focus_cycle(_collect_focusable_buttons());
+
+
+func _collect_focusable_buttons() -> Array[Button]:
+	var buttons: Array[Button] = [new_game_button];
+	if not continue_button.disabled:
+		buttons.append(continue_button);
+	buttons.append(settings_button);
+	buttons.append(quit_button);
+	return buttons;
+
+
+func _apply_button_focus_cycle(buttons: Array[Button]) -> void:
+	if buttons.size() <= 1:
+		return;
+	for button_index: int in range(buttons.size()):
+		var current_button: Button = buttons[button_index];
+		var previous_button: Button = buttons[(button_index - 1 + buttons.size()) % buttons.size()];
+		var next_button: Button = buttons[(button_index + 1) % buttons.size()];
+		current_button.focus_neighbor_top = current_button.get_path_to(previous_button);
+		current_button.focus_neighbor_bottom = current_button.get_path_to(next_button);
 
 
 func _on_continue_button_pressed() -> void:
