@@ -46,6 +46,7 @@ This template is intentionally simple and predictable. It is not a universal gam
 
 - owns top-level application flow
 - decides where the app should go next
+- exposes explicit startup/session contracts via `AppStartupParams` and `SessionStartParams`
 
 `SceneRouter`
 

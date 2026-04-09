@@ -64,7 +64,7 @@ Focus: make the app skeleton strongly typed and extensible.
 ### 1.1 Typed transitions and startup contracts
 
 - [x] Replace generic scene `Variant` payload usage with typed transition payload objects.
-- [ ] Introduce explicit startup/session parameters API in `AppFlow`.
+- [x] Introduce explicit startup/session parameters API in `AppFlow`.
 - [ ] Define and document scene contract interfaces (`on_enter`, `on_exit`, HUD binding contract).
 
 ### 1.2 Runtime configuration layer
