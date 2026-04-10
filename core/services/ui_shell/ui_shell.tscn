@@ -3,10 +3,11 @@
 [ext_resource type="Script" uid="uid://co1ff8m2mtvav" path="res://core/services/ui_shell/ui_shell.gd" id="1_script"]
 [ext_resource type="PackedScene" path="res://features/ui/modals/pause_modal.tscn" id="2_pause_modal"]
 [ext_resource type="PackedScene" path="res://features/ui/modals/settings_modal.tscn" id="3_settings_modal"]
-[ext_resource type="PackedScene" path="res://shared/ui/loading/loading_screen.tscn" id="4_loading_screen"]
-[ext_resource type="PackedScene" path="res://shared/ui/debug/debug_overlay.tscn" id="5_debug_overlay"]
-[ext_resource type="PackedScene" path="res://shared/ui/feedback/feedback_modal.tscn" id="6_feedback_modal"]
-[ext_resource type="PackedScene" path="res://shared/ui/feedback/toast_item.tscn" id="7_toast_item"]
+[ext_resource type="PackedScene" path="res://features/ui/modals/save_slots_modal.tscn" id="4_save_slots_modal"]
+[ext_resource type="PackedScene" path="res://shared/ui/loading/loading_screen.tscn" id="5_loading_screen"]
+[ext_resource type="PackedScene" path="res://shared/ui/debug/debug_overlay.tscn" id="6_debug_overlay"]
+[ext_resource type="PackedScene" path="res://shared/ui/feedback/feedback_modal.tscn" id="7_feedback_modal"]
+[ext_resource type="PackedScene" path="res://shared/ui/feedback/toast_item.tscn" id="8_toast_item"]
 
 [node name="UiShell" type="CanvasLayer" unique_id=503391043]
 script = ExtResource("1_script")
@@ -18,10 +19,11 @@ toast_stack_path = NodePath("ToastLayer/ToastMargin/ToastStack")
 modal_backdrop_path = NodePath("ModalLayer/ModalBackdrop")
 pause_modal_scene = ExtResource("2_pause_modal")
 settings_modal_scene = ExtResource("3_settings_modal")
-feedback_modal_scene = ExtResource("6_feedback_modal")
-loading_screen_scene = ExtResource("4_loading_screen")
-debug_overlay_scene = ExtResource("5_debug_overlay")
-toast_item_scene = ExtResource("7_toast_item")
+save_slots_modal_scene = ExtResource("4_save_slots_modal")
+feedback_modal_scene = ExtResource("7_feedback_modal")
+loading_screen_scene = ExtResource("5_loading_screen")
+debug_overlay_scene = ExtResource("6_debug_overlay")
+toast_item_scene = ExtResource("8_toast_item")
 
 [node name="HudLayer" type="Control" parent="." unique_id=1554832734]
 layout_mode = 3

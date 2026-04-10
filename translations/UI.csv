@@ -10,6 +10,7 @@ UI_TEMPLATE_TITLE,Шаблон игры,Game Template
 UI_TEMPLATE_SUBTITLE,Базовый проект для новых игр,Foundation project for new games
 UI_BACK_TO_MENU,В главное меню,Back To Menu
 UI_SAVE,Сохранить,Save
+UI_SAVE_SLOTS,Слоты сохранений,Save Slots
 UI_CLOSE,Закрыть,Close
 UI_APPLY,Применить,Apply
 ,,
@@ -75,6 +76,13 @@ UI_SETTINGS_OVERLAY,Показать оверлей,Show overlay
 UI_SETTINGS_LANG_SECTION,Настройки языка (Только UI),Language options (UI Only)
 UI_SETTINGS_LANGUAGE,Язык,Language
 UI_SETTINGS_GAMEPLAY_SECTION,Настройки игрового процесса,Gameplay options
+UI_SETTINGS_AUTOSAVE_SECTION,Автосохранения,Autosave
+UI_SETTINGS_AUTOSAVE_ENABLED,Включить автосохранения,Enable autosave
+UI_SETTINGS_AUTOSAVE_INTERVAL,Интервал по таймеру (сек.),Timer interval (sec.)
+UI_SETTINGS_AUTOSAVE_ON_EXIT,Автосейв при выходе,Autosave on exit
+UI_SETTINGS_AUTOSAVE_ON_CHECKPOINT,Автосейв по чекпоинтам,Autosave on checkpoints
+UI_SETTINGS_AUTOSAVE_SCORE_STEP,Шаг чекпоинта по счету B,Checkpoint score step (Counter B)
+UI_SETTINGS_AUTOSAVE_CAPTURE_THUMBNAIL,Сохранять превью скриншотом,Capture screenshot thumbnail
 UI_SETTINGS_CONTROLS_SECTION,Управление,Controls
 UI_SETTINGS_TAB_GENERAL,Основное,General
 UI_SETTINGS_TAB_GRAPHICS,Графика,Graphics
@@ -144,6 +152,43 @@ UI_GUI_GIVE_QUEST_BTN,ПОСЛАТЬ ГЕРОЯ!,SEND HERO!
 UI_GUI_GIVE_REWARD_BTN,{value} МОНЕТ,{value} COINS
 UI_GUI_SELECT_LOCATION,Выберите подходящую локацию и задание,Choose a suitable location and quest
 UI_GUI_LOCATION_TITLE,ЛОКАЦИЯ:,LOCATION:
+,,
+Save Slots,,
+UI_SAVE_SLOT_MODE_LOAD,Режим: загрузка сохранения,Mode: load save
+UI_SAVE_SLOT_MODE_SAVE,Режим: сохранение текущей сессии,Mode: save current session
+UI_SAVE_SLOT_TITLE_INPUT,Название сохранения,Save title
+UI_SAVE_SLOT_TITLE_PLACEHOLDER,Оставьте пустым для автозаголовка,Leave empty for auto title
+UI_SAVE_SLOT_LIST_HEADER,Список сохранений,Save list
+UI_SAVE_SLOT_DETAILS_HEADER,Информация о слоте,Slot details
+UI_SAVE_SLOT_LOAD,Загрузить,Load
+UI_SAVE_SLOT_SAVE,Перезаписать слот,Overwrite slot
+UI_SAVE_SLOT_NEW,Новый ручной слот,New manual slot
+UI_SAVE_SLOT_QUICK,Быстрый сейв,Quick save
+UI_SAVE_SLOT_DELETE,Удалить,Delete
+UI_SAVE_SLOT_REFRESH,Обновить список,Refresh list
+UI_SAVE_SLOT_EMPTY,Слот не выбран,No slot selected
+UI_SAVE_SLOT_KIND_LABEL,Тип: {value},Type: {value}
+UI_SAVE_SLOT_TIME_LABEL,Время: {value},Time: {value}
+UI_SAVE_SLOT_LEVEL_LABEL,Уровень: {value},Level: {value}
+UI_SAVE_SLOT_SCORE_LABEL,Счетчик B: {value},Counter B: {value}
+UI_SAVE_SLOT_KIND_MANUAL,Ручной,Manual
+UI_SAVE_SLOT_KIND_QUICK,Быстрый,Quick
+UI_SAVE_SLOT_KIND_AUTOSAVE,Автосейв,Autosave
+UI_SAVE_SLOT_TOAST_SELECT_SLOT,Сначала выберите слот,Select a slot first
+UI_SAVE_SLOT_TOAST_SAVE_SUCCESS,Сохранение выполнено,Save completed
+UI_SAVE_SLOT_TOAST_SAVE_FAILED,Сохранение не удалось,Save failed
+UI_SAVE_SLOT_TOAST_DELETE_SUCCESS,Слот удален,Slot deleted
+UI_SAVE_SLOT_TOAST_QUICK_SAVE_DONE,Быстрый сейв обновлен,Quick save updated
+UI_SAVE_SLOT_TOAST_LOAD_SUCCESS,Слот загружен,Save loaded
+UI_SAVE_SLOT_TOAST_LOAD_FAILED,Не удалось загрузить слот,Failed to load save slot
+UI_SAVE_SLOT_CONFIRM_OVERWRITE_TITLE,Перезаписать слот?,Overwrite slot?
+UI_SAVE_SLOT_CONFIRM_OVERWRITE_MESSAGE,Текущий слот будет перезаписан. Продолжить?,The selected slot will be overwritten. Continue?
+UI_SAVE_SLOT_CONFIRM_OVERWRITE_ACTION,Перезаписать,Overwrite
+UI_SAVE_SLOT_CONFIRM_QUICK_OVERWRITE_TITLE,Перезаписать быстрый сейв?,Overwrite quick save?
+UI_SAVE_SLOT_CONFIRM_QUICK_OVERWRITE_MESSAGE,Быстрый сейв будет обновлен. Продолжить?,Quick save will be overwritten. Continue?
+UI_SAVE_SLOT_CONFIRM_DELETE_TITLE,Удалить слот?,Delete slot?
+UI_SAVE_SLOT_CONFIRM_DELETE_MESSAGE,Сохранение и его превью будут удалены. Продолжить?,Save and thumbnail will be removed. Continue?
+UI_SAVE_SLOT_CONFIRM_DELETE_ACTION,Удалить,Delete
 ,,
 Pause,,
 UI_PAUSE_TITLE,Пауза,Pause

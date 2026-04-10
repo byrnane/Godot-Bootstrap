@@ -55,6 +55,13 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "UI_CONTINUE"
 
+[node name="SaveSlotsButton" type="Button" parent="MarginContainer/VBoxContainer/MenuCard/ContentMargin/Content" unique_id=1912760321]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "UI_SAVE_SLOTS"
+
 [node name="SettingsButton" type="Button" parent="MarginContainer/VBoxContainer/MenuCard/ContentMargin/Content" unique_id=1646704431]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 56)

@@ -23,6 +23,12 @@ var _binding_buttons: Dictionary = {};
 @onready var sfx_volume_slider: HSlider = %SfxVolumeSlider;
 @onready var fullscreen_check_box: CheckBox = %FullscreenCheckBox;
 @onready var vsync_check_box: CheckBox = %VSyncCheckBox;
+@onready var autosave_enabled_check_box: CheckBox = %AutosaveEnabledCheckBox;
+@onready var autosave_interval_spin_box: SpinBox = %AutosaveIntervalSpinBox;
+@onready var autosave_on_exit_check_box: CheckBox = %AutosaveOnExitCheckBox;
+@onready var autosave_on_checkpoint_check_box: CheckBox = %AutosaveOnCheckpointCheckBox;
+@onready var autosave_score_step_spin_box: SpinBox = %AutosaveScoreStepSpinBox;
+@onready var autosave_capture_thumbnail_check_box: CheckBox = %AutosaveCaptureThumbnailCheckBox;
 @onready var bindings_container: VBoxContainer = %BindingsContainer;
 @onready var bindings_status_label: Label = %BindingsStatusLabel;
 @onready var reset_bindings_button: Button = %ResetBindingsButton;
@@ -41,6 +47,12 @@ func _ready() -> void:
 	sfx_volume_slider.value_changed.connect(_on_controls_changed);
 	fullscreen_check_box.toggled.connect(_on_controls_changed);
 	vsync_check_box.toggled.connect(_on_controls_changed);
+	autosave_enabled_check_box.toggled.connect(_on_controls_changed);
+	autosave_interval_spin_box.value_changed.connect(_on_controls_changed);
+	autosave_on_exit_check_box.toggled.connect(_on_controls_changed);
+	autosave_on_checkpoint_check_box.toggled.connect(_on_controls_changed);
+	autosave_score_step_spin_box.value_changed.connect(_on_controls_changed);
+	autosave_capture_thumbnail_check_box.toggled.connect(_on_controls_changed);
 	reset_bindings_button.pressed.connect(_on_reset_bindings_button_pressed);
 	if not InputManager.bindings_changed.is_connected(_on_bindings_changed):
 		InputManager.bindings_changed.connect(_on_bindings_changed);
@@ -105,6 +117,7 @@ func request_close() -> void:
 
 func _sync_ui_state() -> void:
 	_refresh_action_state();
+	_refresh_autosave_controls_state();
 	_refresh_tab_titles();
 	_refresh_bindings_ui();
 
@@ -137,9 +150,16 @@ func _sync_from_settings() -> void:
 	sfx_volume_slider.value = AppContext.settings.sfx_volume;
 	fullscreen_check_box.button_pressed = AppContext.settings.fullscreen;
 	vsync_check_box.button_pressed = AppContext.settings.vsync_enabled;
+	autosave_enabled_check_box.button_pressed = AppContext.settings.autosave_enabled;
+	autosave_interval_spin_box.value = AppContext.settings.autosave_interval_seconds;
+	autosave_on_exit_check_box.button_pressed = AppContext.settings.autosave_on_exit;
+	autosave_on_checkpoint_check_box.button_pressed = AppContext.settings.autosave_on_checkpoint;
+	autosave_score_step_spin_box.value = AppContext.settings.autosave_score_step;
+	autosave_capture_thumbnail_check_box.button_pressed = AppContext.settings.autosave_capture_thumbnail;
 	_is_syncing_controls = false;
 	_is_dirty = false;
 	_refresh_action_state();
+	_refresh_autosave_controls_state();
 
 
 func _apply_values() -> void:
@@ -150,6 +170,12 @@ func _apply_values() -> void:
 	AppContext.settings.sfx_volume = float(sfx_volume_slider.value);
 	AppContext.settings.fullscreen = fullscreen_check_box.button_pressed;
 	AppContext.settings.vsync_enabled = vsync_check_box.button_pressed;
+	AppContext.settings.autosave_enabled = autosave_enabled_check_box.button_pressed;
+	AppContext.settings.autosave_interval_seconds = int(autosave_interval_spin_box.value);
+	AppContext.settings.autosave_on_exit = autosave_on_exit_check_box.button_pressed;
+	AppContext.settings.autosave_on_checkpoint = autosave_on_checkpoint_check_box.button_pressed;
+	AppContext.settings.autosave_score_step = int(autosave_score_step_spin_box.value);
+	AppContext.settings.autosave_capture_thumbnail = autosave_capture_thumbnail_check_box.button_pressed;
 	SettingsManager.apply_settings();
 	SettingsManager.save_settings();
 	_is_dirty = false;
@@ -166,6 +192,15 @@ func _get_selected_locale_value() -> String:
 func _refresh_action_state() -> void:
 	apply_button.disabled = not _is_dirty;
 	reset_button.disabled = _is_syncing_controls;
+
+
+func _refresh_autosave_controls_state() -> void:
+	var autosave_enabled: bool = autosave_enabled_check_box.button_pressed;
+	autosave_interval_spin_box.editable = autosave_enabled;
+	autosave_on_exit_check_box.disabled = not autosave_enabled;
+	autosave_on_checkpoint_check_box.disabled = not autosave_enabled;
+	autosave_score_step_spin_box.editable = autosave_enabled and autosave_on_checkpoint_check_box.button_pressed;
+	autosave_capture_thumbnail_check_box.disabled = not autosave_enabled;
 
 
 func _refresh_tab_titles() -> void:
@@ -268,6 +303,7 @@ func _on_controls_changed(_value: Variant = null) -> void:
 		return;
 	_is_dirty = true;
 	_refresh_action_state();
+	_refresh_autosave_controls_state();
 
 
 func _on_locale_changed(_locale: String) -> void:

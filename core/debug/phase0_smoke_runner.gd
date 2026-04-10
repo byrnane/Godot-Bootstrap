@@ -233,6 +233,8 @@ func _check_core_data_containers() -> void:
 	sanitized_settings.music_volume = -0.2;
 	sanitized_settings.ui_volume = 9.0;
 	sanitized_settings.sfx_volume = -5.0;
+	sanitized_settings.autosave_interval_seconds = -15;
+	sanitized_settings.autosave_score_step = -25;
 	sanitized_settings.version = -99;
 	SettingsManager.call("_sanitize_settings", sanitized_settings);
 	_check(
@@ -258,6 +260,14 @@ func _check_core_data_containers() -> void:
 	_check(
 		is_equal_approx(sanitized_settings.sfx_volume, 0.0),
 		"data container test: UserSettings SFX volume should clamp to 0.0"
+	);
+	_check(
+		sanitized_settings.autosave_interval_seconds >= 15,
+		"data container test: UserSettings autosave interval should clamp to minimum value"
+	);
+	_check(
+		sanitized_settings.autosave_score_step >= 1,
+		"data container test: UserSettings autosave score step should clamp to minimum value"
 	);
 
 	var startup_params: AppStartupParams = AppStartupParams.new();
@@ -523,7 +533,7 @@ func _validate_main_menu_focus_navigation() -> void:
 	if main_menu == null:
 		return;
 	var focusable_buttons: Array[Button] = [];
-	for button_name: String in ["NewGameButton", "ContinueButton", "SettingsButton", "QuitButton"]:
+	for button_name: String in ["NewGameButton", "ContinueButton", "SaveSlotsButton", "SettingsButton", "QuitButton"]:
 		var button: Button = main_menu.get_node_or_null("MarginContainer/VBoxContainer/MenuCard/ContentMargin/Content/%s" % [button_name]) as Button;
 		if button == null:
 			continue;
@@ -553,7 +563,7 @@ func _validate_pause_modal_focus_navigation(cycle_number: int) -> void:
 	if pause_modal == null:
 		return;
 	var buttons: Array[Button] = [];
-	for button_name: String in ["ResumeButton", "SaveButton", "SettingsButton", "BackButton"]:
+	for button_name: String in ["ResumeButton", "SaveButton", "SaveSlotsButton", "SettingsButton", "BackButton"]:
 		var button: Button = pause_modal.get_node_or_null(
 			"MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/PauseActionsCard/ContentMargin/Content/%s" % [button_name]
 		) as Button;

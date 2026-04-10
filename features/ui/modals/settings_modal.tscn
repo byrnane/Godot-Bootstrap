@@ -102,6 +102,76 @@ max_value = 1.0
 step = 0.01
 value = 1.0
 
+[node name="AutosaveCard" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage" index="2" instance=ExtResource("4_card")]
+layout_mode = 2
+elevated = true
+
+[node name="AutosaveHeader" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/AutosaveCard/ContentMargin/Content" index="0" instance=ExtResource("5_header")]
+layout_mode = 2
+title_key = "UI_SETTINGS_AUTOSAVE_SECTION"
+
+[node name="AutosaveEnabledRow" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/AutosaveCard/ContentMargin/Content" index="1" instance=ExtResource("6_form_row")]
+layout_mode = 2
+title_key = "UI_SETTINGS_AUTOSAVE_ENABLED"
+
+[node name="AutosaveEnabledCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/AutosaveCard/ContentMargin/Content/AutosaveEnabledRow/Content" index="0" unique_id=209823594]
+unique_name_in_owner = true
+layout_mode = 2
+text = ""
+
+[node name="AutosaveIntervalRow" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/AutosaveCard/ContentMargin/Content" index="2" instance=ExtResource("6_form_row")]
+layout_mode = 2
+title_key = "UI_SETTINGS_AUTOSAVE_INTERVAL"
+
+[node name="AutosaveIntervalSpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/AutosaveCard/ContentMargin/Content/AutosaveIntervalRow/Content" index="0" unique_id=552045306]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 15.0
+max_value = 3600.0
+step = 5.0
+value = 120.0
+
+[node name="AutosaveOnExitRow" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/AutosaveCard/ContentMargin/Content" index="3" instance=ExtResource("6_form_row")]
+layout_mode = 2
+title_key = "UI_SETTINGS_AUTOSAVE_ON_EXIT"
+
+[node name="AutosaveOnExitCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/AutosaveCard/ContentMargin/Content/AutosaveOnExitRow/Content" index="0" unique_id=992626965]
+unique_name_in_owner = true
+layout_mode = 2
+text = ""
+
+[node name="AutosaveOnCheckpointRow" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/AutosaveCard/ContentMargin/Content" index="4" instance=ExtResource("6_form_row")]
+layout_mode = 2
+title_key = "UI_SETTINGS_AUTOSAVE_ON_CHECKPOINT"
+
+[node name="AutosaveOnCheckpointCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/AutosaveCard/ContentMargin/Content/AutosaveOnCheckpointRow/Content" index="0" unique_id=465116140]
+unique_name_in_owner = true
+layout_mode = 2
+text = ""
+
+[node name="AutosaveScoreStepRow" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/AutosaveCard/ContentMargin/Content" index="5" instance=ExtResource("6_form_row")]
+layout_mode = 2
+title_key = "UI_SETTINGS_AUTOSAVE_SCORE_STEP"
+
+[node name="AutosaveScoreStepSpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/AutosaveCard/ContentMargin/Content/AutosaveScoreStepRow/Content" index="0" unique_id=911760333]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 1.0
+max_value = 100000.0
+step = 1.0
+value = 100.0
+
+[node name="AutosaveThumbnailRow" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/AutosaveCard/ContentMargin/Content" index="6" instance=ExtResource("6_form_row")]
+layout_mode = 2
+title_key = "UI_SETTINGS_AUTOSAVE_CAPTURE_THUMBNAIL"
+
+[node name="AutosaveCaptureThumbnailCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/AutosaveCard/ContentMargin/Content/AutosaveThumbnailRow/Content" index="0" unique_id=1092905363]
+unique_name_in_owner = true
+layout_mode = 2
+text = ""
+
 [node name="GraphicsPage" type="VBoxContainer" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer" index="1" unique_id=1284658716]
 visible = false
 layout_mode = 2

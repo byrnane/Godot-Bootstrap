@@ -5,6 +5,8 @@ signal resume_requested;
 signal settings_requested;
 signal back_to_menu_requested;
 signal save_requested;
+signal save_slots_requested(mode: StringName);
+signal save_slot_load_requested(slot_descriptor: Dictionary);
 signal debug_clear_save_requested;
 signal debug_jump_scene_requested(scene_id: StringName);
 signal debug_restart_session_requested;
@@ -22,6 +24,7 @@ const DEBUG_OVERLAY_Z_INDEX: int = 1000;
 @export var modal_backdrop_path: NodePath;
 @export var pause_modal_scene: PackedScene;
 @export var settings_modal_scene: PackedScene;
+@export var save_slots_modal_scene: PackedScene;
 @export var feedback_modal_scene: PackedScene;
 @export var loading_screen_scene: PackedScene;
 @export var debug_overlay_scene: PackedScene;
@@ -37,6 +40,7 @@ var _modal_backdrop: Control = null;
 var _current_hud: Control = null;
 var _pause_modal: PauseModal = null;
 var _settings_modal: SettingsModal = null;
+var _save_slots_modal: BaseModal = null;
 var _feedback_modal: FeedbackModal = null;
 var _loading_screen: LoadingScreen = null;
 var _debug_overlay: DebugOverlay = null;
@@ -101,6 +105,18 @@ func close_settings() -> void:
 	_pop_modal(_settings_modal);
 
 
+func open_save_slots(mode: StringName = &"load") -> void:
+	if _save_slots_modal == null:
+		return;
+	if _save_slots_modal.has_method("set_mode"):
+		_save_slots_modal.call("set_mode", mode);
+	_push_modal(_save_slots_modal);
+
+
+func close_save_slots() -> void:
+	_pop_modal(_save_slots_modal);
+
+
 func open_pause() -> void:
 	_push_modal(_pause_modal);
 
@@ -138,6 +154,10 @@ func request_back_to_menu() -> void:
 
 func request_save() -> void:
 	save_requested.emit();
+
+
+func request_save_slots(mode: StringName = &"load") -> void:
+	save_slots_requested.emit(mode);
 
 
 func set_hud_scene(hud_scene: PackedScene) -> Control:
@@ -233,6 +253,7 @@ func _ensure_modals() -> void:
 			# UiShell forwards modal intent upward and stays ignorant of pause logic.
 			_pause_modal.resume_requested.connect(request_resume);
 			_pause_modal.save_requested.connect(request_save);
+			_pause_modal.save_slots_requested.connect(request_save_slots.bind(&"save"));
 			_pause_modal.settings_requested.connect(open_settings);
 			_pause_modal.back_to_menu_requested.connect(request_back_to_menu);
 	if settings_modal_scene != null and _settings_modal == null:
@@ -242,6 +263,18 @@ func _ensure_modals() -> void:
 			_settings_modal.process_mode = Node.PROCESS_MODE_ALWAYS;
 			_bind_modal_lifecycle(_settings_modal);
 			_settings_modal.close_requested.connect(close_settings);
+	if save_slots_modal_scene != null and _save_slots_modal == null:
+		_save_slots_modal = save_slots_modal_scene.instantiate() as BaseModal;
+		if _save_slots_modal != null:
+			_modal_layer.add_child(_save_slots_modal);
+			_save_slots_modal.process_mode = Node.PROCESS_MODE_ALWAYS;
+			_bind_modal_lifecycle(_save_slots_modal);
+			_save_slots_modal.close_requested.connect(close_save_slots);
+			if _save_slots_modal.has_signal(&"load_slot_requested") and not _save_slots_modal.is_connected(
+				&"load_slot_requested",
+				Callable(self, "_on_save_slot_load_requested")
+			):
+				_save_slots_modal.connect(&"load_slot_requested", Callable(self, "_on_save_slot_load_requested"));
 	if feedback_modal_scene != null and _feedback_modal == null:
 		_feedback_modal = feedback_modal_scene.instantiate() as FeedbackModal;
 		if _feedback_modal != null:
@@ -254,6 +287,8 @@ func _ensure_modals() -> void:
 		_warn_setup_issue("pause_modal_scene_missing", "pause_modal_scene is not assigned");
 	if settings_modal_scene == null:
 		_warn_setup_issue("settings_modal_scene_missing", "settings_modal_scene is not assigned");
+	if save_slots_modal_scene == null:
+		_warn_setup_issue("save_slots_modal_scene_missing", "save_slots_modal_scene is not assigned");
 	if feedback_modal_scene == null:
 		_warn_setup_issue("feedback_modal_scene_missing", "feedback_modal_scene is not assigned");
 
@@ -483,9 +518,13 @@ func _on_debug_restart_session_requested() -> void:
 	debug_restart_session_requested.emit();
 
 
+func _on_save_slot_load_requested(slot_descriptor: Dictionary) -> void:
+	save_slot_load_requested.emit(slot_descriptor);
+
+
 func _get_managed_modals() -> Array[Control]:
 	var modals: Array[Control] = [];
-	for modal: Control in [_pause_modal, _settings_modal, _feedback_modal]:
+	for modal: Control in [_pause_modal, _settings_modal, _save_slots_modal, _feedback_modal]:
 		if modal != null:
 			modals.append(modal);
 	return modals;
