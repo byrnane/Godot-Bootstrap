@@ -81,20 +81,38 @@ Expected:
 - No frozen or permanently paused state after transitions.
 
 
-### D. Save and Continue
+### D. Save Slots and Continue
 
 1. In gameplay, change demo simulation state (Metric A/Counter B/level).
-2. Save session.
-3. Return to main menu.
-4. Verify `Continue` is enabled.
-5. Use `Continue` and verify state restoration.
+2. Open save slots modal from pause.
+3. Create a new manual slot.
+4. Overwrite the same slot and verify confirmation flow.
+5. Run quick save and verify `quick` slot appears in list.
+6. Return to main menu.
+7. Verify `Continue` is enabled.
+8. Use `Continue` and verify latest slot state restoration.
 
 Expected:
 
-- Save writes correctly and load restores expected session values.
+- Manual slot, quick slot, and continue-from-latest work consistently.
+- Overwrite and delete flows are explicit and safe.
 
 
-### E. Settings Persistence
+### E. Autosave
+
+1. In settings, enable autosave and set short timer interval.
+2. In gameplay, wait until timer autosave is produced.
+3. Increase score until checkpoint threshold is reached and verify autosave update.
+4. Return to menu and quit; relaunch project.
+5. Verify autosave slot metadata has recent timestamp and valid state.
+
+Expected:
+
+- Timer, checkpoint, and exit autosave triggers are stable and non-spammy.
+- Autosave does not overwrite manual slots.
+
+
+### F. Settings Persistence
 
 1. Change language, volumes, fullscreen, vsync.
 2. Apply settings and close.
@@ -107,7 +125,7 @@ Expected:
 - Settings survive restart and apply safely.
 
 
-### F. Input Rebinding
+### G. Input Rebinding
 
 1. Open controls tab in settings.
 2. Rebind keyboard keys and mouse buttons for several actions.
@@ -120,7 +138,7 @@ Expected:
 - Rebind flow is clear and stable, persisted across restarts.
 
 
-### G. Localization
+### H. Localization
 
 1. Switch locale EN <-> RU.
 2. Verify active screens update immediately.
@@ -131,7 +149,7 @@ Expected:
 - No missing keys, no stale language fragments on active UI.
 
 
-### H. Audio Baseline
+### I. Audio Baseline
 
 1. Verify menu music in main menu.
 2. Enter gameplay and switch level A/B to verify music changes.
@@ -144,7 +162,7 @@ Expected:
 - Audio buses and playback paths function without errors.
 
 
-### I. Debug Overlay
+### J. Debug Overlay
 
 1. Toggle debug overlay (`ui_debug_overlay`).
 2. Verify scene id, app state, paused/loading flags update.
@@ -156,7 +174,7 @@ Expected:
 - Overlay reflects runtime state consistently.
 
 
-### J. Failure Safety Checks
+### K. Failure Safety Checks
 
 1. Trigger rapid repeated navigation (menu <-> gameplay).
 2. Open/close modals quickly.

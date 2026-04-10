@@ -43,3 +43,4 @@ Use this checklist when creating a new game from this template.
 - Launch the game from `res://main/main.tscn`.
 - Check your core loop: main menu -> gameplay -> pause/settings -> back to menu.
 - Verify save/load, settings persistence, and locale switch in your customized scenes.
+- Verify save-slots UX (manual, quick, autosave) and continue-from-latest behavior.

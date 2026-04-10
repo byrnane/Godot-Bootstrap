@@ -1,6 +1,6 @@
 # Godot 2D Game Template
 
-Current version: `0.3.0`
+Current version: `0.4.0`
 
 ## EN
 
@@ -11,6 +11,7 @@ It gives you ready-to-use project infrastructure, but no gameplay mechanics.
 
 - app flow and scene transitions;
 - save slots and load flow;
+- quick save and autosave (timer, exit, checkpoint);
 - settings (audio, video, language) with persistence;
 - input rebinding (keyboard/mouse) with persistence;
 - localization pipeline (`translations/UI.csv`);
@@ -27,8 +28,9 @@ It gives you ready-to-use project infrastructure, but no gameplay mechanics.
 ### Runtime files
 
 - `user://settings.cfg`
-- `user://saves/slot_XX.save` and backups (`.bak`)
+- `user://saves/manual_*.save`, `user://saves/quick.save`, `user://saves/autosave.save`
 - `user://input_bindings.save`
+- `user://saves/thumbnails/*.png` (optional, if thumbnail capture is enabled)
 
 ### Start here
 
@@ -52,6 +54,7 @@ It gives you ready-to-use project infrastructure, but no gameplay mechanics.
 
 - flow приложения и переходы между сценами;
 - слоты сохранений и загрузка;
+- быстрый сейв и автосейвы (таймер, выход, чекпоинт);
 - настройки (аудио, видео, язык) с сохранением;
 - ребинд ввода (клавиатура/мышь) с сохранением;
 - пайплайн локализации (`translations/UI.csv`);
@@ -68,8 +71,9 @@ It gives you ready-to-use project infrastructure, but no gameplay mechanics.
 ### Файлы, которые создаются во время работы
 
 - `user://settings.cfg`
-- `user://saves/slot_XX.save` и резервные копии (`.bak`)
+- `user://saves/manual_*.save`, `user://saves/quick.save`, `user://saves/autosave.save`
 - `user://input_bindings.save`
+- `user://saves/thumbnails/*.png` (опционально, если включены превью)
 
 ### С чего начать
 

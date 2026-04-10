@@ -52,6 +52,14 @@ If data should survive while app is open globally, keep it in `AppContext`.
 - Update migration/normalization in `SaveData.from_variant(...)`.
 - Keep compatibility rules explicit and deterministic.
 
+### Autosave Hooks
+
+- Timer and exit autosave are handled by `AutosaveManager`.
+- For gameplay checkpoints, emit explicit hooks:
+  - `AutosaveManager.emit_checkpoint(checkpoint_id, payload)`
+- For score-based checkpoint simulation, call:
+  - `AutosaveManager.notify_score_changed(score)`
+
 ## Extend Input
 
 - Add action metadata in `InputManager.ACTION_METADATA`.

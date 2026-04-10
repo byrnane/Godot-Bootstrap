@@ -11,6 +11,28 @@ Sections:
 - `Fixed`
 - `Removed`
 
+## [0.4.0] - 2026-04-10
+
+Autosave and save-slot infrastructure update with user-facing slot management UI.
+
+### Added
+
+- `AutosaveManager` with timer, exit, and checkpoint triggers
+- quick-save and dedicated autosave slots in `SaveManager`
+- extended save metadata (title, timestamp, level, score, reason, optional thumbnail)
+- save-slots modal with load/save/delete/overwrite flow
+- autosave settings controls in `SettingsModal`
+
+### Changed
+
+- continue flow now loads the latest valid save across all slot kinds
+- pause and main menu navigation now include save-slots entry points
+- smoke checks updated for new focus paths and autosave settings sanitization
+
+### Fixed
+
+- compatibility path for legacy save files now migrates into the new save container format
+
 ## [0.3.0] - 2026-04-09
 
 Template hardening and production-readiness update focused on debug tooling, smoke quality gates, and onboarding docs.
