@@ -100,6 +100,8 @@ func simulate_primary_metric_increase() -> void:
 
 func simulate_secondary_metric_increment() -> void:
 	SessionContext.score += SECONDARY_METRIC_STEP;
+	if AutosaveManager != null:
+		AutosaveManager.notify_score_changed(SessionContext.score);
 	AudioManager.play_sfx(SECONDARY_INCREMENT_SFX);
 	UiFeedback.toast(tr("UI_TOAST_SCORE_GAINED").format({"value": SECONDARY_METRIC_STEP}));
 	_refresh_view();

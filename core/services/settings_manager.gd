@@ -11,6 +11,7 @@ const SETTINGS_SECTION_LANGUAGE: String = "settings_language";
 const SETTINGS_SECTION_AUDIO: String = "settings_audio";
 const SETTINGS_SECTION_VIDEO: String = "settings_video";
 const SETTINGS_SECTION_INPUT: String = "settings_input";
+const SETTINGS_SECTION_AUTOSAVE: String = "settings_autosave";
 const INPUT_SETTINGS_DOMAIN_VERSION: int = 1;
 const BOOL_TRUE_STRINGS: PackedStringArray = ["1", "true", "yes", "on"];
 const BOOL_FALSE_STRINGS: PackedStringArray = ["0", "false", "no", "off"];
@@ -39,6 +40,7 @@ func save_settings() -> void:
 	_write_audio_settings(config, AppContext.settings);
 	_write_video_settings(config, AppContext.settings);
 	_write_input_settings(config, AppContext.settings);
+	_write_autosave_settings(config, AppContext.settings);
 	config.save(SETTINGS_PATH);
 
 
@@ -65,6 +67,11 @@ func apply_settings() -> Dictionary:
 			"input",
 			_apply_input_settings.bind(AppContext.settings),
 			_recover_input_settings.bind(AppContext.settings)
+		),
+		"autosave": _apply_domain_with_recovery(
+			"autosave",
+			_apply_autosave_settings.bind(AppContext.settings),
+			_recover_autosave_settings.bind(AppContext.settings)
 		),
 	};
 	report["ok"] = _is_apply_report_successful(report);
@@ -96,6 +103,7 @@ func _read_settings_file() -> UserSettings:
 	_read_audio_settings(config, settings);
 	_read_video_settings(config, settings);
 	_read_input_settings(config, settings);
+	_read_autosave_settings(config, settings);
 	_sanitize_settings(settings);
 	return settings;
 
@@ -184,6 +192,69 @@ func _read_video_settings(config: ConfigFile, settings: UserSettings) -> void:
 func _read_input_settings(_config: ConfigFile, _settings: UserSettings) -> void:
 	# Input bindings are owned by `InputManager` and persisted in a dedicated file.
 	return;
+
+
+func _read_autosave_settings(config: ConfigFile, settings: UserSettings) -> void:
+	var autosave_enabled: Variant = _get_domain_value(
+		config,
+		SETTINGS_SECTION_AUTOSAVE,
+		"enabled",
+		"autosave_enabled",
+		settings.autosave_enabled
+	);
+	var autosave_interval_seconds: Variant = _get_domain_value(
+		config,
+		SETTINGS_SECTION_AUTOSAVE,
+		"interval_seconds",
+		"autosave_interval_seconds",
+		settings.autosave_interval_seconds
+	);
+	var autosave_on_exit: Variant = _get_domain_value(
+		config,
+		SETTINGS_SECTION_AUTOSAVE,
+		"on_exit",
+		"autosave_on_exit",
+		settings.autosave_on_exit
+	);
+	var autosave_on_checkpoint: Variant = _get_domain_value(
+		config,
+		SETTINGS_SECTION_AUTOSAVE,
+		"on_checkpoint",
+		"autosave_on_checkpoint",
+		settings.autosave_on_checkpoint
+	);
+	var autosave_score_step: Variant = _get_domain_value(
+		config,
+		SETTINGS_SECTION_AUTOSAVE,
+		"score_step",
+		"autosave_score_step",
+		settings.autosave_score_step
+	);
+	var autosave_capture_thumbnail: Variant = _get_domain_value(
+		config,
+		SETTINGS_SECTION_AUTOSAVE,
+		"capture_thumbnail",
+		"autosave_capture_thumbnail",
+		settings.autosave_capture_thumbnail
+	);
+	settings.autosave_enabled = _parse_bool_setting(autosave_enabled, settings.autosave_enabled, "settings.autosave.enabled");
+	settings.autosave_interval_seconds = _parse_int_setting(
+		autosave_interval_seconds,
+		settings.autosave_interval_seconds,
+		"settings.autosave.interval_seconds"
+	);
+	settings.autosave_on_exit = _parse_bool_setting(autosave_on_exit, settings.autosave_on_exit, "settings.autosave.on_exit");
+	settings.autosave_on_checkpoint = _parse_bool_setting(
+		autosave_on_checkpoint,
+		settings.autosave_on_checkpoint,
+		"settings.autosave.on_checkpoint"
+	);
+	settings.autosave_score_step = _parse_int_setting(autosave_score_step, settings.autosave_score_step, "settings.autosave.score_step");
+	settings.autosave_capture_thumbnail = _parse_bool_setting(
+		autosave_capture_thumbnail,
+		settings.autosave_capture_thumbnail,
+		"settings.autosave.capture_thumbnail"
+	);
 
 
 func _get_domain_value(config: ConfigFile, section: String, key: String, legacy_key: String, default_value: Variant) -> Variant:
@@ -276,6 +347,15 @@ func _write_input_settings(config: ConfigFile, _settings: UserSettings) -> void:
 	config.set_value(SETTINGS_SECTION_INPUT, "bindings_domain_version", INPUT_SETTINGS_DOMAIN_VERSION);
 
 
+func _write_autosave_settings(config: ConfigFile, settings: UserSettings) -> void:
+	config.set_value(SETTINGS_SECTION_AUTOSAVE, "enabled", settings.autosave_enabled);
+	config.set_value(SETTINGS_SECTION_AUTOSAVE, "interval_seconds", settings.autosave_interval_seconds);
+	config.set_value(SETTINGS_SECTION_AUTOSAVE, "on_exit", settings.autosave_on_exit);
+	config.set_value(SETTINGS_SECTION_AUTOSAVE, "on_checkpoint", settings.autosave_on_checkpoint);
+	config.set_value(SETTINGS_SECTION_AUTOSAVE, "score_step", settings.autosave_score_step);
+	config.set_value(SETTINGS_SECTION_AUTOSAVE, "capture_thumbnail", settings.autosave_capture_thumbnail);
+
+
 func _sanitize_settings(settings: UserSettings) -> void:
 	if settings == null:
 		return;
@@ -286,6 +366,7 @@ func _sanitize_settings(settings: UserSettings) -> void:
 	_sanitize_audio_settings(settings);
 	_sanitize_video_settings(settings);
 	_sanitize_input_settings(settings);
+	_sanitize_autosave_settings(settings);
 
 
 func _sanitize_language_settings(settings: UserSettings) -> void:
@@ -307,6 +388,11 @@ func _sanitize_input_settings(_settings: UserSettings) -> void:
 	return;
 
 
+func _sanitize_autosave_settings(settings: UserSettings) -> void:
+	settings.autosave_interval_seconds = clampi(settings.autosave_interval_seconds, 15, 3600);
+	settings.autosave_score_step = maxi(1, settings.autosave_score_step);
+
+
 func _apply_domain_with_recovery(domain_name: String, apply_step: Callable, recover_step: Callable) -> Dictionary:
 	var initial_ok: bool = bool(apply_step.call());
 	if initial_ok:
@@ -325,7 +411,7 @@ func _apply_domain_with_recovery(domain_name: String, apply_step: Callable, reco
 
 
 func _is_apply_report_successful(report: Dictionary) -> bool:
-	for domain_name: String in ["language", "audio", "video", "input"]:
+	for domain_name: String in ["language", "audio", "video", "input", "autosave"]:
 		var domain_report: Variant = report.get(domain_name, {});
 		if not (domain_report is Dictionary):
 			return false;
@@ -335,7 +421,7 @@ func _is_apply_report_successful(report: Dictionary) -> bool:
 
 
 func _has_recovered_domains(report: Dictionary) -> bool:
-	for domain_name: String in ["language", "audio", "video", "input"]:
+	for domain_name: String in ["language", "audio", "video", "input", "autosave"]:
 		var domain_report: Variant = report.get(domain_name, {});
 		if not (domain_report is Dictionary):
 			continue;
@@ -346,7 +432,7 @@ func _has_recovered_domains(report: Dictionary) -> bool:
 
 func _build_report_summary(report: Dictionary) -> String:
 	var fragments: PackedStringArray = [];
-	for domain_name: String in ["language", "audio", "video", "input"]:
+	for domain_name: String in ["language", "audio", "video", "input", "autosave"]:
 		var domain_report: Variant = report.get(domain_name, {});
 		if not (domain_report is Dictionary):
 			fragments.append("%s=invalid" % [domain_name]);
@@ -415,3 +501,20 @@ func _apply_input_settings(_settings: UserSettings) -> bool:
 
 func _recover_input_settings(_settings: UserSettings) -> void:
 	return;
+
+
+func _apply_autosave_settings(_settings: UserSettings) -> bool:
+	if AutosaveManager == null:
+		return true;
+	if AutosaveManager.has_method("refresh_policy"):
+		AutosaveManager.call("refresh_policy");
+	return true;
+
+
+func _recover_autosave_settings(settings: UserSettings) -> void:
+	settings.autosave_enabled = UserSettings.DEFAULT_AUTOSAVE_ENABLED;
+	settings.autosave_interval_seconds = UserSettings.DEFAULT_AUTOSAVE_INTERVAL_SECONDS;
+	settings.autosave_on_exit = UserSettings.DEFAULT_AUTOSAVE_ON_EXIT;
+	settings.autosave_on_checkpoint = UserSettings.DEFAULT_AUTOSAVE_ON_CHECKPOINT;
+	settings.autosave_score_step = UserSettings.DEFAULT_AUTOSAVE_SCORE_STEP;
+	settings.autosave_capture_thumbnail = UserSettings.DEFAULT_AUTOSAVE_CAPTURE_THUMBNAIL;

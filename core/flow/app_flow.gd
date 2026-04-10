@@ -3,6 +3,8 @@ extends Node;
 const SCENE_TRANSITION_PAYLOAD_TYPE = preload("res://core/types/scene_transition_payload.gd");
 const APP_STARTUP_PARAMS_TYPE = preload("res://core/types/app_startup_params.gd");
 const SESSION_START_PARAMS_TYPE = preload("res://core/types/session_start_params.gd");
+const SAVE_SLOTS_MODE_LOAD: StringName = &"load";
+const SAVE_SLOTS_MODE_SAVE: StringName = &"save";
 
 
 var _started: bool = false;
@@ -54,7 +56,7 @@ func start_session(params: SESSION_START_PARAMS_TYPE = null) -> void:
 			SessionContext.reset();
 			transition_kind = SCENE_TRANSITION_PAYLOAD_TYPE.Kind.NEW_GAME;
 		SESSION_START_PARAMS_TYPE.Mode.CONTINUE_ONLY, SESSION_START_PARAMS_TYPE.Mode.CONTINUE_OR_NEW:
-			var save_data: SaveData = SaveManager.load_game();
+			var save_data: SaveData = SaveManager.load_latest_for_continue();
 			if save_data == null or not save_data.session_exists:
 				if session_params.mode == SESSION_START_PARAMS_TYPE.Mode.CONTINUE_ONLY:
 					push_warning("AppFlow: continue-only session start requested but no save exists.");
@@ -69,10 +71,35 @@ func start_session(params: SESSION_START_PARAMS_TYPE = null) -> void:
 			transition_kind = SCENE_TRANSITION_PAYLOAD_TYPE.Kind.NEW_GAME;
 
 	AppContext.set_state(AppState.Value.IN_GAME);
+	if AutosaveManager != null:
+		AutosaveManager.start_for_session();
 	SceneRouter.go_to(
 		session_params.gameplay_scene_id,
 		_build_gameplay_payload(transition_kind, session_params.gameplay_scene_id, session_params.payload_data)
 	);
+
+
+func load_session_from_slot(slot_descriptor: Dictionary) -> bool:
+	if _is_transition_blocked():
+		UiFeedback.toast(tr("UI_DEBUG_TOAST_TRANSITION_BLOCKED"), {"variant": "warning"});
+		return false;
+	var save_data: SaveData = SaveManager.load_game_from_descriptor(slot_descriptor);
+	if save_data == null or not save_data.session_exists:
+		UiFeedback.toast(tr("UI_SAVE_SLOT_TOAST_LOAD_FAILED"), {"variant": "error"});
+		return false;
+	SessionContext.apply_save_data(save_data);
+	AppContext.set_state(AppState.Value.IN_GAME);
+	if AutosaveManager != null:
+		AutosaveManager.start_for_session();
+	UiShell.close_all_modals();
+	SceneRouter.go_to(
+		_get_gameplay_scene_id(),
+		_build_gameplay_payload(SCENE_TRANSITION_PAYLOAD_TYPE.Kind.CONTINUE_GAME, _get_gameplay_scene_id(), {
+			"loaded_from_slot": true,
+		})
+	);
+	UiFeedback.toast(tr("UI_SAVE_SLOT_TOAST_LOAD_SUCCESS"), {"variant": "success"});
+	return true;
 
 
 func return_to_main_menu() -> void:
@@ -108,7 +135,24 @@ func open_settings() -> void:
 	UiShell.open_settings();
 
 
+func open_save_slots_load() -> void:
+	open_save_slots(SAVE_SLOTS_MODE_LOAD);
+
+
+func open_save_slots_save() -> void:
+	open_save_slots(SAVE_SLOTS_MODE_SAVE);
+
+
+func open_save_slots(mode: StringName = SAVE_SLOTS_MODE_LOAD) -> void:
+	if _is_transition_blocked():
+		UiFeedback.toast(tr("UI_DEBUG_TOAST_TRANSITION_BLOCKED"), {"variant": "warning"});
+		return;
+	UiShell.open_save_slots(mode);
+
+
 func quit_game() -> void:
+	if AutosaveManager != null:
+		AutosaveManager.request_autosave(AutosaveManager.REASON_EXIT);
 	get_tree().quit();
 
 
@@ -121,6 +165,9 @@ func _go_to_main_menu(
 	if target_scene_id == StringName():
 		target_scene_id = _get_start_scene_id();
 	_reset_pause_ui();
+	UiShell.close_save_slots();
+	if AutosaveManager != null:
+		AutosaveManager.stop_for_session();
 	AppContext.set_state(AppState.Value.MAIN_MENU);
 	SceneRouter.go_to(target_scene_id, _build_main_menu_payload(transition_kind, target_scene_id));
 
@@ -137,8 +184,12 @@ func _connect_ui_shell() -> void:
 		UiShell.settings_requested.connect(open_settings);
 	if not UiShell.back_to_menu_requested.is_connected(return_to_main_menu):
 		UiShell.back_to_menu_requested.connect(return_to_main_menu);
-	if not UiShell.save_requested.is_connected(SaveManager.save_current_session):
-		UiShell.save_requested.connect(SaveManager.save_current_session);
+	if not UiShell.save_requested.is_connected(_on_quick_save_requested):
+		UiShell.save_requested.connect(_on_quick_save_requested);
+	if not UiShell.save_slots_requested.is_connected(open_save_slots):
+		UiShell.save_slots_requested.connect(open_save_slots);
+	if not UiShell.save_slot_load_requested.is_connected(load_session_from_slot):
+		UiShell.save_slot_load_requested.connect(load_session_from_slot);
 	if not UiShell.debug_clear_save_requested.is_connected(_on_debug_clear_save_requested):
 		UiShell.debug_clear_save_requested.connect(_on_debug_clear_save_requested);
 	if not UiShell.debug_jump_scene_requested.is_connected(_on_debug_jump_scene_requested):
@@ -179,6 +230,7 @@ func _connect_main_menu(scene_root: Node) -> void:
 	_connect_scene_signal(scene_root, &"new_game_requested", Callable(self, "start_new_game"));
 	_connect_scene_signal(scene_root, &"continue_requested", Callable(self, "continue_game"));
 	_connect_scene_signal(scene_root, &"settings_requested", Callable(self, "open_settings"));
+	_connect_scene_signal(scene_root, &"save_slots_requested", Callable(self, "open_save_slots_load"));
 	_connect_scene_signal(scene_root, &"quit_requested", Callable(self, "quit_game"));
 
 
@@ -186,7 +238,15 @@ func _connect_gameplay(scene_root: Node) -> void:
 	_connect_scene_signal(scene_root, &"pause_requested", Callable(self, "request_pause"));
 	_connect_scene_signal(scene_root, &"resume_requested", Callable(self, "request_resume"));
 	_connect_scene_signal(scene_root, &"back_to_menu_requested", Callable(self, "return_to_main_menu"));
-	_connect_scene_signal(scene_root, &"save_requested", Callable(SaveManager, "save_current_session"));
+	_connect_scene_signal(scene_root, &"save_requested", Callable(self, "_on_quick_save_requested"));
+
+
+func _on_quick_save_requested() -> void:
+	var save_success: bool = SaveManager.save_current_session_to_quick({"reason": "manual"});
+	if save_success:
+		UiFeedback.toast(tr("UI_SAVE_SLOT_TOAST_QUICK_SAVE_DONE"), {"variant": "success"});
+		return;
+	UiFeedback.toast(tr("UI_SAVE_SLOT_TOAST_SAVE_FAILED"), {"variant": "error"});
 
 
 func _on_debug_clear_save_requested() -> void:
@@ -215,10 +275,14 @@ func _on_debug_jump_scene_requested(scene_id: StringName) -> void:
 	var transition_kind: int = SCENE_TRANSITION_PAYLOAD_TYPE.Kind.UNSPECIFIED;
 	if scene_id == _get_start_scene_id():
 		AppContext.set_state(AppState.Value.MAIN_MENU);
+		if AutosaveManager != null:
+			AutosaveManager.stop_for_session();
 		transition_kind = SCENE_TRANSITION_PAYLOAD_TYPE.Kind.RETURN_TO_MENU;
 	elif scene_id == _get_gameplay_scene_id():
 		SessionContext.reset();
 		AppContext.set_state(AppState.Value.IN_GAME);
+		if AutosaveManager != null:
+			AutosaveManager.start_for_session();
 		transition_kind = SCENE_TRANSITION_PAYLOAD_TYPE.Kind.NEW_GAME;
 	else:
 		AppContext.set_state(AppState.Value.IN_GAME);
@@ -248,6 +312,7 @@ func _on_debug_restart_session_requested() -> void:
 func _reset_pause_ui() -> void:
 	UiShell.close_pause();
 	UiShell.close_settings();
+	UiShell.close_save_slots();
 	get_tree().paused = false;
 
 
