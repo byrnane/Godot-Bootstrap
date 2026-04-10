@@ -33,9 +33,8 @@ Use this guide to replace demo surfaces in the first integration pass.
 
 ## Quick Validation After Replacement
 
-- Run smoke checks:
-  - `powershell -ExecutionPolicy Bypass -File .\scripts\run_smoke.ps1`
-- Run focused manual checks:
-  - transitions (menu <-> gameplay)
-  - pause/settings modal stack
-  - save/load and localization switch
+Run focused checks:
+
+- transitions (menu <-> gameplay);
+- pause/settings modal stack;
+- save/load and localization switch.

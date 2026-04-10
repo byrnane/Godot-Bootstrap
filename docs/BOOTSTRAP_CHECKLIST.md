@@ -40,8 +40,6 @@ Use this checklist when creating a new game from this template.
 
 ## 6. Quality Gates Before First Milestone
 
-- Run smoke checks:
-  - `powershell -ExecutionPolicy Bypass -File .\scripts\run_smoke.ps1`
-- Run manual checklist:
-  - `docs/MANUAL_TEST_PLAN.md`
-- Fix all critical smoke failures before starting feature work.
+- Launch the game from `res://main/main.tscn`.
+- Check your core loop: main menu -> gameplay -> pause/settings -> back to menu.
+- Verify save/load, settings persistence, and locale switch in your customized scenes.

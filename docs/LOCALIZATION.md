@@ -34,9 +34,8 @@
 
 1. Add or update keys in `translations/UI.csv` for all supported locales.
 2. Update scene/script references.
-3. Run smoke:
-   `powershell -ExecutionPolicy Bypass -File .\scripts\run_smoke.ps1`
-4. Verify `user://phase0_smoke_result.txt` is `PASS`.
+3. Launch the project and switch locale on active screens.
+4. Check static labels and dynamic labels for missing keys and stale text.
 
 ## Coverage Report Fields
 

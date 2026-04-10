@@ -1,5 +1,7 @@
 # Release Process
 
+Internal document for template maintainers.
+
 ## Release Checklist
 
 Before creating a template release:

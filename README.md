@@ -1,113 +1,85 @@
-# Godot Bootstrap Template
+# Godot 2D Game Template
 
 Current version: `0.3.0`
 
 ## EN
 
-Infrastructure-first Godot 4.x template for building 2D games.
+A clean Godot 4.x starter for 2D games.
+It gives you ready-to-use project infrastructure, but no gameplay mechanics.
 
-This repository is not a gameplay framework. It gives you a stable project base:
+### What you get out of the box
 
-- app flow and scene transitions
-- save/settings/input/localization services
-- shared UI shell (HUD, modals, loading, feedback)
-- debug overlay and smoke checks
+- app flow and scene transitions;
+- save slots and load flow;
+- settings (audio, video, language) with persistence;
+- input rebinding (keyboard/mouse) with persistence;
+- localization pipeline (`translations/UI.csv`);
+- shared UI shell (HUD host, modals, loading screen, feedback).
 
-### Requirements
+### Quick start
 
-- Godot `4.6.x`
-- Windows/macOS/Linux (tested mainly on Windows)
+1. Open the project in Godot (`4.6.x`).
+2. Run `res://main/main.tscn`.
+3. Replace demo scenes in `features/` with your own scenes.
+4. Extend `SessionContext`, `SaveData`, and `UserSettings` for your game.
+5. Rename project metadata in `project.godot` and replace `icon.svg`.
 
-### Quick Start
-
-1. Open the project in Godot.
-2. Wait for import to finish.
-3. Run `res://main/main.tscn`.
-4. Replace demo scenes in `features/` with your own.
-5. Extend `SessionContext`, `SaveData`, `UserSettings` for your project.
-
-### Daily Workflow
-
-1. Implement or change your feature.
-2. Run smoke:
-   `powershell -ExecutionPolicy Bypass -File .\scripts\run_smoke.ps1`
-3. If needed, run manual checklist:
-   `docs/MANUAL_TEST_PLAN.md`
-4. Commit only after smoke is `PASS`.
-
-### Files Written At Runtime
+### Runtime files
 
 - `user://settings.cfg`
 - `user://saves/slot_XX.save` and backups (`.bak`)
 - `user://input_bindings.save`
-- `user://phase0_smoke_result.txt` (after smoke run)
 
-### Documentation
+### Start here
 
+- [Docs Index](docs/README.md)
 - [Bootstrap Checklist](docs/BOOTSTRAP_CHECKLIST.md)
-- [Extension Guide](docs/EXTENSION_GUIDE.md)
 - [Demo Replacement Guide](docs/DEMO_REPLACEMENT.md)
-- [Manual Test Plan](docs/MANUAL_TEST_PLAN.md)
-- [Release Process](docs/RELEASE_PROCESS.md)
-- [CI Smoke Troubleshooting](docs/CI_SMOKE_TROUBLESHOOTING.md)
-- [Architecture](docs/ARCHITECTURE.md)
-- [Architecture Guardrails](docs/ARCHITECTURE_GUARDRAILS.md)
+- [Extension Guide](docs/EXTENSION_GUIDE.md)
 - [Localization Workflow](docs/LOCALIZATION.md)
-- [Code Style](docs/CODESTYLE.md)
-- [Changelog](CHANGELOG.md)
-- [Roadmap](TODO.md)
+
+### About documentation
+
+- If you use this repository as a game template, stay with the guides above.
+- Internal template-maintenance docs are grouped in [Maintainer Guide](docs/MAINTAINER_GUIDE.md).
 
 ## RU
 
-Шаблон на Godot 4.x для старта 2D-игр с упором на инфраструктуру.
+Понятный стартовый шаблон на Godot 4.x для 2D-игр.
+В нем есть готовая инфраструктура проекта, но нет игровых механик.
 
-Это не набор игровых механик. Репозиторий дает стабильную базу проекта:
+### Что есть из коробки
 
-- flow приложения и переходы между сценами
-- сервисы сохранений, настроек, ввода и локализации
-- общий UI-слой (HUD, модалки, загрузка, feedback)
-- debug overlay и smoke-проверки
-
-### Требования
-
-- Godot `4.6.x`
-- Windows/macOS/Linux (основная проверка на Windows)
+- flow приложения и переходы между сценами;
+- слоты сохранений и загрузка;
+- настройки (аудио, видео, язык) с сохранением;
+- ребинд ввода (клавиатура/мышь) с сохранением;
+- пайплайн локализации (`translations/UI.csv`);
+- общий UI-слой (HUD-хост, модалки, экран загрузки, feedback).
 
 ### Быстрый старт
 
-1. Откройте проект в Godot.
-2. Дождитесь завершения импорта.
-3. Запустите `res://main/main.tscn`.
-4. Замените demo-сцены в `features/` на свои.
-5. Расширьте `SessionContext`, `SaveData`, `UserSettings` под ваш проект.
+1. Откройте проект в Godot (`4.6.x`).
+2. Запустите `res://main/main.tscn`.
+3. Замените demo-сцены в `features/` на свои.
+4. Расширьте `SessionContext`, `SaveData` и `UserSettings` под свою игру.
+5. Обновите метаданные проекта в `project.godot` и замените `icon.svg`.
 
-### Ежедневный процесс работы
-
-1. Внесите изменения.
-2. Запустите smoke:
-   `powershell -ExecutionPolicy Bypass -File .\scripts\run_smoke.ps1`
-3. При необходимости пройдите ручной чеклист:
-   `docs/MANUAL_TEST_PLAN.md`
-4. Коммитьте изменения только после `PASS` в smoke.
-
-### Какие файлы пишутся во время работы
+### Файлы, которые создаются во время работы
 
 - `user://settings.cfg`
-- `user://saves/slot_XX.save` и backup-файлы (`.bak`)
+- `user://saves/slot_XX.save` и резервные копии (`.bak`)
 - `user://input_bindings.save`
-- `user://phase0_smoke_result.txt` (после smoke)
 
-### Документация
+### С чего начать
 
+- [Docs Index](docs/README.md)
 - [Bootstrap Checklist](docs/BOOTSTRAP_CHECKLIST.md)
-- [Extension Guide](docs/EXTENSION_GUIDE.md)
 - [Demo Replacement Guide](docs/DEMO_REPLACEMENT.md)
-- [Manual Test Plan](docs/MANUAL_TEST_PLAN.md)
-- [Release Process](docs/RELEASE_PROCESS.md)
-- [CI Smoke Troubleshooting](docs/CI_SMOKE_TROUBLESHOOTING.md)
-- [Architecture](docs/ARCHITECTURE.md)
-- [Architecture Guardrails](docs/ARCHITECTURE_GUARDRAILS.md)
+- [Extension Guide](docs/EXTENSION_GUIDE.md)
 - [Localization Workflow](docs/LOCALIZATION.md)
-- [Code Style](docs/CODESTYLE.md)
-- [Changelog](CHANGELOG.md)
-- [Roadmap](TODO.md)
+
+### О документации
+
+- Если вы используете репозиторий как шаблон игры, вам достаточно гайдов выше.
+- Внутренние документы для развития самого шаблона вынесены в [Maintainer Guide](docs/MAINTAINER_GUIDE.md).

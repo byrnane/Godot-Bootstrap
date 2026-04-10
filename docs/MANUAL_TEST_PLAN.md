@@ -1,5 +1,8 @@
 # Manual Test Plan
 
+Internal document for template maintainers.
+This checklist is not required for teams that only consume the template for their own game.
+
 ## Scope
 
 This checklist validates the template infrastructure only (no gameplay mechanics).

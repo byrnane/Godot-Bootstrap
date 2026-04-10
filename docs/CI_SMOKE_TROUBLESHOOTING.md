@@ -1,5 +1,7 @@
 # CI Smoke Troubleshooting
 
+Internal document for template maintainers.
+
 ## Scope
 
 This playbook is used when GitHub Actions `Smoke Checks` fails.
