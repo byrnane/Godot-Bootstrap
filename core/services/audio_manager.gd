@@ -28,6 +28,10 @@ func _ready() -> void:
 	apply_from_settings();
 
 
+func _exit_tree() -> void:
+	_release_runtime_players();
+
+
 func apply_from_settings() -> void:
 	AppContext.ensure_defaults();
 	for bus_settings: Array in [
@@ -179,9 +183,8 @@ func _play_one_shot(source: Variant, bus_name: String, options: Dictionary = {})
 
 
 func _resolve_stream(source: Variant) -> AudioStream:
-	var stream: AudioStream = source as AudioStream;
-	if stream != null:
-		return stream;
+	if source is AudioStream:
+		return source as AudioStream;
 
 	if source is String:
 		var loaded_resource: Resource = load(String(source));
@@ -264,3 +267,34 @@ func _on_one_shot_finished(player: AudioStreamPlayer) -> void:
 	if player.get_parent() != null:
 		player.get_parent().remove_child(player);
 	player.queue_free();
+
+
+func _release_runtime_players() -> void:
+	for tween_index: int in range(_music_tweens.size()):
+		_stop_music_tween(tween_index);
+
+	for player: AudioStreamPlayer in _music_players:
+		if player == null:
+			continue;
+		player.stop();
+		player.stream = null;
+		if player.get_parent() != null:
+			player.get_parent().remove_child(player);
+		player.queue_free();
+
+	if _one_shot_root != null:
+		for child: Node in _one_shot_root.get_children():
+			var player: AudioStreamPlayer = child as AudioStreamPlayer;
+			if player != null:
+				player.stop();
+				player.stream = null;
+			_one_shot_root.remove_child(child);
+			child.queue_free();
+		if _one_shot_root.get_parent() != null:
+			_one_shot_root.get_parent().remove_child(_one_shot_root);
+		_one_shot_root.queue_free();
+		_one_shot_root = null;
+
+	_active_music_player_index = -1;
+	_music_players.clear();
+	_music_tweens.clear();

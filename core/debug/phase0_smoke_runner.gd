@@ -139,7 +139,7 @@ func _expect_transition(action: Callable, expected_scene_id: StringName, expecte
 
 
 func _check_scene_loading_pipeline_contract() -> void:
-	SceneRouter.go_to(Scenes.GAMEPLAY);
+	SceneRouter.go_to(Scenes.GAMEPLAY, null, {"warn_if_queued": false});
 	var loading_started: bool = await _wait_until(
 		func() -> bool:
 			return SceneRouter.is_loading(),
@@ -149,7 +149,7 @@ func _check_scene_loading_pipeline_contract() -> void:
 	if not loading_started:
 		return;
 
-	SceneRouter.go_to(Scenes.MAIN_MENU);
+	SceneRouter.go_to(Scenes.MAIN_MENU, null, {"warn_if_queued": false});
 	var queued_detected: bool = await _wait_until(
 		func() -> bool:
 			return bool(SceneRouter.get_debug_snapshot().get("has_queued_transition", false)),
@@ -172,7 +172,7 @@ func _check_scene_loading_pipeline_contract() -> void:
 	_check(not TransitionManager.is_active(), "scene pipeline test: transition manager stayed active after queue drain");
 	_check(AppContext.state == AppState.Value.MAIN_MENU, "scene pipeline test: app state should be MAIN_MENU after queue drain");
 
-	SceneRouter.go_to(&"__smoke_unknown_scene__");
+	SceneRouter.go_to(&"__smoke_unknown_scene__", null, {"warn_if_unknown": false});
 	var fallback_loading_started: bool = await _wait_until(
 		func() -> bool:
 			return SceneRouter.is_loading() or AppContext.state == AppState.Value.LOADING,
@@ -272,7 +272,7 @@ func _check_core_data_containers() -> void:
 
 	var startup_params: AppStartupParams = AppStartupParams.new();
 	startup_params.main_menu_scene_id = &"__unknown_menu_scene__";
-	var resolved_startup: AppStartupParams = AppFlow.call("_resolve_startup_params", startup_params) as AppStartupParams;
+	var resolved_startup: AppStartupParams = AppFlow.call("_resolve_startup_params", startup_params, false) as AppStartupParams;
 	_check(resolved_startup != null, "data container test: startup params resolution returned null");
 	if resolved_startup != null:
 		_check(
@@ -282,7 +282,7 @@ func _check_core_data_containers() -> void:
 
 	var session_params: SessionStartParams = SessionStartParams.new();
 	session_params.gameplay_scene_id = &"__unknown_gameplay_scene__";
-	var resolved_session: SessionStartParams = AppFlow.call("_resolve_session_start_params", session_params) as SessionStartParams;
+	var resolved_session: SessionStartParams = AppFlow.call("_resolve_session_start_params", session_params, false) as SessionStartParams;
 	_check(resolved_session != null, "data container test: session params resolution returned null");
 	if resolved_session != null:
 		_check(
@@ -723,6 +723,7 @@ func _check(condition: bool, message: String) -> void:
 
 
 func _finish() -> void:
+	_prepare_runtime_for_shutdown();
 	if _failures.is_empty():
 		_write_result_file(true, []);
 		print("[PHASE0_SMOKE] PASS");
@@ -734,6 +735,17 @@ func _finish() -> void:
 	for failure: String in _failures:
 		push_error("[PHASE0_SMOKE] - %s" % [failure]);
 	call_deferred("_quit_smoke", 1);
+
+
+func _prepare_runtime_for_shutdown() -> void:
+	# Smoke keeps long-lived autoloads alive until process exit, so release
+	# audio/config references explicitly before quitting to keep the run clean.
+	if AudioManager != null:
+		AudioManager.stop_music(0.0);
+		if AudioManager.has_method("_release_runtime_players"):
+			AudioManager.call("_release_runtime_players");
+	if GameConfig != null:
+		GameConfig.main_menu_music = null;
 
 
 func _quit_smoke(exit_code: int) -> void:

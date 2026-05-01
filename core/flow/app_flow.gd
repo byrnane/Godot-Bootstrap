@@ -392,42 +392,45 @@ func _is_transition_blocked() -> bool:
 	return SceneRouter.is_loading() or TransitionManager.is_active();
 
 
-func _resolve_startup_params(params: APP_STARTUP_PARAMS_TYPE) -> APP_STARTUP_PARAMS_TYPE:
+func _resolve_startup_params(params: APP_STARTUP_PARAMS_TYPE, warn_on_fallback: bool = true) -> APP_STARTUP_PARAMS_TYPE:
 	var resolved_params: APP_STARTUP_PARAMS_TYPE = params;
 	if resolved_params == null:
 		resolved_params = APP_STARTUP_PARAMS_TYPE.new();
 	if resolved_params.main_menu_scene_id == StringName():
 		resolved_params.main_menu_scene_id = _get_start_scene_id();
 	if not Scenes.has(resolved_params.main_menu_scene_id):
-		push_warning(
-			"AppFlow: startup main_menu_scene_id '%s' is unknown, fallback to '%s'." % [
-				String(resolved_params.main_menu_scene_id),
-				String(_get_start_scene_id()),
-			]
-		);
+		if warn_on_fallback:
+			push_warning(
+				"AppFlow: startup main_menu_scene_id '%s' is unknown, fallback to '%s'." % [
+					String(resolved_params.main_menu_scene_id),
+					String(_get_start_scene_id()),
+				]
+			);
 		resolved_params.main_menu_scene_id = _get_start_scene_id();
 	if resolved_params.launch_mode == APP_STARTUP_PARAMS_TYPE.LaunchMode.START_SESSION:
 		if resolved_params.session_start_params == null:
 			resolved_params.session_start_params = _create_session_start_params(SESSION_START_PARAMS_TYPE.Mode.NEW_GAME);
 		elif not (resolved_params.session_start_params is SESSION_START_PARAMS_TYPE):
-			push_warning("AppFlow: startup session_start_params has invalid type, fallback to NEW_GAME mode.");
+			if warn_on_fallback:
+				push_warning("AppFlow: startup session_start_params has invalid type, fallback to NEW_GAME mode.");
 			resolved_params.session_start_params = _create_session_start_params(SESSION_START_PARAMS_TYPE.Mode.NEW_GAME);
 	return resolved_params;
 
 
-func _resolve_session_start_params(params: SESSION_START_PARAMS_TYPE) -> SESSION_START_PARAMS_TYPE:
+func _resolve_session_start_params(params: SESSION_START_PARAMS_TYPE, warn_on_fallback: bool = true) -> SESSION_START_PARAMS_TYPE:
 	var resolved_params: SESSION_START_PARAMS_TYPE = params;
 	if resolved_params == null:
 		resolved_params = _create_session_start_params(SESSION_START_PARAMS_TYPE.Mode.NEW_GAME);
 	if resolved_params.gameplay_scene_id == StringName():
 		resolved_params.gameplay_scene_id = _get_gameplay_scene_id();
 	if not Scenes.has(resolved_params.gameplay_scene_id):
-		push_warning(
-			"AppFlow: session gameplay_scene_id '%s' is unknown, fallback to '%s'." % [
-				String(resolved_params.gameplay_scene_id),
-				String(_get_gameplay_scene_id()),
-			]
-		);
+		if warn_on_fallback:
+			push_warning(
+				"AppFlow: session gameplay_scene_id '%s' is unknown, fallback to '%s'." % [
+					String(resolved_params.gameplay_scene_id),
+					String(_get_gameplay_scene_id()),
+				]
+			);
 		resolved_params.gameplay_scene_id = _get_gameplay_scene_id();
 	return resolved_params;
 

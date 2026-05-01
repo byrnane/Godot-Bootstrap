@@ -6,12 +6,12 @@ const DEFAULT_CONFIG_PATH: String = "res://core/config/default_game_config.tres"
 const OVERRIDE_CONFIG_PATH: String = "res://core/config/game_config_override.tres";
 const DEFAULT_START_SCENE_ID: StringName = Scenes.MAIN_MENU;
 const DEFAULT_GAMEPLAY_SCENE_ID: StringName = Scenes.GAMEPLAY;
-const DEFAULT_MAIN_MENU_MUSIC: AudioStream = preload("res://assets/music/main_menu.mp3");
+const DEFAULT_MAIN_MENU_MUSIC_PATH: String = "res://assets/music/main_menu.mp3";
 
 
 var start_scene_id: StringName = DEFAULT_START_SCENE_ID;
 var gameplay_scene_id: StringName = DEFAULT_GAMEPLAY_SCENE_ID;
-var main_menu_music: AudioStream = DEFAULT_MAIN_MENU_MUSIC;
+var main_menu_music: AudioStream = null;
 
 
 var _reported_issues: Dictionary = {};
@@ -19,6 +19,10 @@ var _reported_issues: Dictionary = {};
 
 func _ready() -> void:
 	reload();
+
+
+func _exit_tree() -> void:
+	main_menu_music = null;
 
 
 func get_start_scene_id() -> StringName:
@@ -33,13 +37,13 @@ func get_main_menu_music() -> AudioStream:
 	if main_menu_music != null:
 		return main_menu_music;
 	_warn_config_issue("main_menu_music", "main_menu_music is null, fallback to default stream.");
-	return DEFAULT_MAIN_MENU_MUSIC;
+	return load(DEFAULT_MAIN_MENU_MUSIC_PATH) as AudioStream;
 
 
 func reset_to_defaults() -> void:
 	start_scene_id = DEFAULT_START_SCENE_ID;
 	gameplay_scene_id = DEFAULT_GAMEPLAY_SCENE_ID;
-	main_menu_music = DEFAULT_MAIN_MENU_MUSIC;
+	main_menu_music = load(DEFAULT_MAIN_MENU_MUSIC_PATH) as AudioStream;
 
 
 func reload() -> void:
@@ -47,7 +51,7 @@ func reload() -> void:
 	var override_data: GAME_CONFIG_DATA_TYPE = _load_config_data(OVERRIDE_CONFIG_PATH, false);
 	var resolved_start_scene_id: StringName = DEFAULT_START_SCENE_ID;
 	var resolved_gameplay_scene_id: StringName = DEFAULT_GAMEPLAY_SCENE_ID;
-	var resolved_main_menu_music: AudioStream = DEFAULT_MAIN_MENU_MUSIC;
+	var resolved_main_menu_music: AudioStream = load(DEFAULT_MAIN_MENU_MUSIC_PATH) as AudioStream;
 
 	if default_data != null:
 		resolved_start_scene_id = default_data.start_scene_id;

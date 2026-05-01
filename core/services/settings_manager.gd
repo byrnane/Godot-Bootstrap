@@ -481,6 +481,10 @@ func _recover_audio_settings(settings: UserSettings) -> void:
 
 
 func _apply_video_settings(settings: UserSettings) -> bool:
+	# Headless runs have no real window surface, so window-mode validation would
+	# report a false failure and pollute smoke output.
+	if DisplayServer.get_name().to_lower() == "headless":
+		return true;
 	DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED if settings.vsync_enabled else DisplayServer.VSYNC_DISABLED);
 	if settings.fullscreen:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN);

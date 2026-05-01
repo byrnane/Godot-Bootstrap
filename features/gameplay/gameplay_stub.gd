@@ -13,8 +13,8 @@ signal view_changed(view_model: Dictionary);
 const GAMEPLAY_HUD_SCENE: PackedScene = preload("res://features/gameplay/gameplay_hud.tscn");
 const PRIMARY_METRIC_STEP: int = 5;
 const SECONDARY_METRIC_STEP: int = 10;
-const LEVEL_A_MUSIC: AudioStream = preload("res://assets/music/level_a.mp3");
-const LEVEL_B_MUSIC: AudioStream = preload("res://assets/music/level_b.mp3");
+const LEVEL_A_MUSIC_PATH: String = "res://assets/music/level_a.mp3";
+const LEVEL_B_MUSIC_PATH: String = "res://assets/music/level_b.mp3";
 const PRIMARY_DECREASE_SFX: AudioStream = preload("res://assets/sfx/damage.ogg");
 const PRIMARY_INCREASE_SFX: AudioStream = preload("res://assets/sfx/heal.ogg");
 const SECONDARY_INCREMENT_SFX: AudioStream = preload("res://assets/sfx/score.ogg");
@@ -190,6 +190,6 @@ func _on_app_state_changed(_new_state: AppState.Value) -> void:
 func _sync_level_music(level_scene_id: StringName) -> void:
 	match level_scene_id:
 		Scenes.LEVEL_STUB_A:
-			AudioManager.play_music(LEVEL_A_MUSIC);
+			AudioManager.play_music(LEVEL_A_MUSIC_PATH);
 		Scenes.LEVEL_STUB_B:
-			AudioManager.play_music(LEVEL_B_MUSIC);
+			AudioManager.play_music(LEVEL_B_MUSIC_PATH);

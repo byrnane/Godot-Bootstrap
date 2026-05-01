@@ -1,4 +1,4 @@
-# Godot 2D Game Template
+﻿# Godot 2D Game Template
 
 Current version: `0.4.0`
 

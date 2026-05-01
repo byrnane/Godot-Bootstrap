@@ -278,7 +278,7 @@ func _normalize_metadata(raw_metadata: Variant, descriptor: Dictionary, save_dat
 	var slot_id: int = int(descriptor.get("id", -1));
 	var timestamp_unix: int = int(metadata.get("timestamp_unix", FileAccess.get_modified_time(source_path)));
 	if timestamp_unix <= 0:
-		timestamp_unix = Time.get_unix_time_from_system();
+		timestamp_unix = int(Time.get_unix_time_from_system());
 	var reason: String = String(metadata.get("reason", "manual")).strip_edges();
 	var title: String = String(metadata.get("title", "")).strip_edges();
 	if title.is_empty():

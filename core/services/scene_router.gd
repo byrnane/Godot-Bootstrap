@@ -35,16 +35,16 @@ func has_container() -> bool:
 	return _root_container != null;
 
 
-func go_to(scene_id: StringName, payload: SCENE_TRANSITION_PAYLOAD_TYPE = null) -> Node:
+func go_to(scene_id: StringName, payload: SCENE_TRANSITION_PAYLOAD_TYPE = null, options: Dictionary = {}) -> Node:
 	if _is_loading:
-		_queue_transition(scene_id, payload);
+		_queue_transition(scene_id, payload, bool(options.get("warn_if_queued", true)));
 		return null;
 
 	if not has_container():
 		push_error("SceneRouter: root container is not configured.");
 		return null;
 
-	call_deferred("_go_to_async", scene_id, payload);
+	call_deferred("_go_to_async", scene_id, payload, options);
 	return null;
 
 
@@ -63,10 +63,10 @@ func get_debug_snapshot() -> Dictionary:
 	};
 
 
-func _go_to_async(scene_id: StringName, payload: SCENE_TRANSITION_PAYLOAD_TYPE = null) -> void:
+func _go_to_async(scene_id: StringName, payload: SCENE_TRANSITION_PAYLOAD_TYPE = null, options: Dictionary = {}) -> void:
 	var resolved_scene_id: StringName = scene_id;
 	if not Scenes.has(resolved_scene_id):
-		_warn_unknown_scene_id(resolved_scene_id);
+		_warn_unknown_scene_id(resolved_scene_id, bool(options.get("warn_if_unknown", true)));
 		resolved_scene_id = default_scene_id;
 	var transition_payload: SCENE_TRANSITION_PAYLOAD_TYPE = _resolve_transition_payload(resolved_scene_id, payload);
 
@@ -249,7 +249,9 @@ func _restore_state_after_loading() -> void:
 	_should_restore_state_after_loading = false;
 
 
-func _warn_unknown_scene_id(scene_id: StringName) -> void:
+func _warn_unknown_scene_id(scene_id: StringName, should_warn: bool = true) -> void:
+	if not should_warn:
+		return;
 	var warning_key: String = String(scene_id);
 	if _reported_unknown_scene_ids.has(warning_key):
 		return;
@@ -302,11 +304,12 @@ func _create_transition_payload(
 	return payload;
 
 
-func _queue_transition(scene_id: StringName, payload: SCENE_TRANSITION_PAYLOAD_TYPE) -> void:
+func _queue_transition(scene_id: StringName, payload: SCENE_TRANSITION_PAYLOAD_TYPE, should_warn: bool = true) -> void:
 	_has_queued_transition = true;
 	_queued_scene_id = scene_id;
 	_queued_payload = payload;
-	push_warning("SceneRouter: queued go_to('%s') while loading. The latest queued request will run next." % [String(scene_id)]);
+	if should_warn:
+		push_warning("SceneRouter: queued go_to('%s') while loading. The latest queued request will run next." % [String(scene_id)]);
 
 
 func _start_queued_transition_if_any() -> void:

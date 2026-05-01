@@ -8,31 +8,54 @@ $ErrorActionPreference = "Stop"
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $smokeScene = "res://core/debug/phase0_smoke_runner.tscn"
 $resultPath = Join-Path $env:APPDATA "Godot\app_userdata\Game Template\phase0_smoke_result.txt"
+$knownExecutablePaths = @(
+	"C:\Program Files (x86)\Steam\steamapps\common\Godot Engine\godot.windows.opt.tools.64.exe"
+)
+
+function Add-Candidate {
+	param(
+		[System.Collections.Generic.List[string]]$Candidates,
+		[string]$Value
+	)
+
+	if ([string]::IsNullOrWhiteSpace($Value)) {
+		return
+	}
+
+	if (-not $Candidates.Contains($Value)) {
+		$Candidates.Add($Value)
+	}
+}
 
 function Resolve-GodotExecutable {
 	param([string]$preferredExecutable)
 
-	$candidates = @()
-	if (-not [string]::IsNullOrWhiteSpace($preferredExecutable)) {
-		$candidates += $preferredExecutable
+	$candidates = [System.Collections.Generic.List[string]]::new()
+	Add-Candidate -Candidates $candidates -Value $preferredExecutable
+	Add-Candidate -Candidates $candidates -Value $env:GODOT_BIN
+
+	# PATH-based aliases stay first so existing local setups behave the same.
+	foreach ($commandName in @("godot4", "godot")) {
+		Add-Candidate -Candidates $candidates -Value $commandName
 	}
-	if (-not [string]::IsNullOrWhiteSpace($env:GODOT_BIN)) {
-		$candidates += $env:GODOT_BIN
+
+	# Steam installs often live outside PATH on Windows.
+	foreach ($path in $knownExecutablePaths) {
+		Add-Candidate -Candidates $candidates -Value $path
 	}
-	$candidates += "godot4"
-	$candidates += "godot"
 
 	foreach ($candidate in $candidates) {
-		if ([string]::IsNullOrWhiteSpace($candidate)) {
-			continue
+		if (Test-Path -LiteralPath $candidate) {
+			return $candidate
 		}
+
 		$command = Get-Command $candidate -ErrorAction SilentlyContinue
 		if ($null -ne $command) {
-			return $candidate
+			return $command.Source
 		}
 	}
 
-	throw "Godot executable was not found. Pass -GodotExecutable or set GODOT_BIN."
+	throw "Godot executable was not found. Pass -GodotExecutable, set GODOT_BIN, or update the known executable paths in scripts/run_smoke.ps1."
 }
 
 function Main {
@@ -49,7 +72,7 @@ function Main {
 		$arguments = @("--headless") + $arguments
 	}
 
-	# Use Start-Process to avoid host-specific native-command exit handling.
+	# Start-Process keeps exit handling consistent across shells and terminals.
 	$process = Start-Process -FilePath $resolvedExecutable -ArgumentList $arguments -Wait -PassThru -NoNewWindow
 	$godotExitCode = $process.ExitCode
 	Write-Host "Godot exit code: $godotExitCode"
