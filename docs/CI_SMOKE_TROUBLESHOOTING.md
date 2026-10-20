@@ -10,7 +10,9 @@ The CI smoke gate is based on:
 
 - running `res://core/debug/phase0_smoke_runner.tscn` in headless mode;
 - reading `phase0_smoke_result.txt`;
-- requiring final status `PASS`.
+- requiring final status `PASS`, exit code 0, and no SCRIPT ERROR/ERROR.
+
+Use the PowerShell 7 wrapper, not a direct editor launch. It creates an isolated child profile under `.local/smoke/<run-id>` and leaves real user data untouched. The scene rejects unisolated launches. CI installs pinned addons with `scripts/install_addons.ps1`, imports resources with Godot 4.7.2, then uses the same wrapper.
 
 ## Fast Triage
 
@@ -24,13 +26,13 @@ The CI smoke gate is based on:
 Run local headless smoke with explicit Godot binary:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\run_smoke.ps1 -Headless -GodotExecutable "C:\Path\To\godot.exe"
+pwsh -ExecutionPolicy Bypass -File .\scripts\run_smoke.ps1 -Headless -GodotExecutable "C:\Path\To\godot.exe"
 ```
 
 If needed, also run with visible window mode:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\run_smoke.ps1 -GodotExecutable "C:\Path\To\godot.exe"
+pwsh -ExecutionPolicy Bypass -File .\scripts\run_smoke.ps1 -GodotExecutable "C:\Path\To\godot.exe"
 ```
 
 ## Common Failure Buckets

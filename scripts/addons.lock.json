@@ -1,0 +1,14 @@
+[
+  {
+    "folder": "godot_ai",
+    "version": "4.3.0",
+    "url": "https://github.com/hi-godot/godot-ai/releases/download/v4.3.0/godot-ai-v4-plugin.zip",
+    "sha256": "dbc3d16e1aa7a5f3ae8038a150bf4191162112f4329c79611aa6f656e3ca4e58"
+  },
+  {
+    "folder": "cyclops_level_builder",
+    "version": "1.5.1",
+    "url": "https://github.com/blackears/cyclopsLevelBuilder/releases/download/v1.5.1/cyclops_level_builder_1.5.1_for_Godot_4.7.zip",
+    "sha256": "46d6586b2c4843202318794aefca8e7f4be31bde5b52da3424c9313f21691c11"
+  }
+]

@@ -1,0 +1,14 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/demo_crate.glb" id="1"]
+
+[sub_resource type="BoxShape3D" id="Box"]
+size = Vector3(1, 1, 1)
+
+[node name="DemoCrate" type="StaticBody3D"]
+
+[node name="Model" parent="." instance=ExtResource("1")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+position = Vector3(0, 0.5, 0)
+shape = SubResource("Box")

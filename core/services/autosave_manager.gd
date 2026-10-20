@@ -56,7 +56,7 @@ func refresh_policy() -> void:
 func request_autosave(reason: StringName, payload: Dictionary = {}) -> bool:
 	if not _can_autosave(reason):
 		return false;
-	if _is_in_cooldown():
+	if reason != REASON_EXIT and _is_in_cooldown():
 		return false;
 
 	var options: Dictionary = {
@@ -80,12 +80,14 @@ func emit_checkpoint(checkpoint_id: String, payload: Dictionary = {}) -> bool:
 	var checkpoint_token: String = "%s|%s" % [checkpoint_id, JSON.stringify(payload, "", false)];
 	if _checkpoint_tokens.has(checkpoint_token):
 		return false;
+	if not request_autosave(REASON_CHECKPOINT, payload):
+		return false;
 	_checkpoint_tokens[checkpoint_token] = true;
 	_checkpoint_order.append(checkpoint_token);
 	while _checkpoint_order.size() > MAX_CHECKPOINT_TOKENS:
 		var stale_token: String = _checkpoint_order.pop_front();
 		_checkpoint_tokens.erase(stale_token);
-	return request_autosave(REASON_CHECKPOINT, payload);
+	return true;
 
 
 func notify_score_changed(score: int) -> void:
@@ -96,11 +98,11 @@ func notify_score_changed(score: int) -> void:
 		return;
 	if score_bucket <= _last_score_bucket:
 		return;
-	_last_score_bucket = score_bucket;
-	emit_checkpoint("score_step_%d" % [score_bucket], {
+	if emit_checkpoint("score_step_%d" % [score_bucket], {
 		"score": score,
 		"bucket": score_bucket,
-	});
+	}):
+		_last_score_bucket = score_bucket;
 
 
 func _on_autosave_timer_timeout() -> void:
@@ -132,6 +134,8 @@ func _can_autosave(reason: StringName) -> bool:
 		return false;
 	if not AppContext.settings.autosave_enabled:
 		return false;
+	if reason == REASON_EXIT:
+		return bool(AppContext.settings.autosave_on_exit);
 	if AppContext.state != AppState.Value.IN_GAME and AppContext.state != AppState.Value.PAUSED:
 		return false;
 	match reason:
@@ -142,6 +146,10 @@ func _can_autosave(reason: StringName) -> bool:
 		REASON_CHECKPOINT:
 			return bool(AppContext.settings.autosave_on_checkpoint);
 	return false;
+
+
+func should_save_on_exit() -> bool:
+	return _can_autosave(REASON_EXIT);
 
 
 func _is_in_cooldown() -> bool:

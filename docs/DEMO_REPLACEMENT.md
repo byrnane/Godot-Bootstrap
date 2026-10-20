@@ -7,10 +7,10 @@ Use this guide to replace demo surfaces in the first integration pass.
 ## Files Intended For Early Replacement
 
 - `features/main_menu/main_menu.tscn`
-- `features/gameplay/gameplay_stub.tscn`
+- `features/gameplay/gameplay_3d.tscn` (default), `gameplay_stub.tscn` (flat example)
 - `features/gameplay/gameplay_hud.tscn`
-- `features/levels/level_stub_a.tscn`
-- `features/levels/level_stub_b.tscn`
+- `features/levels/level_3d_a.tscn` (default), `level_stub_a.tscn` (flat)
+- `features/levels/level_3d_b.tscn` (default), `level_stub_b.tscn` (flat)
 
 ## Minimal Replacement Flow
 

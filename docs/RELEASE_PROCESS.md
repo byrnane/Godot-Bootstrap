@@ -8,7 +8,7 @@ Before creating a template release:
 
 1. Confirm roadmap phase criteria status in `TODO.md`.
 2. Run smoke checks and get `PASS`:
-   - `powershell -ExecutionPolicy Bypass -File .\scripts\run_smoke.ps1`
+   - `pwsh -ExecutionPolicy Bypass -File .\scripts\run_smoke.ps1`
 3. Run manual checklist from `docs/MANUAL_TEST_PLAN.md` (critical sections at minimum).
 4. Review CI run for `Smoke Checks`.
 5. Update `CHANGELOG.md`:

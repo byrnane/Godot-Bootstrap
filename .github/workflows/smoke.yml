@@ -3,41 +3,36 @@ name: Smoke Checks
 on:
   pull_request:
   push:
-    branches:
-      - main
+    branches: [main]
+
+env:
+  GODOT_VERSION: 4.7.2
 
 jobs:
   smoke:
     runs-on: ubuntu-latest
-    container:
-      image: barichello/godot-ci:4.6
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Run smoke scene (headless)
-        shell: bash
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - name: Install pinned editor addons
+        shell: pwsh
+        run: ./scripts/install_addons.ps1
+      - name: Install matching Godot
         run: |
-          set -euo pipefail
-          RESULT="$HOME/.local/share/godot/app_userdata/Game Template/phase0_smoke_result.txt"
-          rm -f "$RESULT"
-          godot --headless --path . --scene res://core/debug/phase0_smoke_runner.tscn || true
-          if [[ ! -f "$RESULT" ]]; then
-            echo "Smoke result file not found: $RESULT"
-            exit 1
-          fi
-          echo "Smoke result:"
-          cat "$RESULT"
-          if ! grep -qx "PASS" "$RESULT"; then
-            echo "Smoke checks failed."
-            exit 1
-          fi
-
-      - name: Upload smoke artifacts
+          curl -fL "https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip" -o /tmp/godot.zip
+          unzip -q /tmp/godot.zip -d /tmp/godot
+          chmod +x /tmp/godot/Godot*
+          echo "GODOT_BIN=$(find /tmp/godot -maxdepth 1 -type f -name 'Godot*' -print -quit)" >> "$GITHUB_ENV"
+      - name: Import resources
+        run: '"$GODOT_BIN" --headless --editor --path . --import'
+        timeout-minutes: 3
+      - name: Run isolated smoke
+        shell: pwsh
+        run: ./scripts/run_smoke.ps1 -GodotExecutable $env:GODOT_BIN -Headless
+      - uses: actions/upload-artifact@v4
         if: always()
-        uses: actions/upload-artifact@v4
         with:
           name: smoke-result
-          path: |
-            ~/.local/share/godot/app_userdata/Game Template/phase0_smoke_result.txt
+          path: .local/smoke/
+          include-hidden-files: true

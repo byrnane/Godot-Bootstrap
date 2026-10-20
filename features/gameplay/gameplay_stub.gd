@@ -1,4 +1,4 @@
-extends Control;
+extends Node;
 class_name GameplayStub;
 
 const SCENE_TRANSITION_PAYLOAD_TYPE = preload("res://core/types/scene_transition_payload.gd");
@@ -23,7 +23,7 @@ const SECONDARY_INCREMENT_SFX: AudioStream = preload("res://assets/sfx/score.ogg
 @export var pause_action_name: StringName = &"ui_pause";
 @export var level_scene_root_path: NodePath;
 
-@onready var level_root: Control = get_node_or_null(level_scene_root_path) as Control;
+@onready var level_root: Node = get_node_or_null(level_scene_root_path);
 
 
 func _ready() -> void:
@@ -108,13 +108,11 @@ func simulate_secondary_metric_increment() -> void:
 
 
 func load_level_a() -> void:
-	SessionContext.current_level_id = Scenes.LEVEL_STUB_A;
-	_load_level(SessionContext.current_level_id);
+	_load_level(Scenes.LEVEL_STUB_A);
 
 
 func load_level_b() -> void:
-	SessionContext.current_level_id = Scenes.LEVEL_STUB_B;
-	_load_level(SessionContext.current_level_id);
+	_load_level(Scenes.LEVEL_STUB_B);
 
 
 func _load_level(level_scene_id: StringName) -> void:
@@ -122,19 +120,19 @@ func _load_level(level_scene_id: StringName) -> void:
 		return;
 	if not Scenes.has(level_scene_id):
 		return;
-	# Gameplay keeps level content below its own root instead of using
-	# SceneRouter, because this swap is local to the active game scene.
-	for child: Node in level_root.get_children():
-		level_root.remove_child(child);
-		child.queue_free();
 	var level_path: String = Scenes.get_scene_path(level_scene_id);
 	var packed_scene: PackedScene = load(level_path) as PackedScene;
 	if packed_scene == null:
 		return;
-	var level_instance: Control = packed_scene.instantiate() as Control;
+	var level_instance: Node = packed_scene.instantiate();
 	if level_instance == null:
 		return;
+	# Keep the old level intact until the replacement has loaded successfully.
+	for child: Node in level_root.get_children():
+		level_root.remove_child(child);
+		child.queue_free();
 	level_root.add_child(level_instance);
+	SessionContext.current_level_id = level_scene_id;
 	_sync_level_music(level_scene_id);
 	_refresh_view();
 

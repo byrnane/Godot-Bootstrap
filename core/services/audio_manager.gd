@@ -20,6 +20,7 @@ var _music_players: Array[AudioStreamPlayer] = [];
 var _music_tweens: Array[Tween] = [];
 var _active_music_player_index: int = -1;
 var _one_shot_root: Node = null;
+var _shutting_down: bool = false;
 
 
 func _ready() -> void:
@@ -44,6 +45,8 @@ func apply_from_settings() -> void:
 
 
 func play_music(source: Variant, options: Dictionary = {}) -> void:
+	if _shutting_down:
+		return;
 	_ensure_runtime_players();
 	var stream: AudioStream = _resolve_stream(source);
 	if stream == null:
@@ -165,6 +168,8 @@ func _apply_bus_volume(bus_name: String, linear_volume: float) -> void:
 
 
 func _play_one_shot(source: Variant, bus_name: String, options: Dictionary = {}) -> AudioStreamPlayer:
+	if _shutting_down:
+		return null;
 	_ensure_runtime_players();
 	var stream: AudioStream = _resolve_stream(source);
 	if stream == null or _one_shot_root == null:
@@ -298,3 +303,10 @@ func _release_runtime_players() -> void:
 	_active_music_player_index = -1;
 	_music_players.clear();
 	_music_tweens.clear();
+
+
+func shutdown() -> void:
+	_shutting_down = true;
+	_release_runtime_players();
+	# Stopped playback is released on an audio mixer tick, after scene frees.
+	await get_tree().create_timer(0.1, true, false, true).timeout;

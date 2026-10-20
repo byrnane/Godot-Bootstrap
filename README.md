@@ -1,10 +1,12 @@
-﻿# Godot 2D Game Template
+# Godot 2D/3D Game Template
 
-Current version: `0.4.0`
+Current version: `0.4.0` + unreleased 2D/3D preparation
+
+Начать работу: [короткая инструкция](docs/START_HERE.md).
 
 ## EN
 
-A clean Godot 4.x starter for 2D games.
+A clean Godot 4.x starter for 2D and 3D games.
 It gives you ready-to-use project infrastructure, but no gameplay mechanics.
 
 ### What you get out of the box
@@ -19,7 +21,7 @@ It gives you ready-to-use project infrastructure, but no gameplay mechanics.
 
 ### Quick start
 
-1. Open the project in Godot (`4.6.x`).
+1. Install pinned addons: `pwsh -File scripts/install_addons.ps1`, then open the project in Godot (`4.7.2`).
 2. Run `res://main/main.tscn`.
 3. Replace demo scenes in `features/` with your own scenes.
 4. Extend `SessionContext`, `SaveData`, and `UserSettings` for your game.
@@ -47,7 +49,7 @@ It gives you ready-to-use project infrastructure, but no gameplay mechanics.
 
 ## RU
 
-Понятный стартовый шаблон на Godot 4.x для 2D-игр.
+Понятный стартовый шаблон на Godot 4.x для 2D- и 3D-игр.
 В нем есть готовая инфраструктура проекта, но нет игровых механик.
 
 ### Что есть из коробки
@@ -62,7 +64,7 @@ It gives you ready-to-use project infrastructure, but no gameplay mechanics.
 
 ### Быстрый старт
 
-1. Откройте проект в Godot (`4.6.x`).
+1. Установите аддоны: `pwsh -File scripts/install_addons.ps1`, затем откройте проект в Godot (`4.7.2`).
 2. Запустите `res://main/main.tscn`.
 3. Замените demo-сцены в `features/` на свои.
 4. Расширьте `SessionContext`, `SaveData` и `UserSettings` под свою игру.

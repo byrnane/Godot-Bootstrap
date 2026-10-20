@@ -51,22 +51,22 @@ const ACTION_METADATA: Dictionary = {
 	&"ui_up": {
 		"label_key": "UI_INPUT_ACTION_UP",
 		"group_key": "UI_INPUT_GROUP_NAVIGATION",
-		"conflict_group": "navigation_vertical",
+		"conflict_group": "navigation_up",
 	},
 	&"ui_down": {
 		"label_key": "UI_INPUT_ACTION_DOWN",
 		"group_key": "UI_INPUT_GROUP_NAVIGATION",
-		"conflict_group": "navigation_vertical",
+		"conflict_group": "navigation_down",
 	},
 	&"ui_left": {
 		"label_key": "UI_INPUT_ACTION_LEFT",
 		"group_key": "UI_INPUT_GROUP_NAVIGATION",
-		"conflict_group": "navigation_horizontal",
+		"conflict_group": "navigation_left",
 	},
 	&"ui_right": {
 		"label_key": "UI_INPUT_ACTION_RIGHT",
 		"group_key": "UI_INPUT_GROUP_NAVIGATION",
-		"conflict_group": "navigation_horizontal",
+		"conflict_group": "navigation_right",
 	},
 	&"ui_cancel": {
 		"label_key": "UI_INPUT_ACTION_CANCEL",
@@ -214,22 +214,31 @@ func cancel_rebind() -> void:
 	rebind_canceled.emit(canceled_action);
 
 
-func reset_to_defaults() -> void:
+func reset_to_defaults() -> bool:
 	cancel_rebind();
 	for action_name: StringName in REBINDABLE_ACTIONS:
 		_restore_default_action(action_name);
 		bindings_changed.emit(action_name);
-	save_bindings();
+	return save_bindings();
 
 
 func save_bindings() -> bool:
-	var file: FileAccess = FileAccess.open(INPUT_SETTINGS_PATH, FileAccess.WRITE);
+	var pending_path: String = INPUT_SETTINGS_PATH + ".tmp";
+	var file: FileAccess = FileAccess.open(pending_path, FileAccess.WRITE);
 	if file == null:
 		return false;
 
 	file.store_var(_serialize_bindings(), true);
+	file.flush();
+	var write_error: Error = file.get_error();
 	file.close();
-	return true;
+	if write_error != OK:
+		DirAccess.remove_absolute(pending_path);
+		return false;
+	var result: Error = DirAccess.rename_absolute(pending_path, INPUT_SETTINGS_PATH);
+	if result != OK:
+		DirAccess.remove_absolute(pending_path);
+	return result == OK;
 
 
 func load_bindings() -> void:
@@ -262,7 +271,7 @@ func load_bindings() -> void:
 			continue;
 
 		var loaded_events: Array[InputEvent] = _deserialize_events(raw_events as Array);
-		if loaded_events.is_empty():
+		if loaded_events.is_empty() and not (raw_events as Array).is_empty():
 			_restore_default_action(action_name);
 			bindings_changed.emit(action_name);
 			continue;
@@ -378,7 +387,8 @@ func _apply_rebind(action_name: StringName, event: InputEvent) -> void:
 
 	var updated_events: Array[InputEvent] = _build_rebound_event_list(action_name, event, _pending_rebind_slot);
 	_set_action_events(action_name, updated_events);
-	save_bindings();
+	if not save_bindings():
+		UiFeedback.toast(tr("UI_INPUT_SAVE_FAILED"), {"variant": "error"});
 	_pending_rebind_action = &"";
 	_pending_rebind_slot = -1;
 	bindings_changed.emit(action_name);

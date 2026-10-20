@@ -1,4 +1,11 @@
 # Godot 4+ specific ignores
 .godot/
 /android/
-*.uid
+.local/
+builds/
+.codex/config.toml
+*.blend1
+*.blend2
+cyclops_settings.config
+addons/godot_ai/
+addons/cyclops_level_builder/

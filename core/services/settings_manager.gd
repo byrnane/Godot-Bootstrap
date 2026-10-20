@@ -31,7 +31,7 @@ func load_settings() -> void:
 	AppContext.settings = _read_settings_file();
 
 
-func save_settings() -> void:
+func save_settings() -> bool:
 	AppContext.ensure_defaults();
 	_sanitize_settings(AppContext.settings);
 	var config: ConfigFile = ConfigFile.new();
@@ -41,7 +41,12 @@ func save_settings() -> void:
 	_write_video_settings(config, AppContext.settings);
 	_write_input_settings(config, AppContext.settings);
 	_write_autosave_settings(config, AppContext.settings);
-	config.save(SETTINGS_PATH);
+	var result: Error = config.save(SETTINGS_PATH + ".tmp");
+	if result == OK:
+		result = DirAccess.rename_absolute(SETTINGS_PATH + ".tmp", SETTINGS_PATH);
+	if result != OK:
+		UiFeedback.toast(tr("UI_SETTINGS_SAVE_FAILED"), {"variant": "error"});
+	return result == OK;
 
 
 func apply_settings() -> Dictionary:
@@ -481,6 +486,9 @@ func _recover_audio_settings(settings: UserSettings) -> void:
 
 
 func _apply_video_settings(settings: UserSettings) -> bool:
+	if OS.has_feature("web"):
+		# Browser fullscreen must be requested directly from a user input handler.
+		return true;
 	# Headless runs have no real window surface, so window-mode validation would
 	# report a false failure and pollute smoke output.
 	if DisplayServer.get_name().to_lower() == "headless":

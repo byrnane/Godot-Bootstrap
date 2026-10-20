@@ -44,6 +44,7 @@ func go_to(scene_id: StringName, payload: SCENE_TRANSITION_PAYLOAD_TYPE = null, 
 		push_error("SceneRouter: root container is not configured.");
 		return null;
 
+	_is_loading = true;
 	call_deferred("_go_to_async", scene_id, payload, options);
 	return null;
 
@@ -72,7 +73,7 @@ func _go_to_async(scene_id: StringName, payload: SCENE_TRANSITION_PAYLOAD_TYPE =
 
 	var scene_path: String = Scenes.get_scene_path(resolved_scene_id);
 	if scene_path == EMPTY_SCENE_PATH:
-		push_error("SceneRouter: scene path is empty for id '%s'." % [String(resolved_scene_id)]);
+		await _fail_scene_load(resolved_scene_id, scene_path, "scene path is empty");
 		return;
 
 	_is_loading = true;
@@ -118,11 +119,7 @@ func _go_to_async(scene_id: StringName, payload: SCENE_TRANSITION_PAYLOAD_TYPE =
 
 	var scene_instance: Node = packed_scene.instantiate();
 	if scene_instance == null:
-		push_error("SceneRouter: failed to instantiate scene '%s'." % [scene_path]);
-		await TransitionManager.fail_loading(tr("UI_LOADING_ERROR"));
-		_restore_state_after_loading();
-		_is_loading = false;
-		_start_queued_transition_if_any();
+		await _fail_scene_load(resolved_scene_id, scene_path, "failed to instantiate scene");
 		return;
 
 	# Exit hooks run before the node is freed so the outgoing scene can detach
@@ -226,11 +223,11 @@ func _call_on_exit(target: Node) -> void:
 
 func _fail_scene_load(scene_id: StringName, scene_path: String, reason: String) -> void:
 	var error_text: String = tr("UI_LOADING_ERROR");
-	scene_load_failed.emit(scene_id, error_text);
 	push_error("SceneRouter: %s for '%s'." % [reason, scene_path]);
 	await TransitionManager.fail_loading(error_text);
 	_restore_state_after_loading();
 	_is_loading = false;
+	scene_load_failed.emit(scene_id, error_text);
 	_start_queued_transition_if_any();
 
 
@@ -320,6 +317,7 @@ func _start_queued_transition_if_any() -> void:
 	_has_queued_transition = false;
 	_queued_scene_id = &"";
 	_queued_payload = null;
+	_is_loading = true;
 	call_deferred("_go_to_async", queued_scene_id, queued_payload);
 
 

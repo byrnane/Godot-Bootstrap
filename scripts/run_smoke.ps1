@@ -1,96 +1,58 @@
 param(
-	[string]$GodotExecutable = "",
-	[switch]$Headless
+    [string]$GodotExecutable = "",
+    [switch]$Headless,
+    [string]$Scene = "res://core/debug/phase0_smoke_runner.tscn"
 )
-
 $ErrorActionPreference = "Stop"
-
 $projectRoot = Split-Path -Parent $PSScriptRoot
-$smokeScene = "res://core/debug/phase0_smoke_runner.tscn"
-$resultPath = Join-Path $env:APPDATA "Godot\app_userdata\Game Template\phase0_smoke_result.txt"
-$knownExecutablePaths = @(
-	"C:\Program Files (x86)\Steam\steamapps\common\Godot Engine\godot.windows.opt.tools.64.exe"
-)
-
-function Add-Candidate {
-	param(
-		[System.Collections.Generic.List[string]]$Candidates,
-		[string]$Value
-	)
-
-	if ([string]::IsNullOrWhiteSpace($Value)) {
-		return
-	}
-
-	if (-not $Candidates.Contains($Value)) {
-		$Candidates.Add($Value)
-	}
+$candidates = @($GodotExecutable, $env:GODOT_BIN, "godot4", "godot", "C:\Program Files (x86)\Steam\steamapps\common\Godot Engine\godot.windows.opt.tools.64.exe")
+$resolvedExecutable = $null
+foreach ($candidate in $candidates) {
+    if ([string]::IsNullOrWhiteSpace($candidate)) { continue }
+    $command = Get-Command $candidate -ErrorAction SilentlyContinue
+    if ($null -ne $command) { $resolvedExecutable = $command.Source; break }
+    if (Test-Path -LiteralPath $candidate -PathType Leaf) { $resolvedExecutable = $candidate; break }
 }
-
-function Resolve-GodotExecutable {
-	param([string]$preferredExecutable)
-
-	$candidates = [System.Collections.Generic.List[string]]::new()
-	Add-Candidate -Candidates $candidates -Value $preferredExecutable
-	Add-Candidate -Candidates $candidates -Value $env:GODOT_BIN
-
-	# PATH-based aliases stay first so existing local setups behave the same.
-	foreach ($commandName in @("godot4", "godot")) {
-		Add-Candidate -Candidates $candidates -Value $commandName
-	}
-
-	# Steam installs often live outside PATH on Windows.
-	foreach ($path in $knownExecutablePaths) {
-		Add-Candidate -Candidates $candidates -Value $path
-	}
-
-	foreach ($candidate in $candidates) {
-		if (Test-Path -LiteralPath $candidate) {
-			return $candidate
-		}
-
-		$command = Get-Command $candidate -ErrorAction SilentlyContinue
-		if ($null -ne $command) {
-			return $command.Source
-		}
-	}
-
-	throw "Godot executable was not found. Pass -GodotExecutable, set GODOT_BIN, or update the known executable paths in scripts/run_smoke.ps1."
+if (-not $resolvedExecutable) { throw "Godot not found. Pass -GodotExecutable or set GODOT_BIN." }
+# Isolate the child before any autoload reads or writes user data.
+$runRoot = Join-Path $projectRoot (".local/smoke/" + [guid]::NewGuid().ToString("N"))
+New-Item -ItemType Directory -Path $runRoot -Force | Out-Null
+if ([IO.Path]::GetExtension($resolvedExecutable) -eq ".cmd") {
+    $wrapper = Get-Content -LiteralPath $resolvedExecutable -Raw
+    if ($wrapper -match '"([^"\r\n]+\.exe)"') { $resolvedExecutable = $Matches[1] }
+    else { throw "Pass the Godot EXE with -GodotExecutable; unsupported wrapper: $resolvedExecutable" }
 }
-
-function Main {
-	$resolvedExecutable = Resolve-GodotExecutable -preferredExecutable $GodotExecutable
-	Write-Host "Using Godot executable: $resolvedExecutable"
-	Write-Host "Project root: $projectRoot"
-
-	if (Test-Path $resultPath) {
-		Remove-Item $resultPath -Force
-	}
-
-	$arguments = @("--path", $projectRoot, "--scene", $smokeScene)
-	if ($Headless) {
-		$arguments = @("--headless") + $arguments
-	}
-
-	# Start-Process keeps exit handling consistent across shells and terminals.
-	$process = Start-Process -FilePath $resolvedExecutable -ArgumentList $arguments -Wait -PassThru -NoNewWindow
-	$godotExitCode = $process.ExitCode
-	Write-Host "Godot exit code: $godotExitCode"
-
-	if (-not (Test-Path $resultPath)) {
-		throw "Smoke result file was not generated: $resultPath"
-	}
-
-	$result = (Get-Content $resultPath -Raw)
-	$normalizedResult = $result.Trim().Trim([char]0xFEFF)
-	if ($normalizedResult -eq "PASS") {
-		Write-Host "Smoke result: PASS"
-		exit 0
-	}
-
-	Write-Host "Smoke result contents:"
-	Write-Host $normalizedResult
-	throw "Smoke run finished without PASS status."
+$startInfo = [System.Diagnostics.ProcessStartInfo]::new()
+$startInfo.FileName = $resolvedExecutable
+$startInfo.WorkingDirectory = $projectRoot
+$startInfo.UseShellExecute = $false
+$startInfo.CreateNoWindow = $Headless.IsPresent
+$startInfo.RedirectStandardOutput = $true
+$startInfo.RedirectStandardError = $true
+foreach ($argument in @("--path", $projectRoot, "--scene", $Scene, "--max-fps", "60")) { $startInfo.ArgumentList.Add($argument) }
+if ($Headless) { $startInfo.ArgumentList.Add("--headless") }
+$startInfo.Environment["APPDATA"] = Join-Path $runRoot "AppData"
+$startInfo.Environment["LOCALAPPDATA"] = Join-Path $runRoot "LocalAppData"
+$startInfo.Environment["XDG_DATA_HOME"] = Join-Path $runRoot "data"
+$startInfo.Environment["XDG_CONFIG_HOME"] = Join-Path $runRoot "config"
+$startInfo.Environment["GAME_TEMPLATE_SMOKE_ISOLATED"] = "1"
+$process = [System.Diagnostics.Process]::new()
+$process.StartInfo = $startInfo
+$null = $process.Start()
+$stdoutTask = $process.StandardOutput.ReadToEndAsync()
+$stderrTask = $process.StandardError.ReadToEndAsync()
+if (-not $process.WaitForExit(90000)) {
+    $process.Kill($true)
+    throw "Smoke timed out. Artifacts: $runRoot"
 }
-
-Main
+$stdout = $stdoutTask.GetAwaiter().GetResult()
+$stderr = $stderrTask.GetAwaiter().GetResult()
+[IO.File]::WriteAllText((Join-Path $runRoot "stdout.log"), $stdout)
+[IO.File]::WriteAllText((Join-Path $runRoot "stderr.log"), $stderr)
+Write-Host $stdout
+if ($stderr) { Write-Host $stderr }
+$results = @(Get-ChildItem -LiteralPath $runRoot -Filter phase0_smoke_result.txt -File -Recurse)
+if ($process.ExitCode -ne 0 -or $stderr -match '(?m)^(SCRIPT ERROR|ERROR):' -or $results.Count -ne 1 -or (Get-Content -LiteralPath $results[0].FullName -Raw).Trim() -ne "PASS") {
+    throw "Smoke failed (exit $($process.ExitCode)). Artifacts: $runRoot"
+}
+Write-Host "PASS. Artifacts: $runRoot"

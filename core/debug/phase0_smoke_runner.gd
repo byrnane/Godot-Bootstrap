@@ -32,6 +32,10 @@ var _failures: Array[String] = [];
 
 
 func _ready() -> void:
+	if OS.get_environment("GAME_TEMPLATE_SMOKE_ISOLATED") != "1":
+		push_error("Run smoke through scripts/run_smoke.ps1 (isolated user data required).");
+		get_tree().quit(1);
+		return;
 	process_mode = Node.PROCESS_MODE_ALWAYS;
 	SceneRouter.configure(scene_root);
 	call_deferred("_run");
@@ -51,7 +55,10 @@ func _run() -> void:
 	_validate_main_menu_focus_navigation();
 	_check_default_theme_contrast();
 	_check_core_data_containers();
+	_check_persistence_regressions();
+	_check_settings_write_retry();
 	await _check_scene_loading_pipeline_contract();
+	await _check_session_scene_override();
 	await _check_audio_pipeline_contract();
 
 	for cycle_index: int in range(CYCLE_COUNT):
@@ -113,7 +120,34 @@ func _run() -> void:
 
 	await _expect_pause_ignored_during_transition();
 	await _expect_feedback_modal_backdrop_behavior();
+	await _check_exit_save_retry();
 	_finish();
+
+
+func _check_exit_save_retry() -> void:
+	SessionContext.reset();
+	SessionContext.score = 37;
+	AppContext.set_state(AppState.Value.IN_GAME);
+	AppContext.settings.autosave_enabled = true;
+	AppContext.settings.autosave_on_exit = true;
+	AutosaveManager.start_for_session();
+	# A directory at the temporary filename causes a real write failure.
+	var blocked_path: String = "user://saves/autosave.save.tmp";
+	DirAccess.make_dir_recursive_absolute(blocked_path);
+	get_tree().root.close_requested.emit();
+	await get_tree().process_frame;
+	_check(bool(AppFlow.get("_quit_dialog_open")), "exit regression: save failure did not open a choice");
+	_check(not bool(AppFlow.get("_quitting")), "exit regression: game exited after a failed save");
+	var modal: FeedbackModal = UiShell.get("_feedback_modal") as FeedbackModal;
+	_check(modal != null and not modal.close_on_cancel and not modal.close_on_backdrop,
+		"exit regression: Escape/backdrop can discard the failed save");
+	DirAccess.remove_absolute(blocked_path);
+	if modal == null or not bool(AppFlow.get("_quit_dialog_open")):
+		return;
+	modal.confirm_button.pressed.emit();
+	await _wait_until(func() -> bool: return bool(AppFlow.get("_quitting")), STATE_TIMEOUT_SECONDS);
+	var saved: SaveData = SaveManager.load_game_from_descriptor(SaveManager.descriptor_for_autosave());
+	_check(saved != null and saved.score == 37, "exit regression: Retry did not save the active session");
 
 
 func _expect_transition(action: Callable, expected_scene_id: StringName, expected_state: AppState.Value, label: String) -> void:
@@ -192,6 +226,96 @@ func _check_scene_loading_pipeline_contract() -> void:
 		LOAD_TIMEOUT_SECONDS
 	);
 	_check(fallback_loaded, "scene pipeline test: unknown scene fallback did not resolve to default scene");
+
+
+func _check_persistence_regressions() -> void:
+	var pause_key: InputEventKey = InputEventKey.new();
+	pause_key.keycode = KEY_F10;
+	_check(InputMap.action_has_event(&"ui_pause", pause_key), "input regression: default pause key must be F10");
+	var data: SaveData = SaveData.new();
+	data.session_exists = true;
+	data.score = 10;
+	_check(SaveManager.save_game(data, 98), "save regression: first write failed");
+	data.score = 20;
+	_check(SaveManager.save_game(data, 98), "save regression: replacement failed");
+	var path: String = "user://saves/manual_98.save";
+	var backup: PackedByteArray = FileAccess.get_file_as_bytes(path + ".bak");
+	var broken: FileAccess = FileAccess.open(path, FileAccess.WRITE);
+	broken.store_var({"version": SaveData.CURRENT_VERSION + 1});
+	broken.close();
+	var recovered: SaveData = SaveManager.load_game(98);
+	_check(recovered != null and recovered.score == 10, "save regression: backup recovery failed");
+	_check(FileAccess.get_file_as_bytes(path + ".bak") == backup, "save regression: recovery damaged backup");
+	DirAccess.remove_absolute(path);
+	_check(SaveManager.list_slots().has(98), "save regression: backup-only slot is missing");
+	_check(SaveManager.load_game(98) != null, "save regression: backup-only slot cannot load");
+	SaveManager.delete_save(98);
+	for legacy_path: String in ["user://saves/slot_97.save.bak", "user://savegame.save.bak"]:
+		var legacy_slot: int = 97 if legacy_path.contains("slot_97") else 0;
+		var legacy: FileAccess = FileAccess.open(legacy_path, FileAccess.WRITE);
+		legacy.store_var(data.to_dictionary());
+		legacy.close();
+		var legacy_bytes: PackedByteArray = FileAccess.get_file_as_bytes(legacy_path);
+		var legacy_recovered: SaveData = SaveManager.load_game(legacy_slot);
+		_check(legacy_recovered != null and legacy_recovered.score == 20, "save regression: legacy backup-only recovery failed");
+		_check(FileAccess.file_exists(legacy_path) and FileAccess.get_file_as_bytes(legacy_path) == legacy_bytes,
+			"save regression: migration deleted the only recovery copy");
+		SaveManager.delete_save(legacy_slot);
+
+	var previous_state: AppState.Value = AppContext.state;
+	AppContext.set_state(AppState.Value.IN_GAME);
+	AutosaveManager.start_for_session();
+	AutosaveManager.set("_last_autosave_time_sec", Time.get_unix_time_from_system());
+	_check(not AutosaveManager.emit_checkpoint("smoke_retry"), "autosave regression: cooldown not applied");
+	AutosaveManager.set("_last_autosave_time_sec", -9999.0);
+	_check(AutosaveManager.emit_checkpoint("smoke_retry"), "autosave regression: rejected checkpoint cannot retry");
+	_check(AutosaveManager.request_autosave(AutosaveManager.REASON_EXIT), "autosave regression: cooldown blocks exit save");
+	AutosaveManager.stop_for_session();
+	SaveManager.delete_save_descriptor(SaveManager.descriptor_for_autosave());
+	AppContext.set_state(previous_state);
+
+	var key: InputEventKey = InputEventKey.new();
+	key.physical_keycode = KEY_W;
+	InputManager.call("_apply_rebind", &"ui_down", key);
+	_check(not InputManager.call("_action_has_matching_event", &"ui_up", key), "input regression: opposite directions share a key");
+	var no_events: Array[InputEvent] = [];
+	InputManager.call("_set_action_events", &"ui_up", no_events);
+	_check(InputManager.save_bindings(), "input regression: save failed");
+	InputManager.load_bindings();
+	_check(InputManager.get_action_events(&"ui_up").is_empty(), "input regression: unbound action reverted on load");
+	var previous_bindings: PackedByteArray = FileAccess.get_file_as_bytes(InputManager.INPUT_SETTINGS_PATH);
+	var blocked_bindings: String = InputManager.INPUT_SETTINGS_PATH + ".tmp";
+	DirAccess.make_dir_absolute(blocked_bindings);
+	_check(not InputManager.save_bindings(), "input regression: blocked write reported success");
+	_check(FileAccess.get_file_as_bytes(InputManager.INPUT_SETTINGS_PATH) == previous_bindings,
+		"input regression: failed write damaged saved bindings");
+	DirAccess.remove_absolute(blocked_bindings);
+	InputManager.reset_to_defaults();
+
+
+func _check_settings_write_retry() -> void:
+	var modal: Control = UiShell.get("_settings_modal") as Control;
+	_check(modal != null, "settings regression: settings modal is missing");
+	if modal == null:
+		return;
+	var blocked_path: String = SettingsManager.SETTINGS_PATH + ".tmp";
+	DirAccess.make_dir_absolute(blocked_path);
+	modal.call("_on_reset_button_pressed");
+	_check(bool(modal.get("_is_dirty")), "settings regression: failed reset cannot be retried");
+	var apply_button: Button = modal.get("apply_button") as Button;
+	_check(apply_button != null and not apply_button.disabled, "settings regression: Apply disabled after failed reset");
+	DirAccess.remove_absolute(blocked_path);
+	_check(bool(modal.call("_apply_values")), "settings regression: retry did not save settings");
+
+
+func _check_session_scene_override() -> void:
+	var params: SessionStartParams = SessionStartParams.new();
+	params.gameplay_scene_id = Scenes.LEVEL_STUB_A;
+	await _expect_transition(Callable(AppFlow, "start_session").bind(params), Scenes.LEVEL_STUB_A,
+		AppState.Value.IN_GAME, "session scene override");
+	_check(bool(AutosaveManager.get("_session_active")), "session regression: scene override disabled autosave");
+	await _expect_transition(Callable(AppFlow, "return_to_main_menu"), Scenes.MAIN_MENU,
+		AppState.Value.MAIN_MENU, "return from session scene override");
 
 
 func _check_core_data_containers() -> void:
@@ -749,8 +873,13 @@ func _prepare_runtime_for_shutdown() -> void:
 
 
 func _quit_smoke(exit_code: int) -> void:
+	# The Retry scenario already owns a normal application exit.
+	if bool(AppFlow.get("_quitting")):
+		return;
 	# Let queued frees from smoke helpers flush before shutdown to keep output clean.
 	await get_tree().process_frame;
+	# AudioServer releases stopped playback on its next mixer tick, not a scene frame.
+	await get_tree().create_timer(0.1, true, false, true).timeout;
 	get_tree().quit(exit_code);
 
 

@@ -220,3 +220,9 @@ UI_STATE_MAIN_MENU,ГЛАВНОЕ МЕНЮ,MAIN_MENU
 UI_STATE_LOADING,ЗАГРУЗКА,LOADING
 UI_STATE_IN_GAME,В ИГРЕ,IN_GAME
 UI_STATE_PAUSED,ПАУЗА,PAUSED
+UI_EXIT_SAVE_FAILED_TITLE,Не удалось сохранить,Could not save
+UI_EXIT_SAVE_FAILED,Прогресс не записан. Повторить сохранение или выйти без него?,Progress was not saved. Retry saving or quit without saving?
+UI_RETRY_SAVE,Повторить,Retry
+UI_EXIT_WITHOUT_SAVE,Выйти без сохранения,Quit without saving
+UI_INPUT_SAVE_FAILED,Не удалось записать настройки управления,Could not save input bindings
+UI_SETTINGS_SAVE_FAILED,Не удалось записать настройки,Could not save settings

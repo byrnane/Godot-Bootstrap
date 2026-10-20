@@ -19,6 +19,7 @@ signal quit_requested;
 
 
 func _ready() -> void:
+	quit_button.visible = not OS.has_feature("web");
 	AudioManager.bind_ui_sounds(self);
 	continue_button.pressed.connect(_on_continue_button_pressed);
 	new_game_button.pressed.connect(_on_new_game_button_pressed);
@@ -44,7 +45,8 @@ func _collect_focusable_buttons() -> Array[Button]:
 		buttons.append(continue_button);
 	buttons.append(save_slots_button);
 	buttons.append(settings_button);
-	buttons.append(quit_button);
+	if quit_button.visible:
+		buttons.append(quit_button);
 	return buttons;
 
 

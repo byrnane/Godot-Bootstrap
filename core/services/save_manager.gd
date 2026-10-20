@@ -105,13 +105,25 @@ func save_game_to_descriptor(data: SaveData, slot_descriptor: Dictionary, option
 		"metadata": metadata,
 	};
 	var save_path: String = _get_primary_path(descriptor);
-	_create_backup(save_path);
-	var file: FileAccess = FileAccess.open(save_path, FileAccess.WRITE);
+	var pending_path: String = save_path + ".tmp";
+	var file: FileAccess = FileAccess.open(pending_path, FileAccess.WRITE);
 	if file == null:
 		_warn_slot_issue("write/%s" % [save_path], "failed to open '%s' for writing." % [save_path]);
 		return false;
 	file.store_var(payload, true);
+	file.flush();
+	var write_error: Error = file.get_error();
 	file.close();
+	if write_error != OK or _read_payload(pending_path, descriptor).is_empty():
+		DirAccess.remove_absolute(pending_path);
+		return false;
+	# A corrupt primary must never replace the valid recovery copy.
+	if not _read_payload(save_path, descriptor).is_empty() and not _create_backup(save_path):
+		DirAccess.remove_absolute(pending_path);
+		return false;
+	if DirAccess.rename_absolute(pending_path, save_path) != OK:
+		DirAccess.remove_absolute(pending_path);
+		return false;
 	_cleanup_legacy_paths_after_save(descriptor);
 	return true;
 
@@ -389,10 +401,10 @@ func _resolve_load_path(descriptor: Dictionary) -> String:
 	var kind: StringName = _get_descriptor_kind(descriptor);
 	if kind == SLOT_KIND_QUICK:
 		var quick_path: String = _get_quick_path();
-		return quick_path if FileAccess.file_exists(quick_path) else "";
+		return quick_path if FileAccess.file_exists(quick_path) else _existing_backup(quick_path);
 	if kind == SLOT_KIND_AUTOSAVE:
 		var autosave_path: String = _get_autosave_path();
-		return autosave_path if FileAccess.file_exists(autosave_path) else "";
+		return autosave_path if FileAccess.file_exists(autosave_path) else _existing_backup(autosave_path);
 
 	var slot_id: int = int(descriptor.get("id", DEFAULT_SLOT_ID));
 	var manual_path: String = _get_manual_path(slot_id);
@@ -403,7 +415,18 @@ func _resolve_load_path(descriptor: Dictionary) -> String:
 		return legacy_slot_path;
 	if slot_id == DEFAULT_SLOT_ID and FileAccess.file_exists(LEGACY_DEFAULT_SAVE_PATH):
 		return LEGACY_DEFAULT_SAVE_PATH;
+	for candidate: String in [manual_path, legacy_slot_path]:
+		var backup: String = _existing_backup(candidate);
+		if not backup.is_empty():
+			return backup;
+	if slot_id == DEFAULT_SLOT_ID:
+		return _existing_backup(LEGACY_DEFAULT_SAVE_PATH);
 	return "";
+
+
+func _existing_backup(path: String) -> String:
+	var backup_path: String = _get_backup_path(path);
+	return backup_path if FileAccess.file_exists(backup_path) else "";
 
 
 func _resolve_backup_path(load_path: String, descriptor: Dictionary) -> String:
@@ -451,9 +474,15 @@ func _cleanup_legacy_paths_after_save(descriptor: Dictionary) -> void:
 	if kind != SLOT_KIND_MANUAL:
 		return;
 	var slot_id: int = int(descriptor.get("id", DEFAULT_SLOT_ID));
-	_delete_path_and_backup(_get_legacy_slot_path(slot_id));
+	var legacy_paths: Array[String] = [_get_legacy_slot_path(slot_id)];
 	if slot_id == DEFAULT_SLOT_ID:
-		_delete_path_and_backup(LEGACY_DEFAULT_SAVE_PATH);
+		legacy_paths.append(LEGACY_DEFAULT_SAVE_PATH);
+	var has_current_backup: bool = not _read_payload(_get_backup_path(_get_primary_path(descriptor)), descriptor).is_empty();
+	for path: String in legacy_paths:
+		DirAccess.remove_absolute(path);
+		# Keep the recovery copy until the new save has its own valid backup.
+		if has_current_backup:
+			DirAccess.remove_absolute(_get_backup_path(path));
 
 
 func _get_manual_path(slot_id: int) -> String:
@@ -517,8 +546,10 @@ func _list_manual_slot_ids() -> Array[int]:
 			var entry_name: String = directory.get_next();
 			if entry_name.is_empty():
 				break;
-			if directory.current_is_dir() or entry_name.ends_with(BACKUP_SUFFIX):
+			if directory.current_is_dir():
 				continue;
+			if entry_name.ends_with(BACKUP_SUFFIX):
+				entry_name = entry_name.trim_suffix(BACKUP_SUFFIX);
 			if entry_name.begins_with("manual_") and entry_name.ends_with(".save"):
 				var manual_text: String = entry_name.substr(7, entry_name.length() - 12);
 				if manual_text.is_valid_int():
@@ -528,7 +559,7 @@ func _list_manual_slot_ids() -> Array[int]:
 				if legacy_text.is_valid_int():
 					map[_normalize_slot_id(int(legacy_text))] = true;
 		directory.list_dir_end();
-	if FileAccess.file_exists(LEGACY_DEFAULT_SAVE_PATH):
+	if FileAccess.file_exists(LEGACY_DEFAULT_SAVE_PATH) or not _existing_backup(LEGACY_DEFAULT_SAVE_PATH).is_empty():
 		map[DEFAULT_SLOT_ID] = true;
 	var slots: Array[int] = [];
 	for key: Variant in map.keys():
@@ -548,19 +579,17 @@ func _get_backup_path(path: String) -> String:
 	return "%s%s" % [path, BACKUP_SUFFIX];
 
 
-func _create_backup(path: String) -> void:
+func _create_backup(path: String) -> bool:
 	if not FileAccess.file_exists(path):
-		return;
-	var source_file: FileAccess = FileAccess.open(path, FileAccess.READ);
-	if source_file == null:
-		return;
-	var bytes: PackedByteArray = source_file.get_buffer(source_file.get_length());
-	source_file.close();
-	var target_file: FileAccess = FileAccess.open(_get_backup_path(path), FileAccess.WRITE);
-	if target_file == null:
-		return;
-	target_file.store_buffer(bytes);
-	target_file.close();
+		return true;
+	var pending_backup: String = _get_backup_path(path) + ".tmp";
+	if DirAccess.copy_absolute(path, pending_backup) != OK:
+		DirAccess.remove_absolute(pending_backup);
+		return false;
+	var result: Error = DirAccess.rename_absolute(pending_backup, _get_backup_path(path));
+	if result != OK:
+		DirAccess.remove_absolute(pending_backup);
+	return result == OK;
 
 
 func _delete_path_and_backup(path: String) -> void:

@@ -8,9 +8,9 @@ const LEVEL_STUB_B: StringName = &"level_stub_b";
 
 const _SCENE_PATHS: Dictionary = {
 	MAIN_MENU: "res://features/main_menu/main_menu.tscn",
-	GAMEPLAY: "res://features/gameplay/gameplay_stub.tscn",
-	LEVEL_STUB_A: "res://features/levels/level_stub_a.tscn",
-	LEVEL_STUB_B: "res://features/levels/level_stub_b.tscn",
+	GAMEPLAY: "res://features/gameplay/gameplay_3d.tscn",
+	LEVEL_STUB_A: "res://features/levels/level_3d_a.tscn",
+	LEVEL_STUB_B: "res://features/levels/level_3d_b.tscn",
 };
 
 static func get_scene_path(scene_id: StringName) -> String:

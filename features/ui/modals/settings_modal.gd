@@ -38,6 +38,9 @@ var _binding_buttons: Dictionary = {};
 
 func _ready() -> void:
 	super._ready();
+	if OS.has_feature("web"):
+		vsync_check_box.get_parent().get_parent().hide();
+		autosave_on_exit_check_box.get_parent().get_parent().hide();
 	if not LocalizationManager.locale_changed.is_connected(_on_locale_changed):
 		LocalizationManager.locale_changed.connect(_on_locale_changed);
 	language_option_button.item_selected.connect(_on_controls_changed);
@@ -45,7 +48,7 @@ func _ready() -> void:
 	music_volume_slider.value_changed.connect(_on_controls_changed);
 	ui_volume_slider.value_changed.connect(_on_controls_changed);
 	sfx_volume_slider.value_changed.connect(_on_controls_changed);
-	fullscreen_check_box.toggled.connect(_on_controls_changed);
+	fullscreen_check_box.toggled.connect(_on_fullscreen_toggled);
 	vsync_check_box.toggled.connect(_on_controls_changed);
 	autosave_enabled_check_box.toggled.connect(_on_controls_changed);
 	autosave_interval_spin_box.value_changed.connect(_on_controls_changed);
@@ -148,7 +151,7 @@ func _sync_from_settings() -> void:
 	music_volume_slider.value = AppContext.settings.music_volume;
 	ui_volume_slider.value = AppContext.settings.ui_volume;
 	sfx_volume_slider.value = AppContext.settings.sfx_volume;
-	fullscreen_check_box.button_pressed = AppContext.settings.fullscreen;
+	fullscreen_check_box.button_pressed = DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN if OS.has_feature("web") else AppContext.settings.fullscreen;
 	vsync_check_box.button_pressed = AppContext.settings.vsync_enabled;
 	autosave_enabled_check_box.button_pressed = AppContext.settings.autosave_enabled;
 	autosave_interval_spin_box.value = AppContext.settings.autosave_interval_seconds;
@@ -162,7 +165,7 @@ func _sync_from_settings() -> void:
 	_refresh_autosave_controls_state();
 
 
-func _apply_values() -> void:
+func _apply_values() -> bool:
 	AppContext.settings.language = _get_selected_locale_value();
 	AppContext.settings.master_volume = float(master_volume_slider.value);
 	AppContext.settings.music_volume = float(music_volume_slider.value);
@@ -177,9 +180,11 @@ func _apply_values() -> void:
 	AppContext.settings.autosave_score_step = int(autosave_score_step_spin_box.value);
 	AppContext.settings.autosave_capture_thumbnail = autosave_capture_thumbnail_check_box.button_pressed;
 	SettingsManager.apply_settings();
-	SettingsManager.save_settings();
+	if not SettingsManager.save_settings():
+		return false;
 	_is_dirty = false;
 	_refresh_action_state();
+	return true;
 
 
 func _get_selected_locale_value() -> String:
@@ -282,20 +287,31 @@ func _refresh_bindings_ui() -> void:
 
 func _on_apply_button_pressed() -> void:
 	InputManager.cancel_rebind();
-	_apply_values();
-	close_requested.emit();
+	if _apply_values():
+		close_requested.emit();
 
 
 func _on_reset_button_pressed() -> void:
 	AppContext.settings.reset_to_defaults();
+	if OS.has_feature("web"):
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED);
 	SettingsManager.apply_settings();
-	SettingsManager.save_settings();
+	var saved: bool = SettingsManager.save_settings();
 	_populate_locales();
 	_sync_from_settings();
+	if not saved:
+		_is_dirty = true;
+		_refresh_action_state();
 
 
 func _on_close_button_pressed() -> void:
 	request_close();
+
+
+func _on_fullscreen_toggled(enabled: bool) -> void:
+	if OS.has_feature("web") and not _is_syncing_controls:
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN if enabled else DisplayServer.WINDOW_MODE_WINDOWED);
+	_on_controls_changed(enabled);
 
 
 func _on_controls_changed(_value: Variant = null) -> void:
@@ -365,8 +381,11 @@ func _on_rebind_conflicts_resolved(action_name: StringName, replaced_actions: Ar
 
 func _on_confirm_reset_bindings() -> void:
 	_is_reset_bindings_confirmation_pending = false;
-	InputManager.reset_to_defaults();
+	var saved: bool = InputManager.reset_to_defaults();
 	_refresh_bindings_ui();
+	if not saved:
+		UiFeedback.toast(tr("UI_INPUT_SAVE_FAILED"), {"variant": "error"});
+		return;
 	UiFeedback.toast(tr("UI_INPUT_BINDINGS_RESET_DONE"), {
 		"variant": "success",
 		"duration": 2.4,

@@ -9,14 +9,23 @@ const SAVE_SLOTS_MODE_SAVE: StringName = &"save";
 
 var _started: bool = false;
 var _reported_missing_scene_signals: Dictionary = {};
+var _pending_flow: Dictionary = {};
+var _quit_dialog_open: bool = false;
+var _quitting: bool = false;
+var _quit_waiting_for_transition: bool = false;
 
 
 func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS;
 	_connect_ui_shell();
 	_connect_app_context();
 	_connect_transition_manager();
 	if not SceneRouter.scene_changed.is_connected(_on_scene_changed):
 		SceneRouter.scene_changed.connect(_on_scene_changed);
+	SceneRouter.scene_load_failed.connect(_on_scene_load_failed);
+	if not OS.has_feature("web"):
+		get_tree().auto_accept_quit = false;
+		get_tree().root.close_requested.connect(quit_game);
 
 
 func startup(params: APP_STARTUP_PARAMS_TYPE = null) -> void:
@@ -50,6 +59,7 @@ func start_session(params: SESSION_START_PARAMS_TYPE = null) -> void:
 		return;
 
 	var session_params: SESSION_START_PARAMS_TYPE = _resolve_session_start_params(params);
+	_capture_flow(true);
 	var transition_kind: int = SCENE_TRANSITION_PAYLOAD_TYPE.Kind.NEW_GAME;
 	match session_params.mode:
 		SESSION_START_PARAMS_TYPE.Mode.NEW_GAME:
@@ -60,6 +70,7 @@ func start_session(params: SESSION_START_PARAMS_TYPE = null) -> void:
 			if save_data == null or not save_data.session_exists:
 				if session_params.mode == SESSION_START_PARAMS_TYPE.Mode.CONTINUE_ONLY:
 					push_warning("AppFlow: continue-only session start requested but no save exists.");
+					_pending_flow.clear();
 					return;
 				SessionContext.reset();
 				transition_kind = SCENE_TRANSITION_PAYLOAD_TYPE.Kind.NEW_GAME;
@@ -71,8 +82,6 @@ func start_session(params: SESSION_START_PARAMS_TYPE = null) -> void:
 			transition_kind = SCENE_TRANSITION_PAYLOAD_TYPE.Kind.NEW_GAME;
 
 	AppContext.set_state(AppState.Value.IN_GAME);
-	if AutosaveManager != null:
-		AutosaveManager.start_for_session();
 	SceneRouter.go_to(
 		session_params.gameplay_scene_id,
 		_build_gameplay_payload(transition_kind, session_params.gameplay_scene_id, session_params.payload_data)
@@ -87,10 +96,10 @@ func load_session_from_slot(slot_descriptor: Dictionary) -> bool:
 	if save_data == null or not save_data.session_exists:
 		UiFeedback.toast(tr("UI_SAVE_SLOT_TOAST_LOAD_FAILED"), {"variant": "error"});
 		return false;
+	_capture_flow(true);
+	_pending_flow["loaded_from_slot"] = true;
 	SessionContext.apply_save_data(save_data);
 	AppContext.set_state(AppState.Value.IN_GAME);
-	if AutosaveManager != null:
-		AutosaveManager.start_for_session();
 	UiShell.close_all_modals();
 	SceneRouter.go_to(
 		_get_gameplay_scene_id(),
@@ -98,7 +107,6 @@ func load_session_from_slot(slot_descriptor: Dictionary) -> bool:
 			"loaded_from_slot": true,
 		})
 	);
-	UiFeedback.toast(tr("UI_SAVE_SLOT_TOAST_LOAD_SUCCESS"), {"variant": "success"});
 	return true;
 
 
@@ -151,9 +159,70 @@ func open_save_slots(mode: StringName = SAVE_SLOTS_MODE_LOAD) -> void:
 
 
 func quit_game() -> void:
-	if AutosaveManager != null:
-		AutosaveManager.request_autosave(AutosaveManager.REASON_EXIT);
+	if OS.has_feature("web") or _quit_dialog_open or _quitting or _quit_waiting_for_transition:
+		return;
+	# Finish or roll back the pending transition before saving its session.
+	if SceneRouter.is_loading() or TransitionManager.is_active():
+		_quit_waiting_for_transition = true;
+		while SceneRouter.is_loading() or TransitionManager.is_active():
+			await get_tree().process_frame;
+		_quit_waiting_for_transition = false;
+		quit_game();
+		return;
+	if AutosaveManager.should_save_on_exit() and not AutosaveManager.request_autosave(AutosaveManager.REASON_EXIT):
+		_quit_dialog_open = true;
+		UiFeedback.confirm(tr("UI_EXIT_SAVE_FAILED"), _retry_quit, _quit_without_save, {
+			"title": tr("UI_EXIT_SAVE_FAILED_TITLE"),
+			"confirm_text": tr("UI_RETRY_SAVE"),
+			"cancel_text": tr("UI_EXIT_WITHOUT_SAVE"),
+			"close_on_backdrop": false,
+			"close_on_cancel": false,
+		});
+		return;
+	_finish_quit();
+
+
+func _retry_quit() -> void:
+	_quit_dialog_open = false;
+	quit_game();
+
+
+func _quit_without_save() -> void:
+	_finish_quit();
+
+
+func _finish_quit() -> void:
+	if _quitting:
+		return;
+	_quitting = true;
+	await AudioManager.shutdown();
 	get_tree().quit();
+
+
+func _capture_flow(starts_session: bool = false) -> void:
+	_pending_flow = {
+		"state": AppContext.state,
+		"session": SessionContext.to_save_data(),
+		"is_new_session": SessionContext.is_new_session,
+		"starts_session": starts_session,
+	};
+
+
+func _on_scene_load_failed(_scene_id: StringName, _error_text: String) -> void:
+	if _pending_flow.is_empty():
+		return;
+	SessionContext.apply_save_data(_pending_flow["session"] as SaveData);
+	SessionContext.is_new_session = bool(_pending_flow["is_new_session"]);
+	var state_unchanged: bool = AppContext.state == _pending_flow["state"];
+	AppContext.set_state(_pending_flow["state"]);
+	if state_unchanged:
+		# The router already restored this state, but listeners saw the failed session.
+		AppContext.state_changed.emit(AppContext.state);
+	if bool(_pending_flow.get("loaded_from_slot", false)):
+		UiFeedback.toast(tr("UI_SAVE_SLOT_TOAST_LOAD_FAILED"), {"variant": "error"});
+	_pending_flow.clear();
+	if AppContext.state == AppState.Value.PAUSED:
+		UiShell.open_pause();
 
 
 func _go_to_main_menu(
@@ -164,10 +233,9 @@ func _go_to_main_menu(
 		return;
 	if target_scene_id == StringName():
 		target_scene_id = _get_start_scene_id();
+	_capture_flow();
 	_reset_pause_ui();
 	UiShell.close_save_slots();
-	if AutosaveManager != null:
-		AutosaveManager.stop_for_session();
 	AppContext.set_state(AppState.Value.MAIN_MENU);
 	SceneRouter.go_to(target_scene_id, _build_main_menu_payload(transition_kind, target_scene_id));
 
@@ -218,6 +286,14 @@ func _on_scene_changed(_scene_id: StringName, scene_root: Node) -> void:
 		return;
 
 	var current_scene_id: StringName = SceneRouter.current_scene_id;
+	if not _pending_flow.is_empty():
+		if bool(_pending_flow["starts_session"]):
+			AutosaveManager.start_for_session();
+		else:
+			AutosaveManager.stop_for_session();
+		if bool(_pending_flow.get("loaded_from_slot", false)):
+			UiFeedback.toast(tr("UI_SAVE_SLOT_TOAST_LOAD_SUCCESS"), {"variant": "success"});
+		_pending_flow.clear();
 	_sync_scene_music(current_scene_id);
 	match current_scene_id:
 		Scenes.MAIN_MENU:
@@ -271,18 +347,15 @@ func _on_debug_jump_scene_requested(scene_id: StringName) -> void:
 		UiFeedback.toast(tr("UI_DEBUG_TOAST_TRANSITION_BLOCKED"), {"variant": "warning"});
 		return;
 
+	_capture_flow(scene_id == _get_gameplay_scene_id());
 	_reset_pause_ui();
 	var transition_kind: int = SCENE_TRANSITION_PAYLOAD_TYPE.Kind.UNSPECIFIED;
 	if scene_id == _get_start_scene_id():
 		AppContext.set_state(AppState.Value.MAIN_MENU);
-		if AutosaveManager != null:
-			AutosaveManager.stop_for_session();
 		transition_kind = SCENE_TRANSITION_PAYLOAD_TYPE.Kind.RETURN_TO_MENU;
 	elif scene_id == _get_gameplay_scene_id():
 		SessionContext.reset();
 		AppContext.set_state(AppState.Value.IN_GAME);
-		if AutosaveManager != null:
-			AutosaveManager.start_for_session();
 		transition_kind = SCENE_TRANSITION_PAYLOAD_TYPE.Kind.NEW_GAME;
 	else:
 		AppContext.set_state(AppState.Value.IN_GAME);
@@ -389,7 +462,7 @@ func _build_gameplay_payload(
 
 
 func _is_transition_blocked() -> bool:
-	return SceneRouter.is_loading() or TransitionManager.is_active();
+	return SceneRouter.is_loading() or TransitionManager.is_active() or _quit_dialog_open or _quitting;
 
 
 func _resolve_startup_params(params: APP_STARTUP_PARAMS_TYPE, warn_on_fallback: bool = true) -> APP_STARTUP_PARAMS_TYPE:

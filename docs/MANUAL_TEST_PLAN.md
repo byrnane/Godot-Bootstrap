@@ -18,7 +18,7 @@ It focuses on:
 
 ## Test Environment
 
-- Godot `4.6.x`
+- Godot `4.7.2`
 - Fresh run with existing user data
 - Fresh run after deleting:
 - `user://settings.cfg`
@@ -28,11 +28,10 @@ It focuses on:
 
 ## Quick Automated Pre-Check
 
-Run smoke scene:
+Run the smoke wrapper in PowerShell 7 (it isolates user data):
 
-- `res://core/debug/phase0_smoke_runner.tscn`
-- `powershell -ExecutionPolicy Bypass -File .\scripts\run_smoke.ps1`
-- (optional) `powershell -ExecutionPolicy Bypass -File .\scripts\run_smoke.ps1 -Headless`
+- `pwsh -ExecutionPolicy Bypass -File .\scripts\run_smoke.ps1`
+- (optional) `pwsh -ExecutionPolicy Bypass -File .\scripts\run_smoke.ps1 -Headless`
 
 Expected:
 
