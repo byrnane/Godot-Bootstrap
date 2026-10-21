@@ -1,38 +1,47 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3]
 
-[ext_resource type="Script" path="res://features/levels/level_stub.gd" id="1_script"]
-[ext_resource type="Font" path="res://shared/ui/theme/heading_font_embedded.tres" id="2_heading_font"]
+[ext_resource type="Texture2D" path="res://assets/textures/demo_tiles.svg" id="1_tiles"]
 
-[node name="LevelStubA" type="Control"]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-script = ExtResource("1_script")
+[sub_resource type="RectangleShape2D" id="FloorShape"]
+size = Vector2(400, 24)
 
-[node name="PanelContainer" type="PanelContainer" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+[sub_resource type="RectangleShape2D" id="CrateShape"]
+size = Vector2(32, 32)
 
-[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer"]
-layout_mode = 2
-theme_override_constants/separation = 12
+[node name="Level2DA" type="Node2D"]
 
-[node name="AccentRect" type="ColorRect" parent="PanelContainer/VBoxContainer"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 16)
-layout_mode = 2
-color = Color(0.20, 0.42, 0.75, 1.0)
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(-80, 0)
+position_smoothing_enabled = false
 
-[node name="TitleLabel" type="Label" parent="PanelContainer/VBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "UI_LEVEL_STUB_A_TITLE"
-theme_override_fonts/font = ExtResource("2_heading_font")
-theme_override_font_sizes/font_size = 24
+[node name="Floor" type="StaticBody2D" parent="."]
+position = Vector2(0, 100)
+
+[node name="Polygon2D" type="Polygon2D" parent="Floor"]
+color = Color(0.12, 0.23, 0.31, 1)
+polygon = PackedVector2Array(-200, -12, 200, -12, 200, 12, -200, 12)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
+shape = SubResource("FloorShape")
+
+[node name="Crate" type="StaticBody2D" parent="."]
+position = Vector2(-64, 72)
+
+[node name="Sprite2D" type="Sprite2D" parent="Crate"]
+scale = Vector2(2, 2)
+texture = ExtResource("1_tiles")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Crate"]
+shape = SubResource("CrateShape")
+
+[node name="FallingBody" type="RigidBody2D" parent="."]
+position = Vector2(32, -80)
+lock_rotation = true
+
+[node name="Sprite2D" type="Sprite2D" parent="FallingBody"]
+modulate = Color(0.55, 0.9, 1, 1)
+scale = Vector2(2, 2)
+texture = ExtResource("1_tiles")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FallingBody"]
+shape = SubResource("CrateShape")
