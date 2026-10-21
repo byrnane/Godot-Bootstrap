@@ -59,7 +59,9 @@ func _apply_compact_layout() -> void:
 	density.place(%Objective, Control.PRESET_BOTTOM_LEFT, Rect2(16, -100, 288, 84));
 	density.place(%Interaction, Control.PRESET_BOTTOM_RIGHT, Rect2(-304, -100, 288, 84));
 	density.place(%TimerLabel, Control.PRESET_BOTTOM_RIGHT, Rect2(-172, -132, 156, 24));
-	density.place(%DemoPanel, Control.PRESET_BOTTOM_WIDE, Rect2(16, -160, get_viewport_rect().size.x - 32, 144));
+	density.fill(%DemoPanel);
+	%DemoPanel.anchor_top = 1;
+	%DemoPanel.offset_top = -160;
 	%DemoPanel.get_node("Margin/Grid").columns = 2;
 
 
