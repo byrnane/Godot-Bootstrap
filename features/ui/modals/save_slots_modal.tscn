@@ -1,158 +1,205 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene format=3]
 
-[ext_resource type="PackedScene" path="res://features/ui/modals/base_modal.tscn" id="1_base"]
-[ext_resource type="Script" path="res://features/ui/modals/save_slots_modal.gd" id="2_script"]
-[ext_resource type="PackedScene" path="res://shared/ui/components/ui_card.tscn" id="3_card"]
-[ext_resource type="PackedScene" path="res://shared/ui/components/ui_section_header.tscn" id="4_header"]
-[ext_resource type="PackedScene" path="res://shared/ui/components/ui_action_bar.tscn" id="5_action_bar"]
+[ext_resource type="Script" path="res://features/ui/modals/save_slots_modal.gd" id="script"]
+[ext_resource type="PackedScene" path="res://features/ui/modals/base_modal.tscn" id="base"]
 
-[node name="SaveSlotsModal" instance=ExtResource("1_base")]
-offset_left = -560.0
-offset_top = -340.0
-offset_right = 560.0
-offset_bottom = 340.0
-script = ExtResource("2_script")
-default_focus_path = NodePath("MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/MainRow/LeftCard/ContentMargin/Content/SlotList")
+[node name="SaveSlotsModal" instance=ExtResource("base")]
 fullscreen_mode = true
+theme_type_variation = &"UiCanvas"
+default_focus_path = NodePath("MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/MainRow/SlotScroll/SlotList")
+script = ExtResource("script")
+
+[node name="MarginContainer" parent="." index="0"]
+theme_override_constants/margin_left = 48
+theme_override_constants/margin_right = 48
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_bottom = 12
 
 [node name="TitleLabel" parent="MarginContainer/VBoxContainer" index="0"]
 text = "UI_SAVE_SLOTS"
 
-[node name="Body" type="VBoxContainer" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body" index="0"]
+[node name="Modes" type="HBoxContainer" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body"]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="ModeHintLabel" type="Label" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/Body" index="0" unique_id=580654473]
+[node name="LoadModeButton" type="Button" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/Modes"]
 unique_name_in_owner = true
 layout_mode = 2
+custom_minimum_size = Vector2(0, 56)
+theme_type_variation = &"UiTabItem"
+text = "UI_LOAD_MODE_TAB"
+toggle_mode = true
+
+[node name="SaveModeButton" type="Button" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/Modes"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0, 56)
+theme_type_variation = &"UiTabItem"
+text = "UI_SAVE_MODE_TAB"
+toggle_mode = true
+
+[node name="ModeHintLabel" type="Label" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"UiSmall"
+visible = false
 text = "UI_SAVE_SLOT_MODE_LOAD"
 
-[node name="TitleInputRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/Body" index="1"]
-layout_mode = 2
-theme_override_constants/separation = 10
 
-[node name="TitleInputLabel" type="Label" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/Body/TitleInputRow" index="0"]
-layout_mode = 2
-text = "UI_SAVE_SLOT_TITLE_INPUT"
-
-[node name="TitleLineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/Body/TitleInputRow" index="1" unique_id=1583476335]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-placeholder_text = "UI_SAVE_SLOT_TITLE_PLACEHOLDER"
-
-[node name="MainRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/Body" index="2"]
+[node name="MainRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/separation = 14
+theme_override_constants/separation = 48
 
-[node name="LeftCard" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/Body/MainRow" index="0" instance=ExtResource("3_card")]
-custom_minimum_size = Vector2(560, 0)
+[node name="SlotScroll" type="ScrollContainer" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/MainRow"]
+follow_focus = true
 layout_mode = 2
-size_flags_horizontal = 3
+custom_minimum_size = Vector2(456, 352)
+horizontal_scroll_mode = 0
 size_flags_vertical = 3
-elevated = true
 
-[node name="ListHeader" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/Body/MainRow/LeftCard/ContentMargin/Content" index="0" instance=ExtResource("4_header")]
-layout_mode = 2
-title_key = "UI_SAVE_SLOT_LIST_HEADER"
-
-[node name="SlotList" type="ItemList" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/Body/MainRow/LeftCard/ContentMargin/Content" index="1" unique_id=554625339]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 320)
-layout_mode = 2
-size_flags_vertical = 3
-select_mode = 0
-allow_reselect = true
-
-[node name="ListActions" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/Body/MainRow/LeftCard/ContentMargin/Content" index="2" instance=ExtResource("5_action_bar")]
-layout_mode = 2
-
-[node name="LoadButton" type="Button" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/Body/MainRow/LeftCard/ContentMargin/Content/ListActions" index="0" unique_id=1849949693]
+[node name="SlotList" type="VBoxContainer" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/MainRow/SlotScroll"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-text = "UI_SAVE_SLOT_LOAD"
+theme_override_constants/separation = 8
 
-[node name="SaveButton" type="Button" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/Body/MainRow/LeftCard/ContentMargin/Content/ListActions" index="1" unique_id=1472508438]
-unique_name_in_owner = true
+[node name="Details" type="PanelContainer" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/MainRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "UI_SAVE_SLOT_SAVE"
+custom_minimum_size = Vector2(0, 352)
 
-[node name="NewSlotButton" type="Button" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/Body/MainRow/LeftCard/ContentMargin/Content/ListActions" index="2" unique_id=1910477548]
+[node name="Margin" type="MarginContainer" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/MainRow/Details"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+
+[node name="Content" type="VBoxContainer" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/MainRow/Details/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="SlotTitleLabel" type="Label" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/MainRow/Details/Margin/Content"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 3
-text = "UI_SAVE_SLOT_NEW"
+theme_type_variation = &"UiSection"
+text = "UI_SAVE_SLOT_EMPTY"
 
-[node name="QuickSaveButton" type="Button" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/Body/MainRow/LeftCard/ContentMargin/Content/ListActions" index="3" unique_id=1268474458]
+
+[node name="PreviewTextureRect" type="TextureRect" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/MainRow/Details/Margin/Content"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 3
-text = "UI_SAVE_SLOT_QUICK"
-
-[node name="DeleteButton" type="Button" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/Body/MainRow/LeftCard/ContentMargin/Content/ListActions" index="4" unique_id=1494993512]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-text = "UI_SAVE_SLOT_DELETE"
-
-[node name="RightCard" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/Body/MainRow" index="1" instance=ExtResource("3_card")]
-custom_minimum_size = Vector2(380, 0)
-layout_mode = 2
-size_flags_vertical = 3
-elevated = true
-
-[node name="DetailsHeader" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/Body/MainRow/RightCard/ContentMargin/Content" index="0" instance=ExtResource("4_header")]
-layout_mode = 2
-title_key = "UI_SAVE_SLOT_DETAILS_HEADER"
-
-[node name="PreviewTextureRect" type="TextureRect" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/Body/MainRow/RightCard/ContentMargin/Content" index="1" unique_id=420457241]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(320, 180)
-layout_mode = 2
+custom_minimum_size = Vector2(320, 140)
 expand_mode = 1
 stretch_mode = 5
 
-[node name="SlotTitleLabel" type="Label" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/Body/MainRow/RightCard/ContentMargin/Content" index="2" unique_id=152983883]
+[node name="SlotKindLabel" type="Label" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/MainRow/Details/Margin/Content"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "UI_SAVE_SLOT_EMPTY"
-autowrap_mode = 2
-
-[node name="SlotKindLabel" type="Label" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/Body/MainRow/RightCard/ContentMargin/Content" index="3" unique_id=1126665065]
-unique_name_in_owner = true
-layout_mode = 2
+theme_type_variation = &"UiSmall"
 text = "UI_SAVE_SLOT_KIND_LABEL"
 
-[node name="SlotTimeLabel" type="Label" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/Body/MainRow/RightCard/ContentMargin/Content" index="4" unique_id=1956168625]
+
+[node name="SlotTimeLabel" type="Label" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/MainRow/Details/Margin/Content"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_type_variation = &"UiSmall"
 text = "UI_SAVE_SLOT_TIME_LABEL"
 
-[node name="SlotLevelLabel" type="Label" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/Body/MainRow/RightCard/ContentMargin/Content" index="5" unique_id=866076611]
+
+[node name="SlotLevelLabel" type="Label" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/MainRow/Details/Margin/Content"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_type_variation = &"UiSmall"
 text = "UI_SAVE_SLOT_LEVEL_LABEL"
 
-[node name="SlotScoreLabel" type="Label" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/Body/MainRow/RightCard/ContentMargin/Content" index="6" unique_id=1489527702]
+
+[node name="SlotScoreLabel" type="Label" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/MainRow/Details/Margin/Content"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_type_variation = &"UiSmall"
 text = "UI_SAVE_SLOT_SCORE_LABEL"
 
-[node name="ButtonsRow" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/Body" index="3" instance=ExtResource("5_action_bar")]
+
+[node name="TitleLineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/MainRow/Details/Margin/Content"]
 unique_name_in_owner = true
+layout_mode = 2
+placeholder_text = "UI_SAVE_SLOT_TITLE_PLACEHOLDER"
+
+[node name="Footer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Divider" type="HSeparator" parent="MarginContainer/VBoxContainer/Footer"]
 layout_mode = 2
 
-[node name="RefreshButton" type="Button" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/Body/ButtonsRow" index="0" unique_id=179865205]
+[node name="Actions" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Footer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="NewSlotButton" type="Button" parent="MarginContainer/VBoxContainer/Footer/Actions"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 56)
+theme_type_variation = &"UiButtonSecondary"
+text = "UI_SAVE_SLOT_NEW"
+
+
+[node name="QuickSaveButton" type="Button" parent="MarginContainer/VBoxContainer/Footer/Actions"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0, 56)
+theme_type_variation = &"UiButtonGhost"
+text = "UI_SAVE_SLOT_QUICK"
+
+
+[node name="RefreshButton" type="Button" parent="MarginContainer/VBoxContainer/Footer/Actions"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0, 56)
+theme_type_variation = &"UiButtonGhost"
 text = "UI_SAVE_SLOT_REFRESH"
 
-[node name="CloseButton" type="Button" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/Body/ButtonsRow" index="1" unique_id=1193041887]
-unique_name_in_owner = true
+
+[node name="Spacer" type="Control" parent="MarginContainer/VBoxContainer/Footer/Actions"]
 layout_mode = 2
 size_flags_horizontal = 3
+
+[node name="LoadButton" type="Button" parent="MarginContainer/VBoxContainer/Footer/Actions"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0, 56)
+theme_type_variation = &"UiButtonSecondary"
+text = "UI_SAVE_SLOT_LOAD"
+
+
+[node name="DeleteButton" type="Button" parent="MarginContainer/VBoxContainer/Footer/Actions"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0, 56)
+theme_type_variation = &"UiButtonDanger"
+text = "UI_SAVE_SLOT_DELETE"
+
+
+[node name="SaveButton" type="Button" parent="MarginContainer/VBoxContainer/Footer/Actions"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0, 56)
+theme_type_variation = &"UiButtonPrimary"
+text = "UI_SAVE_SLOT_SAVE"
+
+
+[node name="CloseButton" type="Button" parent="MarginContainer/VBoxContainer/TitleLabel"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0, 56)
+theme_type_variation = &"UiButtonGhost"
 text = "UI_CLOSE"
+layout_mode = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -180.0
+offset_top = -4.0
+offset_bottom = 52.0

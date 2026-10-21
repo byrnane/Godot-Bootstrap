@@ -80,3 +80,8 @@ If data should survive while app is open globally, keep it in `AppContext`.
 - Inherit modals from `BaseModal`.
 - Keep backdrop/cancel behavior explicit.
 - Let `UiShell` own stacking and visibility behavior.
+- Keep component data and intent signals separate from screen controllers and managers.
+- Use semantic Godot Theme variations; replace the theme to change appearance.
+- Add a standalone example to `shared/ui/catalog/ui_catalog.tscn`.
+
+See [UI Framework](UI_FRAMEWORK.md) for the component contracts and skin workflow. A new visual style does not need a separate autoload, modal stack or persistence implementation.

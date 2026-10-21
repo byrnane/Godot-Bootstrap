@@ -19,11 +19,14 @@ If you are building your own game on top of the template, start from `README.md`
 - [Architecture](ARCHITECTURE.md)
 - [Architecture Guardrails](ARCHITECTURE_GUARDRAILS.md)
 - [Code Style](CODESTYLE.md)
+- [UI Framework](UI_FRAMEWORK.md)
+- [Local Figma export](../design/figma/README.md)
 
 ## Quality and Validation
 
 - [Manual Test Plan](MANUAL_TEST_PLAN.md)
 - [Local Testing](TESTING.md)
+- [Current acceptance and limitations](READINESS.md)
 
 ## Release and Planning
 

@@ -20,9 +20,13 @@ Use this guide to replace demo surfaces in the first integration pass.
    - `get_hud_scene()`
    - `bind_hud(hud)`
    - `unbind_hud(hud)`
-3. Replace HUD with your own controls and view model mapping.
+3. Replace the HUD composition and view model mapping; reuse resource bars, counters, objectives and input hints from `shared/ui/components/`. The demo HUD accepts optional resources without reading session data directly.
+   Remove or replace its collapsible demo-actions panel when adding real gameplay.
 4. Replace level stubs with your own world/content nodes.
 5. Update `Scenes` registry paths and `GameConfig` defaults if ids change.
+
+Style changes, component contracts and catalog: [UI Framework](UI_FRAMEWORK.md).
+The local design reference is documented in [design/figma](../design/figma/README.md).
 
 ## Keep These Infrastructure Hooks
 

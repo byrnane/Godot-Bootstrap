@@ -1,0 +1,42 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://shared/ui/components/ui_resource_bar.gd" id="script"]
+
+[node name="UiResourceBar" type="VBoxContainer"]
+script = ExtResource("script")
+custom_minimum_size = Vector2(300, 52)
+mouse_filter = 2
+theme_override_constants/separation = 4
+
+[node name="Header" type="HBoxContainer" parent="."]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Header"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(24, 24)
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="Title" type="Label" parent="Header"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"UiCaption"
+text = "UI_RESOURCE_HEALTH"
+size_flags_horizontal = 3
+
+[node name="Value" type="Label" parent="Header"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"UiCaption"
+text = "80 / 100"
+
+[node name="Bar" type="ProgressBar" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0, 6)
+mouse_filter = 2
+show_percentage = false
+value = 80.0

@@ -2,13 +2,27 @@
 
 ## Goal
 
-Bring this repository to a production-ready 2D game template state:
+Maintain a reusable Godot template with a common `main` base and `3d`, `2d`, `2d-pixelart` variants:
 
-- suitable as a base for many 2D game genres;
+- suitable as a base for 2D and 3D games;
 - focused on infrastructure only;
 - no built-in gameplay mechanics (demo simulation only);
 - stable, debuggable, testable, and easy to extend.
 
+
+## Current Status — 2026-10-21
+
+The checked baseline phases below record implemented infrastructure, not unconditional current release acceptance. The universal native UI is implemented in the common base; variants receive its commits through merge. See [READINESS.md](docs/READINESS.md) for actual checks and limits, [UI_FRAMEWORK.md](docs/UI_FRAMEWORK.md) for extension, and [design/figma](design/figma/README.md) for the local design export.
+
+- [x] Native Theme roles, reusable screen/HUD components and standalone catalog.
+- [x] Shared UI integration in menus, settings, saves, feedback and loading.
+- [x] Focused smoke and native 2D/3D UI checks.
+- [ ] Separate pixelart skin and layout acceptance at 640×360.
+- [ ] Native `.fig` backup (the local JSON/SVG export is not an importable Figma file).
+- [ ] Physical gamepad acceptance of the updated UI.
+- [x] Fresh Windows/Web exports; native Theme/font/full OFL and absence of design/editor payload verified in the packages.
+- [ ] Graphical target-platform acceptance of these fresh exports.
+- [ ] Diagnose the known ObjectDB shutdown warning; 3D editor shutdown also has resource warnings.
 
 ## Non-Goals
 
@@ -52,7 +66,7 @@ Focus: remove current risks, warnings, and architectural rough edges.
 
 ### Exit criteria for Phase 0
 
-- [x] Project launches without warnings.
+- [x] Original class-name shadowing startup warnings removed; remaining shutdown warnings are tracked in [READINESS.md](docs/READINESS.md).
 - [x] Main menu -> gameplay -> pause/settings -> back to menu works repeatedly without regressions.
 - [x] No known runtime blockers in current infrastructure.
 
@@ -170,11 +184,13 @@ Focus: faster diagnosis and safer refactors.
 - [x] Add localization smoke checks (key existence, locale switch sanity).
 - [x] Define one-command local smoke run for template maintainers.
 
-### 4.3 CI quality gates
+### 4.3 Local quality gates
 
-- [x] Add automated smoke run in CI (headless where possible).
-- [x] Fail builds on critical smoke regressions.
-- [x] Document troubleshooting playbook for CI failures.
+- [x] Keep isolated smoke suites available through `scripts/run_smoke.ps1`.
+- [x] Fail the local run on critical errors, a missing PASS or a nonzero exit.
+- [x] Document selective checks and troubleshooting in [TESTING.md](docs/TESTING.md).
+
+GitHub Actions were removed by owner decision; no CI is currently used.
 
 ### Exit criteria for Phase 4
 
@@ -207,7 +223,7 @@ Focus: make the template easy to adopt and evolve.
 
 ### Exit criteria for Phase 5
 
-- [x] New team can start a fresh 2D project from template with minimal friction.
+- [x] New team can select a 2D/3D variant and start a separate game repository; pixelart UI adaptation remains pending.
 - [x] Documentation matches actual architecture and workflows.
 - [x] Template release process is repeatable.
 

@@ -1,0 +1,38 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://shared/ui/components/ui_text_panel.gd" id="script"]
+
+[node name="UiTooltip" type="PanelContainer"]
+script = ExtResource("script")
+custom_minimum_size = Vector2(320, 86)
+mouse_filter = 2
+caption_key = ""
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+mouse_filter = 2
+
+[node name="Content" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Caption" type="Label" parent="Margin/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"UiCaption"
+text = ""
+horizontal_alignment = 0
+mouse_filter = 2
+
+[node name="Text" type="Label" parent="Margin/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"UiLabel"
+text = ""
+horizontal_alignment = 0
+autowrap_mode = 2
+mouse_filter = 2

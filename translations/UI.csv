@@ -78,10 +78,10 @@ UI_SETTINGS_LANGUAGE,Язык,Language
 UI_SETTINGS_GAMEPLAY_SECTION,Настройки игрового процесса,Gameplay options
 UI_SETTINGS_AUTOSAVE_SECTION,Автосохранения,Autosave
 UI_SETTINGS_AUTOSAVE_ENABLED,Включить автосохранения,Enable autosave
-UI_SETTINGS_AUTOSAVE_INTERVAL,Интервал по таймеру (сек.),Timer interval (sec.)
+UI_SETTINGS_AUTOSAVE_INTERVAL,Интервал — сек,Interval — sec
 UI_SETTINGS_AUTOSAVE_ON_EXIT,Автосейв при выходе,Autosave on exit
 UI_SETTINGS_AUTOSAVE_ON_CHECKPOINT,Автосейв по чекпоинтам,Autosave on checkpoints
-UI_SETTINGS_AUTOSAVE_SCORE_STEP,Шаг чекпоинта по счету B,Checkpoint score step (Counter B)
+UI_SETTINGS_AUTOSAVE_SCORE_STEP,Шаг счета,Score step
 UI_SETTINGS_AUTOSAVE_CAPTURE_THUMBNAIL,Сохранять превью скриншотом,Capture screenshot thumbnail
 UI_SETTINGS_CONTROLS_SECTION,Управление,Controls
 UI_SETTINGS_TAB_GENERAL,Основное,General
@@ -226,3 +226,26 @@ UI_RETRY_SAVE,Повторить,Retry
 UI_EXIT_WITHOUT_SAVE,Выйти без сохранения,Quit without saving
 UI_INPUT_SAVE_FAILED,Не удалось записать настройки управления,Could not save input bindings
 UI_SETTINGS_SAVE_FAILED,Не удалось записать настройки,Could not save settings
+
+UI_RESOURCE_HEALTH,Здоровье,Health
+UI_RESOURCE_MANA,Мана,Mana
+UI_RESOURCE_STAMINA,Выносливость,Stamina
+UI_OBJECTIVE,Текущая цель,Current objective
+UI_DEMO_CONTROLS,Демо-действия,Demo controls
+UI_RESULT_WIN,Победа,Victory
+UI_RESULT_LOSS,Поражение,Defeat
+UI_RESULT_MESSAGE,Результаты игровой сессии,Session results
+UI_COMPONENT_CATALOG,Компоненты интерфейса,UI components
+UI_SETTINGS_DIRTY,Есть несохраненные изменения,Unsaved changes
+UI_KIT_BUTTONS,Кнопки,Buttons
+UI_KIT_STATES,Состояния,States
+UI_KIT_FIELDS,Поля ввода,Input fields
+UI_KIT_CHOICES,Выбор и переключатели,Choices and toggles
+UI_KIT_RANGES,Диапазоны и прогресс,Ranges and progress
+UI_KIT_HUD,Игровой HUD,Game HUD
+UI_KIT_FEEDBACK,Обратная связь,Feedback
+UI_KIT_TOAST,Уведомление,Notification
+UI_KIT_DIALOG,Диалог,Dialog
+UI_LOAD_MODE_TAB,Загрузка,Load
+UI_SAVE_MODE_TAB,Сохранение,Save
+UI_NO_CONTINUE,Пока нет сохраненной игры,No saved game yet

@@ -31,18 +31,33 @@ func _ready() -> void:
 
 func on_enter(_payload: SCENE_TRANSITION_PAYLOAD_TYPE = null) -> void:
 	_refresh_continue_state();
-	new_game_button.grab_focus();
+	if continue_button.disabled:
+		new_game_button.grab_focus();
+	else:
+		continue_button.grab_focus();
 
 
 func _refresh_continue_state() -> void:
-	continue_button.disabled = not SaveManager.has_continue_save();
+	var descriptor: Dictionary = SaveManager.get_latest_slot_for_continue();
+	continue_button.disabled = descriptor.is_empty();
+	if descriptor.is_empty():
+		%ContinueHint.text = tr("UI_NO_CONTINUE");
+	else:
+		var metadata: Dictionary = SaveManager.get_slot_metadata(descriptor);
+		%ContinueHint.text = "%s · %s" % [metadata.get("title", ""), metadata.get("timestamp_text", "")];
 	UI_FOCUS.apply_vertical_focus_cycle(_collect_focusable_buttons());
 
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED and is_node_ready():
+		_refresh_continue_state();
+
+
 func _collect_focusable_buttons() -> Array[Button]:
-	var buttons: Array[Button] = [new_game_button];
+	var buttons: Array[Button] = [];
 	if not continue_button.disabled:
 		buttons.append(continue_button);
+	buttons.append(new_game_button);
 	buttons.append(save_slots_button);
 	buttons.append(settings_button);
 	if quit_button.visible:
