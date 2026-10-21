@@ -50,7 +50,6 @@ Choose `3d`, `2d`, or `2d-pixelart` and clone that branch into a separate game r
 - [Extension Guide](docs/EXTENSION_GUIDE.md)
 - [Localization Workflow](docs/LOCALIZATION.md)
 - [UI Framework](docs/UI_FRAMEWORK.md)
-- [Local Figma export](design/figma/README.md)
 
 ### About documentation
 
@@ -99,7 +98,6 @@ Choose `3d`, `2d`, or `2d-pixelart` and clone that branch into a separate game r
 - [Extension Guide](docs/EXTENSION_GUIDE.md)
 - [Localization Workflow](docs/LOCALIZATION.md)
 - [UI Framework](docs/UI_FRAMEWORK.md)
-- [Local Figma export](design/figma/README.md)
 
 ### О документации
 
