@@ -26,7 +26,6 @@ Use this guide to replace demo surfaces in the first integration pass.
 5. Update `Scenes` registry paths and `GameConfig` defaults if ids change.
 
 Style changes, component contracts and catalog: [UI Framework](UI_FRAMEWORK.md).
-The local design reference is documented in [design/figma](../design/figma/README.md).
 
 ## Keep These Infrastructure Hooks
 

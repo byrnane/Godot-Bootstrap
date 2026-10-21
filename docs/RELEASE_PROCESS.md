@@ -19,7 +19,7 @@ Before creating a template release:
 6. If persistence contracts changed:
    - document migration notes;
    - confirm compatibility behavior for `SaveData` / `UserSettings`.
-7. Ensure docs reflect current architecture and extension points. If UI changed, refresh the local design reference and document whether the native `.fig` backup exists.
+7. Ensure docs reflect current architecture and extension points. If UI changed, check the source Figma link and the UI Framework guide.
 8. Merge the accepted common commits from `main` into `3d`, `2d`, and `2d-pixelart`, preserving variant settings; follow [VARIANTS.md](VARIANTS.md). Uncommitted worktree copies do not update branch history.
 9. Build and accept target-platform exports from the release candidate when packaging or native behavior changed. Earlier pre-UI exports do not validate a new UI. Record actual results and remaining limits in [READINESS.md](READINESS.md).
 10. Create the release commit and git tag only with owner authorization. Push/publication require a separate instruction.

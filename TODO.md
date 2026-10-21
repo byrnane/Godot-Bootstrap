@@ -12,13 +12,12 @@ Maintain a reusable Godot template with a common `main` base and `3d`, `2d`, `2d
 
 ## Current Status — 2026-10-21
 
-The checked baseline phases below record implemented infrastructure, not unconditional current release acceptance. The universal native UI is implemented in the common base; variants receive its commits through merge. See [READINESS.md](docs/READINESS.md) for actual checks and limits, [UI_FRAMEWORK.md](docs/UI_FRAMEWORK.md) for extension, and [design/figma](design/figma/README.md) for the local design export.
+The checked baseline phases below record implemented infrastructure, not unconditional current release acceptance. The universal native UI is implemented in the common base; variants receive its commits through merge. See [READINESS.md](docs/READINESS.md) for actual checks and limits, [UI_FRAMEWORK.md](docs/UI_FRAMEWORK.md) for extension.
 
 - [x] Native Theme roles, reusable screen/HUD components and standalone catalog.
 - [x] Shared UI integration in menus, settings, saves, feedback and loading.
 - [x] Focused smoke and native 2D/3D UI checks.
 - [ ] Separate pixelart skin and layout acceptance at 640×360.
-- [ ] Native `.fig` backup (the local JSON/SVG export is not an importable Figma file).
 - [ ] Physical gamepad acceptance of the updated UI.
 - [x] Fresh Windows/Web exports; native Theme/font/full OFL and absence of design/editor payload verified in the packages.
 - [ ] Graphical target-platform acceptance of these fresh exports.

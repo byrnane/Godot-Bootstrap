@@ -3,9 +3,7 @@
 Общая база для 2D и 3D использует Godot Control, контейнеры и Theme. В ней нет
 собственного рендера, второго стека окон или обязательного плагина.
 Исходный макет: [Game Template UI](https://www.figma.com/design/le33QeQV2WWwvlW0hGpT0M/Game-Template-UI).
-Локальные данные, стили, переменные и SVG-превью: [design/figma](../design/figma/README.md).
-Это справочная выгрузка; native `.fig` пока не сохранен. Текущее состояние приемки
-и переноса между ветками: [READINESS.md](READINESS.md).
+Текущее состояние приемки и переноса между ветками: [READINESS.md](READINESS.md).
 
 ## Где что менять
 
