@@ -6,12 +6,14 @@
 | --- | --- | --- |
 | `main` | Общие сервисы, UI и нейтральные Control-заглушки | 1280×720, canvas_items, linear |
 | `3d` | Node3D, камера, свет, модели, коллизии, Jolt, Cyclops, Blender → GLB | 1280×720, canvas_items, linear |
-| `2d` | Node2D, Camera2D, статические и падающие тела, два уровня | 1280×720, canvas_items, linear |
+| `2d` | «Лесной хранитель»: платформер, аренный шутер, головоломка | База 1280×720, canvas_items, expand, linear; fullscreen |
 | `2d-pixelart` | Технический 2D-пример на пиксельной сетке | 640×360, viewport, integer, nearest |
 
-Во всех ветках: Godot 4.7.2, Compatibility, Windows/Web, сохранение пропорций, стартовое окно 1280×720.
+Во всех ветках: Godot 4.7.2, Compatibility, Windows/Web и сохранение пропорций. В `2d` первый запуск полноэкранный, оконный размер 1600×900; остальные варианты сохраняют стартовое окно 1280×720.
 Godot AI общий. Cyclops и его export plugin входят только в `3d`.
-Идентификаторы сцен и формат сохранений одинаковы. Путь игровой сцены — `features/gameplay/gameplay.tscn`, уровней — `features/levels/level_a.tscn` и `level_b.tscn`.
+Общие идентификаторы сцен и формат SaveData v3 одинаковы. Игровые данные варианта находятся в `game_data`. Путь игровой сцены — `features/gameplay/gameplay.tscn`, уровней — `features/levels/level_a.tscn` и `level_b.tscn`.
+
+В `2d` режимы загружаются внутри единого gameplay. Пути A/B остаются совместимыми входами в первые два уровня платформера. Пример и управление: `docs/2D_EXAMPLE.md` в ветке `2d`.
 
 ## PixelArt и UI
 

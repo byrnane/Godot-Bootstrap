@@ -494,11 +494,20 @@ func _apply_video_settings(settings: UserSettings) -> bool:
 	if DisplayServer.get_name().to_lower() == "headless":
 		return true;
 	DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED if settings.vsync_enabled else DisplayServer.VSYNC_DISABLED);
-	if settings.fullscreen:
-		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN);
-	else:
-		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED);
-	var expected_mode: int = DisplayServer.WINDOW_MODE_FULLSCREEN if settings.fullscreen else DisplayServer.WINDOW_MODE_WINDOWED;
+	var fullscreen_mode: int = int(ProjectSettings.get_setting("display/window/size/mode", 3));
+	if fullscreen_mode not in [DisplayServer.WINDOW_MODE_FULLSCREEN, DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN]:
+		fullscreen_mode = DisplayServer.WINDOW_MODE_FULLSCREEN;
+	var expected_mode: int = fullscreen_mode if settings.fullscreen else DisplayServer.WINDOW_MODE_WINDOWED;
+	var was_fullscreen: bool = DisplayServer.window_get_mode() in [3, 4];
+	DisplayServer.window_set_mode(expected_mode);
+	if not settings.fullscreen:
+		DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_BORDERLESS, false);
+		if was_fullscreen:
+			var requested: Vector2i = Vector2i(ProjectSettings.get_setting("display/window/size/window_width_override", 1280), ProjectSettings.get_setting("display/window/size/window_height_override", 720));
+			var usable: Rect2i = DisplayServer.screen_get_usable_rect();
+			requested = requested.min(usable.size - Vector2i(64, 80));
+			DisplayServer.window_set_size(requested);
+			DisplayServer.window_set_position(usable.position + (usable.size - requested) / 2);
 	return DisplayServer.window_get_mode() == expected_mode;
 
 

@@ -22,7 +22,7 @@ const DEFAULT_AUTOSAVE_CAPTURE_THUMBNAIL: bool = false;
 @export_range(0.0, 1.0, 0.01) var music_volume: float = DEFAULT_MUSIC_VOLUME;
 @export_range(0.0, 1.0, 0.01) var ui_volume: float = DEFAULT_UI_VOLUME;
 @export_range(0.0, 1.0, 0.01) var sfx_volume: float = DEFAULT_SFX_VOLUME;
-@export var fullscreen: bool = false;
+@export var fullscreen: bool = default_fullscreen();
 @export var vsync_enabled: bool = true;
 @export var autosave_enabled: bool = DEFAULT_AUTOSAVE_ENABLED;
 @export_range(15, 3600, 5) var autosave_interval_seconds: int = DEFAULT_AUTOSAVE_INTERVAL_SECONDS;
@@ -32,6 +32,10 @@ const DEFAULT_AUTOSAVE_CAPTURE_THUMBNAIL: bool = false;
 @export var autosave_capture_thumbnail: bool = DEFAULT_AUTOSAVE_CAPTURE_THUMBNAIL;
 
 
+static func default_fullscreen() -> bool:
+	return int(ProjectSettings.get_setting("display/window/size/mode", 0)) in [3, 4];
+
+
 func reset_to_defaults() -> void:
 	version = CURRENT_VERSION;
 	language = DEFAULT_LANGUAGE;
@@ -39,7 +43,7 @@ func reset_to_defaults() -> void:
 	music_volume = DEFAULT_MUSIC_VOLUME;
 	ui_volume = DEFAULT_UI_VOLUME;
 	sfx_volume = DEFAULT_SFX_VOLUME;
-	fullscreen = false;
+	fullscreen = default_fullscreen();
 	vsync_enabled = true;
 	autosave_enabled = DEFAULT_AUTOSAVE_ENABLED;
 	autosave_interval_seconds = DEFAULT_AUTOSAVE_INTERVAL_SECONDS;

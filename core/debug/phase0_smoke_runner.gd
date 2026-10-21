@@ -79,6 +79,12 @@ func _run() -> void:
 
 
 func _check_game_flow() -> void:
+	var variant_checks: String = "res://core/debug/variant_flow_checks.gd";
+	if ResourceLoader.exists(variant_checks):
+		var failures: Array[String] = await load(variant_checks).run(self);
+		for failure: String in failures:
+			_check(false, failure);
+		return;
 	var cycle_number: int = 1;
 	await _expect_transition(
 		Callable(AppFlow, "start_new_game"),
@@ -327,14 +333,31 @@ func _check_persistence_regressions() -> void:
 		SaveManager.delete_save(legacy_slot);
 
 	var previous_state: AppState.Value = AppContext.state;
+	var previous_session_exists: bool = SessionContext.session_exists;
+	SessionContext.session_exists = true;
 	AppContext.set_state(AppState.Value.IN_GAME);
 	AutosaveManager.start_for_session();
 	AutosaveManager.set("_last_autosave_time_sec", Time.get_unix_time_from_system());
-	_check(not AutosaveManager.emit_checkpoint("smoke_retry"), "autosave regression: cooldown not applied");
-	AutosaveManager.set("_last_autosave_time_sec", -9999.0);
-	_check(AutosaveManager.emit_checkpoint("smoke_retry"), "autosave regression: rejected checkpoint cannot retry");
+	_check(not AutosaveManager.request_autosave(AutosaveManager.REASON_TIMER), "autosave regression: timer cooldown not applied");
+	_check(AutosaveManager.emit_checkpoint("smoke_first"), "autosave regression: timer cooldown lost checkpoint");
+	_check(AutosaveManager.emit_checkpoint("smoke_second"), "autosave regression: adjacent checkpoints cannot both save");
+	_check(not AutosaveManager.emit_checkpoint("smoke_second"), "autosave regression: duplicate checkpoint was saved twice");
+	DirAccess.make_dir_recursive_absolute("user://saves/autosave.save.tmp");
+	_check(not AutosaveManager.emit_checkpoint("smoke_retry"), "autosave regression: failed write reported success");
+	DirAccess.remove_absolute("user://saves/autosave.save.tmp");
+	_check(AutosaveManager.emit_checkpoint("smoke_retry"), "autosave regression: failed checkpoint cannot retry");
 	_check(AutosaveManager.request_autosave(AutosaveManager.REASON_EXIT), "autosave regression: cooldown blocks exit save");
 	AutosaveManager.stop_for_session();
+	AppContext.set_state(AppState.Value.MAIN_MENU);
+	SessionContext.game_data["exit_snapshot"] = {"stage": 2};
+	_check(AutosaveManager.should_save_on_exit(), "autosave regression: returning to menu disabled exit save");
+	_check(AutosaveManager.request_autosave(AutosaveManager.REASON_EXIT), "autosave regression: menu exit snapshot was not saved");
+	var menu_exit_save: SaveData = SaveManager.load_game_from_descriptor(SaveManager.descriptor_for_autosave());
+	_check(menu_exit_save != null and menu_exit_save.game_data.get("exit_snapshot", {}).get("stage", -1) == 2, "autosave regression: menu exit lost latest game data");
+	SessionContext.game_data.erase("exit_snapshot");
+	SessionContext.session_exists = false;
+	_check(not AutosaveManager.should_save_on_exit(), "autosave regression: first menu launch created an empty session save");
+	SessionContext.session_exists = previous_session_exists;
 	SaveManager.delete_save_descriptor(SaveManager.descriptor_for_autosave());
 	AppContext.set_state(previous_state);
 
@@ -383,6 +406,24 @@ func _check_session_scene_override() -> void:
 
 
 func _check_core_data_containers() -> void:
+	var nested: Dictionary = {"mode": {"stage": 2}};
+	var extended: SaveData = SaveData.from_variant({"version": 2, "session_exists": true, "game_data": nested});
+	_check(extended != null and extended.version == 3, "game data migration failed");
+	if extended != null:
+		nested.mode.stage = 9;
+		_check(extended.game_data.mode.stage == 2, "save aliases its source game data");
+		SessionContext.apply_save_data(extended);
+		var snapshot: SaveData = SessionContext.to_save_data();
+		SessionContext.game_data.mode.stage = 7;
+		_check(snapshot.game_data.mode.stage == 2, "session snapshot is not a deep copy");
+		SessionContext.apply_save_data(snapshot);
+		_check(SessionContext.game_data.mode.stage == 2 and SessionContext.session_exists, "session rollback lost game data");
+		var no_session: SaveData = SaveData.new();
+		SessionContext.apply_save_data(no_session);
+		_check(not SessionContext.to_save_data().session_exists, "empty session was turned into a playable save");
+	_check(SaveData.from_variant({"version": 3, "game_data": "invalid"}) == null, "invalid game data was accepted");
+	var old_save: SaveData = SaveData.from_variant({"version": 1});
+	_check(old_save != null and old_save.game_data.is_empty(), "legacy save did not get empty game data");
 	# Intentionally feed partially invalid payloads to verify migration and
 	# fallback contracts of persistence/runtime parameter containers.
 	var migrated_save: SaveData = SaveData.from_variant({
