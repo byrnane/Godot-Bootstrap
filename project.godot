@@ -35,13 +35,13 @@ _mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
 
 [display]
 
-window/size/viewport_width=1280
-window/size/viewport_height=720
+window/size/viewport_width=640
+window/size/viewport_height=360
 window/size/window_width_override=1280
 window/size/window_height_override=720
-window/stretch/mode="canvas_items"
+window/stretch/mode="viewport"
 window/stretch/aspect="keep"
-window/stretch/scale_mode="fractional"
+window/stretch/scale_mode="integer"
 
 [editor_plugins]
 
@@ -81,4 +81,5 @@ locale/translations=PackedStringArray("res://translations/UI.en.translation", "r
 
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
-textures/canvas_textures/default_texture_filter=1
+textures/canvas_textures/default_texture_filter=0
+2d/snap/snap_2d_transforms_to_pixel=true
