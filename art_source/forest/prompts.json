@@ -1,0 +1,50 @@
+{
+  "tool": "built-in ImageGen",
+  "assets": [
+    {
+      "asset": "forest_panorama.png",
+      "transparent_background": false,
+      "prompt": "Use case: stylized-concept. Asset type: wide landscape background for a hand-painted 2D fantasy game called Forest Keeper. A quiet ancient forest at blue twilight, enormous mossy trees, layered fern silhouettes, distant stone arch, fireflies and warm amber lantern glow among muted teal foliage. Painterly storybook illustration with clear big shapes, delicate textured edges, game-ready readable composition. Wide panoramic landscape, no characters, no text, no UI, no watermarks. Dark navy and forest green base; warm golden accents, not bright. Usable as both main menu background and side-scrolling forest scenery. Fill frame, landscape 3:2 or wider."
+    },
+    {
+      "asset": "keeper_side.png",
+      "transparent_background": true,
+      "prompt": "Use case: stylized-concept. Single game-ready asset for Forest Keeper, a hand-painted storybook 2D adventure in a dark twilight forest. Painterly textured clean silhouette, muted moss teal and navy, warm amber glow, readable at small game scale, no pixel art, no text, no watermark, no interface, no surrounding scenery. A small friendly woodland spirit wearing a pointed moss-green hood and short leaf cloak, glowing warm eyes in a dark face, little boots, carrying a small golden lantern in its forward hand. Full body SIDE VIEW facing right, neutral standing pose, feet horizontally aligned, entire character centered with generous transparent margin. One character only, not a sprite sheet. Genuine transparent background with alpha, no checkerboard painted in."
+    },
+    {
+      "asset": "keeper_top.png",
+      "transparent_background": true,
+      "prompt": "Use case: stylized-concept. Single game-ready asset for Forest Keeper, a hand-painted storybook 2D adventure in a dark twilight forest. Painterly textured clean silhouette, muted moss teal and navy, warm amber glow, readable at small game scale, no pixel art, no text, no watermark, no interface, no surrounding scenery. A small woodland spirit in a pointed moss-green hood and short leaf cloak with tiny boots and a golden lantern. TRUE TOP DOWN overhead view for a top-down shooter, facing DOWN toward bottom of frame, visible hood, shoulders, arms and feet, no face portrait. One full-body sprite centered, no sheet or alternate views. Genuine transparent background with alpha, no checkerboard painted in."
+    },
+    {
+      "asset": "shadow.png",
+      "transparent_background": true,
+      "prompt": "Use case: stylized-concept. Single game-ready asset for Forest Keeper, a hand-painted storybook 2D adventure in a dark twilight forest. Painterly textured clean silhouette, muted moss teal and navy, warm amber glow, readable at small game scale, no pixel art, no text, no watermark, no interface, no surrounding scenery. A small round shadow forest creature, soft navy-black smoky body, two clear glowing lilac eyes, tiny leaf-like ears, whimsical rather than scary. Slightly overhead full-body view, simple direction-neutral silhouette, suitable for both chasing and ranged enemy variants. Entire creature centered, genuine transparency around it. Genuine transparent background with alpha, no checkerboard painted in."
+    },
+    {
+      "asset": "platform.png",
+      "transparent_background": true,
+      "prompt": "Use case: stylized-concept. Single game-ready asset for Forest Keeper, a hand-painted storybook 2D adventure in a dark twilight forest. Painterly textured clean silhouette, muted moss teal and navy, warm amber glow, readable at small game scale, no pixel art, no text, no watermark, no interface, no surrounding scenery. One wide horizontal modular moss-covered earth platform for a SIDE VIEW platformer. Flat walkable grassy top, brown soil and dark stone beneath with small roots; roughly 4:1 wide shape, flat collision surface along the top, no perspective, no ground shadow, no loose scenery. Entire isolated platform with transparent space around all edges. Genuine transparent background with alpha, no checkerboard painted in."
+    },
+    {
+      "asset": "forest_floor.png",
+      "transparent_background": false,
+      "prompt": "Use case: stylized-concept. Single game-ready asset for Forest Keeper, a hand-painted storybook 2D adventure in a dark twilight forest. Painterly textured clean silhouette, muted moss teal and navy, warm amber glow, readable at small game scale, no pixel art, no text, no watermark, no interface, no surrounding scenery. A seamless square top-down forest ground texture: dark muted moss, sparse tiny leaves, subtle dirt and small pebbles. Absolutely flat overhead orthographic view, even lighting, no horizon, no large objects, no bright patches, no border. Tileable edges, low visual contrast so characters and projectiles stay readable. Opaque texture filling the entire square."
+    },
+    {
+      "asset": "crate.png",
+      "transparent_background": true,
+      "prompt": "Use case: stylized-concept. Single game-ready asset for Forest Keeper, a hand-painted storybook 2D adventure in a dark twilight forest. Painterly textured clean silhouette, muted moss teal and navy, warm amber glow, readable at small game scale, no pixel art, no text, no watermark, no interface, no surrounding scenery. A single sturdy wooden crate wrapped with mossy iron bands, warm brown planks, clearly box-shaped with a simple amber rune. Slight TOP DOWN overhead view for a grid puzzle game, almost square footprint, no long cast shadow, fully isolated, centered with transparent margin. Genuine transparent background with alpha, no checkerboard painted in."
+    },
+    {
+      "asset": "checkpoint_lantern.png",
+      "transparent_background": true,
+      "prompt": "Use case: stylized-concept. Single game-ready asset for Forest Keeper, a hand-painted storybook 2D adventure in a dark twilight forest. Painterly textured clean silhouette, muted moss teal and navy, warm amber glow, readable at small game scale, no pixel art, no text, no watermark, no interface, no surrounding scenery. One small antique brass forest lantern on a short carved wooden post with moss and a glowing amber flame inside, SIDE VIEW suitable for checkpoint in a 2D platformer. Clear readable silhouette, warm glow kept close to the lantern, entire object centered with transparent margin, no ground or background. Genuine transparent background with alpha, no checkerboard painted in."
+    },
+    {
+      "asset": "stone_gate.png",
+      "transparent_background": true,
+      "prompt": "Use case: stylized-concept. Single game-ready asset for Forest Keeper, a hand-painted storybook 2D adventure in a dark twilight forest. Painterly textured clean silhouette, muted moss teal and navy, warm amber glow, readable at small game scale, no pixel art, no text, no watermark, no interface, no surrounding scenery. One ancient mossy stone archway with open DARK TRANSPARENT center, chunky carved pillars and a small amber crystal in its keystone. Front facing orthographic view, clearly readable doorway for a 2D game level exit. Entire arch centered, genuine transparent background and transparent opening, no floor or scenery. Genuine transparent background with alpha, no checkerboard painted in."
+    }
+  ]
+}
