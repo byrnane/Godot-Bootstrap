@@ -72,7 +72,7 @@ If data should survive while app is open globally, keep it in `AppContext`.
 - Add keys to `translations/UI.csv`.
 - Use static keys in `.tscn` for fixed labels.
 - Use `tr("UI_KEY")` in scripts for runtime strings.
-- Run smoke and check localization coverage before merge.
+- Run only affected smoke suites; use `-Suite localization` for localization changes. See `TESTING.md`.
 
 ## Add New Modal or Shared UI Primitive
 
