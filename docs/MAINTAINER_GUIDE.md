@@ -23,7 +23,7 @@ If you are building your own game on top of the template, start from `README.md`
 ## Quality and Validation
 
 - [Manual Test Plan](MANUAL_TEST_PLAN.md)
-- [CI Smoke Troubleshooting](CI_SMOKE_TROUBLESHOOTING.md)
+- [Local Testing](TESTING.md)
 
 ## Release and Planning
 
@@ -34,7 +34,7 @@ If you are building your own game on top of the template, start from `README.md`
 ## Working Principle
 
 Keep user-facing docs focused on onboarding and day-to-day game development.
-Move maintainer-only instructions (CI, release internals, deep architecture notes) into this section.
+Move maintainer-only instructions (local testing, release internals, deep architecture notes) into this section.
 
 ## RU
 

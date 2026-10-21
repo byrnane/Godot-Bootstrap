@@ -2,6 +2,7 @@
 
 Internal document for template maintainers.
 This checklist is not required for teams that only consume the template for their own game.
+During development, use only sections affected by the change; do not repeat this checklist after every edit. See [Local Testing](TESTING.md).
 
 ## Scope
 
@@ -28,10 +29,10 @@ It focuses on:
 
 ## Quick Automated Pre-Check
 
-Run the smoke wrapper in PowerShell 7 (it isolates user data):
+Run only the affected smoke suite in PowerShell 7 (it isolates user data); for flow changes:
 
-- `pwsh -ExecutionPolicy Bypass -File .\scripts\run_smoke.ps1`
-- (optional) `pwsh -ExecutionPolicy Bypass -File .\scripts\run_smoke.ps1 -Headless`
+- `pwsh -ExecutionPolicy Bypass -File .\scripts\run_smoke.ps1 -Suite flow`
+- (optional) `pwsh -ExecutionPolicy Bypass -File .\scripts\run_smoke.ps1 -Headless -Suite flow`
 
 Expected:
 
