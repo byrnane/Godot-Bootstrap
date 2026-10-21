@@ -14,6 +14,9 @@ The CI smoke gate is based on:
 
 Use the PowerShell 7 wrapper, not a direct editor launch. It creates an isolated child profile under `.local/smoke/<run-id>` and leaves real user data untouched. The scene rejects unisolated launches. CI installs pinned addons with `scripts/install_addons.ps1`, imports resources with Godot 4.7.2, then uses the same wrapper.
 
+Для pull request `GAME_TEMPLATE_VARIANT` выбирается по целевой ветке (`github.base_ref`), для push — по отправленной ветке (`github.ref_name`).
+Так PR из рабочей ветки проверяет настройки принимающего варианта, а обновление `main` → `3d` не проверяется ошибочно как база `main`.
+
 ## Fast Triage
 
 1. Open failed workflow run.
