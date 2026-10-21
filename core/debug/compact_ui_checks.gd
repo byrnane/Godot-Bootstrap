@@ -6,6 +6,21 @@ static func run(host: Node) -> Array[String]:
 	var viewport: SubViewport = SubViewport.new();
 	viewport.size = Vector2i(640, 360);
 	host.add_child(viewport);
+	var actions: UiActionBar = load("res://shared/ui/components/ui_action_bar.tscn").instantiate();
+	actions.size = Vector2(600, 40);
+	var action: Button = Button.new();
+	action.custom_minimum_size = Vector2(80, 32);
+	actions.add_child(action);
+	viewport.add_child(actions);
+	for alignment: String in ["start", "center", "end"]:
+		actions.content_alignment = alignment;
+		await _settle(host);
+		var available: float = actions.size.x - action.size.x;
+		var expected_x: float = 0.0 if alignment == "start" else (available / 2.0 if alignment == "center" else available);
+		if absf(action.get_global_rect().position.x - expected_x) > 1.0:
+			failures.append("compact: action bar ignored " + alignment + " alignment");
+	actions.queue_free();
+	await _settle(host);
 	var old_locale: String = LocalizationManager.get_current_locale();
 	for locale: String in ["ru", "en"]:
 		LocalizationManager.set_locale(locale, false);
@@ -13,6 +28,9 @@ static func run(host: Node) -> Array[String]:
 		viewport.add_child(settings);
 		settings.show();
 		await _settle(host);
+		for tab: Control in settings.settings_tabs.tabs_container.get_children():
+			if tab.theme_type_variation != &"UiTabItem" or tab.alignment != HORIZONTAL_ALIGNMENT_CENTER:
+				failures.append("compact: horizontal tab retained sidebar styling");
 		for index: int in range(3):
 			settings.settings_tabs.set_current_tab(index);
 			await _settle(host);
