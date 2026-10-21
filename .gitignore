@@ -10,6 +10,3 @@ cyclops_settings.config
 addons/godot_ai/
 addons/cyclops_level_builder/
 
-# Local Figma backups; runtime UI assets stay under shared/ui/.
-/design/figma/20??-??-??/
-/design/figma/*.fig

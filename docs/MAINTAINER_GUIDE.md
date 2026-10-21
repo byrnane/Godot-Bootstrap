@@ -20,7 +20,6 @@ If you are building your own game on top of the template, start from `README.md`
 - [Architecture Guardrails](ARCHITECTURE_GUARDRAILS.md)
 - [Code Style](CODESTYLE.md)
 - [UI Framework](UI_FRAMEWORK.md)
-- [Local Figma export](../design/figma/README.md)
 
 ## Quality and Validation
 
