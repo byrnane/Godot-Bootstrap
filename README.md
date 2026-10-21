@@ -4,6 +4,8 @@ Current version: `0.4.0` + unreleased template variants
 
 Ветки: `main` — общая база, `3d`, `2d`, `2d-pixelart` — готовые варианты. Игры создаются в отдельных репозиториях клонированием выбранной ветки.
 
+Основная разработка шаблона ведется в `main`. Ветки вариантов получают его обновления через merge и сохраняют общую логику; в них меняются настройки, представление, примеры, ресурсы и дополнительные аддоны.
+
 Начать работу: [короткая инструкция](docs/START_HERE.md). Состав и обновления: [варианты шаблона](docs/VARIANTS.md).
 
 ## EN
@@ -22,6 +24,8 @@ It gives you ready-to-use project infrastructure, but no gameplay mechanics.
 - shared UI shell (HUD host, modals, loading screen, feedback).
 
 ### Quick start
+
+Choose `3d`, `2d`, or `2d-pixelart` and clone that branch into a separate game repository first. See the [branch selection guide](docs/START_HERE.md).
 
 1. Install pinned addons: `pwsh -File scripts/install_addons.ps1`, then open the project in Godot (`4.7.2`).
 2. Run `res://main/main.tscn`.
@@ -65,6 +69,8 @@ It gives you ready-to-use project infrastructure, but no gameplay mechanics.
 - общий UI-слой (HUD-хост, модалки, экран загрузки, feedback).
 
 ### Быстрый старт
+
+Сначала выберите `3d`, `2d` или `2d-pixelart` и клонируйте выбранную ветку в отдельный репозиторий игры. Команды — в [инструкции начала работы](docs/START_HERE.md).
 
 1. Установите аддоны: `pwsh -File scripts/install_addons.ps1`, затем откройте проект в Godot (`4.7.2`).
 2. Запустите `res://main/main.tscn`.
