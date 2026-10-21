@@ -19,6 +19,10 @@ signal quit_requested;
 
 
 func _ready() -> void:
+	if preload("res://shared/ui/theme/ui_density.gd").apply(self):
+		for side: String in ["left", "right", "top", "bottom"]:
+			$Margin.add_theme_constant_override("margin_" + side, 16);
+		$Margin/Column/Space.custom_minimum_size.y = 8;
 	quit_button.visible = not OS.has_feature("web");
 	AudioManager.bind_ui_sounds(self);
 	continue_button.pressed.connect(_on_continue_button_pressed);

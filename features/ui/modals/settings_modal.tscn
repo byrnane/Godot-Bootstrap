@@ -71,7 +71,7 @@ size_flags_horizontal = 3
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 
-[node name="Columns" type="HBoxContainer" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage"]
+[node name="Columns" type="BoxContainer" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage"]
 layout_mode = 2
 theme_override_constants/separation = 64
 
