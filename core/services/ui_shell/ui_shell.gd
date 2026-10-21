@@ -63,6 +63,9 @@ func _ready() -> void:
 	_loading_layer = get_node_or_null(loading_layer_path) as Control;
 	_debug_layer = get_node_or_null(debug_layer_path) as Control;
 	_toast_stack = get_node_or_null(toast_stack_path) as VBoxContainer;
+	if _toast_stack != null and preload("res://shared/ui/theme/ui_density.gd").is_compact(_toast_stack):
+		var toast_margin: Control = _toast_stack.get_parent();
+		preload("res://shared/ui/theme/ui_density.gd").place(toast_margin, Control.PRESET_TOP_RIGHT, Rect2(-436, 16, 420, 0));
 	if _debug_layer != null:
 		_debug_layer.z_as_relative = false;
 		_debug_layer.z_index = DEBUG_LAYER_Z_INDEX;

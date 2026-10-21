@@ -41,6 +41,18 @@ var _pending_descriptor: Dictionary = {};
 
 func _ready() -> void:
 	super._ready();
+	if preload("res://shared/ui/theme/ui_density.gd").is_compact(self):
+		var main_row: BoxContainer = slot_list.get_parent().get_parent();
+		main_row.vertical = true;
+		slot_list.get_parent().custom_minimum_size = Vector2.ZERO;
+		# One scroll owner prevents competing focus-follow adjustments in the stacked layout.
+		slot_list.get_parent().vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED;
+		slot_list.get_parent().size_flags_horizontal = Control.SIZE_EXPAND_FILL;
+		preview_texture_rect.custom_minimum_size = Vector2(0, 96);
+		var details: Control = main_row.get_node("Details");
+		details.custom_minimum_size = Vector2.ZERO;
+		for label: Label in [slot_title_label, slot_kind_label, slot_time_label, slot_level_label, slot_score_label]:
+			label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART;
 	%LoadModeButton.pressed.connect(set_mode.bind(&"load"));
 	%SaveModeButton.pressed.connect(set_mode.bind(&"save"));
 	load_button.pressed.connect(_on_load_button_pressed);

@@ -50,7 +50,7 @@ theme_type_variation = &"UiSection"
 text = "UI_KIT_BUTTONS"
 
 
-[node name="Buttons" type="HBoxContainer" parent="Scroll/Margin/Content"]
+[node name="Buttons" type="BoxContainer" parent="Scroll/Margin/Content"]
 layout_mode = 2
 theme_override_constants/separation = 16
 
@@ -88,7 +88,7 @@ theme_type_variation = &"UiSection"
 text = "UI_KIT_STATES"
 
 
-[node name="States" type="HBoxContainer" parent="Scroll/Margin/Content"]
+[node name="States" type="BoxContainer" parent="Scroll/Margin/Content"]
 layout_mode = 2
 theme_override_constants/separation = 16
 
@@ -120,7 +120,7 @@ theme_type_variation = &"UiSection"
 text = "UI_KIT_FIELDS"
 
 
-[node name="Fields" type="HBoxContainer" parent="Scroll/Margin/Content"]
+[node name="Fields" type="BoxContainer" parent="Scroll/Margin/Content"]
 layout_mode = 2
 theme_override_constants/separation = 16
 
@@ -151,7 +151,7 @@ theme_type_variation = &"UiSection"
 text = "UI_KIT_CHOICES"
 
 
-[node name="Choices" type="HBoxContainer" parent="Scroll/Margin/Content"]
+[node name="Choices" type="BoxContainer" parent="Scroll/Margin/Content"]
 layout_mode = 2
 theme_override_constants/separation = 16
 
@@ -179,7 +179,7 @@ theme_type_variation = &"UiSection"
 text = "UI_KIT_RANGES"
 
 
-[node name="Ranges" type="HBoxContainer" parent="Scroll/Margin/Content"]
+[node name="Ranges" type="BoxContainer" parent="Scroll/Margin/Content"]
 layout_mode = 2
 theme_override_constants/separation = 16
 
@@ -201,7 +201,7 @@ theme_type_variation = &"UiSection"
 text = "UI_KIT_HUD"
 
 
-[node name="Resources" type="HBoxContainer" parent="Scroll/Margin/Content"]
+[node name="Resources" type="BoxContainer" parent="Scroll/Margin/Content"]
 layout_mode = 2
 theme_override_constants/separation = 16
 
@@ -225,7 +225,7 @@ theme_type_variation = &"UiSection"
 text = "UI_SETTINGS_TAB_CONTROLS"
 
 
-[node name="Bindings" type="HBoxContainer" parent="Scroll/Margin/Content"]
+[node name="Bindings" type="BoxContainer" parent="Scroll/Margin/Content"]
 layout_mode = 2
 theme_override_constants/separation = 16
 
@@ -240,7 +240,7 @@ theme_type_variation = &"UiSection"
 text = "UI_SAVE_SLOTS"
 
 
-[node name="Saves" type="HBoxContainer" parent="Scroll/Margin/Content"]
+[node name="Saves" type="BoxContainer" parent="Scroll/Margin/Content"]
 layout_mode = 2
 theme_override_constants/separation = 16
 
@@ -255,7 +255,7 @@ theme_type_variation = &"UiSection"
 text = "UI_KIT_FEEDBACK"
 
 
-[node name="Statuses" type="HBoxContainer" parent="Scroll/Margin/Content"]
+[node name="Statuses" type="BoxContainer" parent="Scroll/Margin/Content"]
 layout_mode = 2
 theme_override_constants/separation = 16
 
@@ -297,7 +297,7 @@ theme_type_variation = &"UiSection"
 text = "UI_RESULT_MESSAGE"
 
 
-[node name="Results" type="HBoxContainer" parent="Scroll/Margin/Content"]
+[node name="Results" type="BoxContainer" parent="Scroll/Margin/Content"]
 layout_mode = 2
 theme_override_constants/separation = 16
 

@@ -73,6 +73,15 @@ func _ready() -> void:
 	_populate_locales();
 	_refresh_tab_titles();
 	_sync_from_settings();
+	if preload("res://shared/ui/theme/ui_density.gd").is_compact(self):
+		settings_tabs.set_sidebar(false);
+		var general: Node = settings_tabs.pages_container.get_node("GeneralPage");
+		general.get_node("Columns").vertical = true;
+		general.get_node("LanguageTopSpace").custom_minimum_size.y = 0;
+		general.get_node("LanguageBottomSpace").custom_minimum_size.y = 8;
+		bindings_container.get_parent().custom_minimum_size.y = 112;
+		get_node("%ResetButton").custom_minimum_size.x = 0;
+		get_node("%ApplyButton").custom_minimum_size.x = 0;
 
 
 func _exit_tree() -> void:

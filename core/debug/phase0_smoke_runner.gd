@@ -79,12 +79,6 @@ func _run() -> void:
 
 
 func _check_game_flow() -> void:
-	var variant_checks: String = "res://core/debug/variant_flow_checks.gd";
-	if ResourceLoader.exists(variant_checks):
-		var failures: Array[String] = await load(variant_checks).run(self);
-		for failure: String in failures:
-			_check(false, failure);
-		return;
 	var cycle_number: int = 1;
 	await _expect_transition(
 		Callable(AppFlow, "start_new_game"),
@@ -93,7 +87,9 @@ func _check_game_flow() -> void:
 		"cycle %d: start new game" % [cycle_number]
 	);
 	_check(not get_tree().paused, "cycle %d: tree should not stay paused after gameplay load" % [cycle_number]);
-	await _check_template_scenes();
+	_check_variant_configuration();
+	if not ResourceLoader.exists("res://core/debug/variant_flow_checks.gd"):
+		await _check_template_scenes();
 
 	AppFlow.request_pause();
 	var paused_state_reached: bool = await _wait_until(
@@ -139,6 +135,11 @@ func _check_game_flow() -> void:
 		AppState.Value.MAIN_MENU,
 		"cycle %d: return to menu after continue" % [cycle_number]
 	);
+	var variant_checks: String = "res://core/debug/variant_flow_checks.gd";
+	if ResourceLoader.exists(variant_checks):
+		var failures: Array[String] = await load(variant_checks).run(self);
+		for failure: String in failures:
+			_check(false, failure);
 
 
 func _check_template_scenes() -> void:
@@ -171,6 +172,10 @@ func _check_template_scenes() -> void:
 	gameplay.call("load_level_a");
 	await get_tree().process_frame;
 
+
+
+func _check_variant_configuration() -> void:
+	var world_type: String = SceneRouter.current_scene_root.get_class();
 	# Maintainer validation supplies the branch; game copies can use smoke without Git.
 	var variant: String = OS.get_environment("GAME_TEMPLATE_VARIANT");
 	if variant not in ["main", "3d", "2d", "2d-pixelart"]:
@@ -181,10 +186,11 @@ func _check_template_scenes() -> void:
 	_check(ProjectSettings.get_setting("rendering/renderer/rendering_method") == "gl_compatibility", "template: expected Compatibility renderer");
 	_check(ProjectSettings.get_setting("display/window/size/viewport_width") == (640 if pixel_art else 1280), "template: wrong viewport width");
 	_check(ProjectSettings.get_setting("display/window/size/viewport_height") == (360 if pixel_art else 720), "template: wrong viewport height");
-	_check(ProjectSettings.get_setting("display/window/size/window_width_override") == 1280, "template: wrong initial window width");
-	_check(ProjectSettings.get_setting("display/window/size/window_height_override") == 720, "template: wrong initial window height");
+	_check(ProjectSettings.get_setting("display/window/size/window_width_override") == (1600 if variant == "2d" else 1280), "template: wrong initial window width");
+	_check(ProjectSettings.get_setting("display/window/size/window_height_override") == (900 if variant == "2d" else 720), "template: wrong initial window height");
 	_check(ProjectSettings.get_setting("display/window/stretch/mode") == ("viewport" if pixel_art else "canvas_items"), "template: wrong stretch mode");
-	_check(ProjectSettings.get_setting("display/window/stretch/aspect") == "keep", "template: aspect ratio must be preserved");
+	_check(ProjectSettings.get_setting("display/window/stretch/aspect") == ("expand" if variant == "2d" else "keep"), "template: wrong stretch aspect");
+	_check(UserSettings.new().fullscreen == (variant == "2d"), "template: wrong default fullscreen mode");
 	_check(ProjectSettings.get_setting("display/window/stretch/scale_mode") == ("integer" if pixel_art else "fractional"), "template: wrong scale mode");
 	var expected_filter: int = Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_NEAREST if pixel_art else Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_LINEAR;
 	_check(ProjectSettings.get_setting("rendering/textures/canvas_textures/default_texture_filter") == expected_filter, "template: wrong texture filter");

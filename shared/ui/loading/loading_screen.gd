@@ -59,6 +59,8 @@ var _status_state: StringName = STATUS_LOADING;
 
 
 func _ready() -> void:
+	if preload("res://shared/ui/theme/ui_density.gd").apply(self):
+		card.custom_minimum_size.x = minf(480, get_viewport_rect().size.x - 32);
 	visible = false;
 	mouse_filter = Control.MOUSE_FILTER_STOP;
 	process_mode = Node.PROCESS_MODE_ALWAYS;
