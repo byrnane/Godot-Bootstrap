@@ -55,6 +55,7 @@ func _on_cancel_button_pressed() -> void:
 
 
 func _apply_payload(payload: Dictionary, fallback_title: String, fallback_variant: String) -> void:
+	confirm_button.theme_type_variation = &"UiButtonDanger" if bool(payload.get("destructive", false)) else &"UiButtonPrimary";
 	close_on_backdrop = bool(payload.get("close_on_backdrop", true));
 	close_on_cancel = bool(payload.get("close_on_cancel", true));
 	status_badge.variant = StringName(payload.get("variant", fallback_variant));

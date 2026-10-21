@@ -1,0 +1,46 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://shared/ui/components/ui_result_content.gd" id="script"]
+
+[node name="UiResultContent" type="VBoxContainer"]
+script = ExtResource("script")
+custom_minimum_size = Vector2(576, 0)
+theme_override_constants/separation = 24
+
+[node name="Title" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"UiHeading"
+text = "UI_RESULT_WIN"
+
+[node name="Message" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"UiBody"
+text = "UI_RESULT_MESSAGE"
+autowrap_mode = 2
+
+[node name="Metrics" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="Actions" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Secondary" type="Button" parent="Actions"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0, 56)
+theme_type_variation = &"UiButtonSecondary"
+text = "UI_BACK_TO_MENU"
+size_flags_horizontal = 3
+
+[node name="Primary" type="Button" parent="Actions"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0, 56)
+theme_type_variation = &"UiButtonPrimary"
+text = "UI_CONTINUE"
+size_flags_horizontal = 3

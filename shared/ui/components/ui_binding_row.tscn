@@ -1,0 +1,33 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://shared/ui/components/ui_binding_row.gd" id="script"]
+
+[node name="UiBindingRow" type="HBoxContainer"]
+script = ExtResource("script")
+custom_minimum_size = Vector2(0, 64)
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"UiLabel"
+text = ""
+size_flags_horizontal = 3
+
+[node name="Primary" type="Button" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0, 56)
+theme_type_variation = &"UiButtonSecondary"
+text = ""
+custom_minimum_size = Vector2(144, 48)
+size_flags_vertical = 4
+
+[node name="Secondary" type="Button" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0, 56)
+theme_type_variation = &"UiButtonSecondary"
+text = ""
+custom_minimum_size = Vector2(144, 48)
+size_flags_vertical = 4

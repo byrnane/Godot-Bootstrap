@@ -7,10 +7,10 @@
 [node name="PauseModal" unique_id=1481707140 instance=ExtResource("1_base")]
 visible = true
 layout_mode = 3
-offset_left = -202.0
-offset_top = -166.0
-offset_right = 202.0
-offset_bottom = 166.0
+offset_left = -320.0
+offset_top = -233.0
+offset_right = 320.0
+offset_bottom = 233.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("2_script")
@@ -22,9 +22,12 @@ text = "UI_PAUSE_TITLE"
 
 [node name="PauseActionsCard" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body" index="0" instance=ExtResource("3_card")]
 layout_mode = 2
-elevated = true
+elevated = false
+inner_padding = 0
+theme_type_variation = &"UiTransparent"
 
 [node name="ResumeButton" type="Button" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/PauseActionsCard/ContentMargin/Content" index="0" unique_id=888822576]
+theme_type_variation = &"UiButtonPrimary"
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3

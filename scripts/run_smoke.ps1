@@ -1,7 +1,7 @@
 param(
     [string]$GodotExecutable = "",
     [switch]$Headless,
-    [ValidateSet("flow", "persistence", "transitions", "audio", "localization", "all")]
+    [ValidateSet("flow", "ui", "persistence", "transitions", "audio", "localization", "all")]
     [string]$Suite = "flow",
     [string]$Scene = "res://core/debug/phase0_smoke_runner.tscn"
 )

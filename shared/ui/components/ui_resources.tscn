@@ -1,0 +1,37 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://shared/ui/components/ui_resources.gd" id="script"]
+[ext_resource type="PackedScene" path="res://shared/ui/components/ui_resource_bar.tscn" id="bar"]
+
+[node name="UiResources" type="PanelContainer"]
+script = ExtResource("script")
+custom_minimum_size = Vector2(348, 0)
+mouse_filter = 2
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+mouse_filter = 2
+
+[node name="Bars" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+mouse_filter = 2
+
+[node name="HealthBar" instance=ExtResource("bar") parent="Margin/Bars"]
+layout_mode = 2
+kind = "health"
+title_key = "UI_RESOURCE_HEALTH"
+
+[node name="ManaBar" instance=ExtResource("bar") parent="Margin/Bars"]
+layout_mode = 2
+kind = "mana"
+title_key = "UI_RESOURCE_MANA"
+
+[node name="StaminaBar" instance=ExtResource("bar") parent="Margin/Bars"]
+layout_mode = 2
+kind = "stamina"
+title_key = "UI_RESOURCE_STAMINA"

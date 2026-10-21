@@ -1,7 +1,6 @@
 [gd_scene format=3 uid="uid://bcpsvw3g07aos"]
 
 [ext_resource type="Script" uid="uid://cmo2sq0ce0aoe" path="res://features/ui/modals/base_modal.gd" id="1_script"]
-[ext_resource type="FontVariation" path="res://shared/ui/theme/heading_font_embedded.tres" id="2_heading_font"]
 
 [node name="BaseModal" type="PanelContainer" unique_id=122904615]
 anchors_preset = 8
@@ -9,37 +8,38 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -240.0
+offset_left = -320.0
 offset_top = -200.0
-offset_right = 240.0
+offset_right = 320.0
 offset_bottom = 200.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_vertical = 4
+theme_type_variation = &"UiDialog"
 script = ExtResource("1_script")
 
 [node name="MarginContainer" type="MarginContainer" parent="." unique_id=2098910067]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 10
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 32
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=1612714182]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 24
 
 [node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1525170081]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_fonts/font = ExtResource("2_heading_font")
-theme_override_font_sizes/font_size = 22
+theme_type_variation = &"UiHeading"
 text = "UI_LOADING"
-horizontal_alignment = 1
+horizontal_alignment = 0
 
 [node name="BodyScroll" type="ScrollContainer" parent="MarginContainer/VBoxContainer" unique_id=2009316597]
 unique_name_in_owner = true
+follow_focus = true
 custom_minimum_size = Vector2(0, 120)
 layout_mode = 2
 size_flags_vertical = 3
@@ -49,13 +49,13 @@ horizontal_scroll_mode = 0
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 4
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 4
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 0
+theme_override_constants/margin_bottom = 0
 
 [node name="Body" type="VBoxContainer" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin" unique_id=480076289]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 12
+theme_override_constants/separation = 24

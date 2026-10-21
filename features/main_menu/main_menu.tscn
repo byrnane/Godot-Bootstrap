@@ -1,77 +1,140 @@
-[gd_scene load_steps=3 format=3 uid="uid://glgqifwjnr65"]
+[gd_scene format=3]
 
-[ext_resource type="Script" uid="uid://0mcl0i6pdr5" path="res://features/main_menu/main_menu.gd" id="1_script"]
-[ext_resource type="PackedScene" path="res://shared/ui/components/ui_card.tscn" id="2_card"]
-[ext_resource type="PackedScene" path="res://shared/ui/components/ui_section_header.tscn" id="3_header"]
+[ext_resource type="Script" path="res://features/main_menu/main_menu.gd" id="script"]
 
-[node name="MainMenu" type="Control" unique_id=344137205]
+[ext_resource type="Texture2D" path="res://shared/ui/theme/art/menu_background.svg" id="background"]
+[ext_resource type="Script" path="res://shared/ui/components/ui_button.gd" id="button_script"]
+
+[node name="MainMenu" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_script")
+script = ExtResource("script")
 
-[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1117564538]
+[node name="Background" type="PanelContainer" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_type_variation = &"UiCanvas"
+mouse_filter = 2
+
+[node name="Artwork" type="TextureRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 64
-theme_override_constants/margin_top = 64
-theme_override_constants/margin_right = 64
-theme_override_constants/margin_bottom = 64
+texture = ExtResource("background")
+expand_mode = 1
+stretch_mode = 6
+mouse_filter = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=1939489121]
+[node name="Margin" type="MarginContainer" parent="."]
 layout_mode = 2
+theme_override_constants/margin_left = 80
+theme_override_constants/margin_top = 80
+theme_override_constants/margin_right = 80
+theme_override_constants/margin_bottom = 80
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="MenuCard" parent="MarginContainer/VBoxContainer" index="0" instance=ExtResource("2_card")]
+[node name="Column" type="VBoxContainer" parent="Margin"]
 layout_mode = 2
-elevated = true
+theme_override_constants/separation = 12
 
-[node name="MenuHeader" parent="MarginContainer/VBoxContainer/MenuCard/ContentMargin/Content" index="0" instance=ExtResource("3_header")]
+[node name="Title" type="Label" parent="Margin/Column"]
 layout_mode = 2
-title_key = "UI_TEMPLATE_TITLE"
-description_key = "UI_TEMPLATE_SUBTITLE"
+theme_type_variation = &"UiHero"
+text = "UI_TEMPLATE_TITLE"
 
-[node name="ButtonsSpacer" type="Control" parent="MarginContainer/VBoxContainer/MenuCard/ContentMargin/Content" unique_id=1613290033]
-custom_minimum_size = Vector2(0, 16)
+
+[node name="Subtitle" type="Label" parent="Margin/Column"]
 layout_mode = 2
+theme_type_variation = &"UiMuted"
+text = "UI_TEMPLATE_SUBTITLE"
 
-[node name="NewGameButton" type="Button" parent="MarginContainer/VBoxContainer/MenuCard/ContentMargin/Content" unique_id=135512355]
+
+[node name="Space" type="Control" parent="Margin/Column"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 48)
+
+[node name="Actions" type="VBoxContainer" parent="Margin/Column"]
+layout_mode = 2
+custom_minimum_size = Vector2(360, 0)
+size_flags_horizontal = 0
+theme_override_constants/separation = 12
+
+[node name="ContinueButton" type="Button" parent="Margin/Column/Actions"]
+script = ExtResource("button_script")
+icon_role = &"arrow"
+icon_alignment = 2
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
-size_flags_horizontal = 3
-text = "UI_NEW_GAME"
-
-[node name="ContinueButton" type="Button" parent="MarginContainer/VBoxContainer/MenuCard/ContentMargin/Content" unique_id=874925832]
-unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 56)
-layout_mode = 2
-size_flags_horizontal = 3
+theme_type_variation = &"UiButtonPrimary"
 text = "UI_CONTINUE"
+alignment = 0
 
-[node name="SaveSlotsButton" type="Button" parent="MarginContainer/VBoxContainer/MenuCard/ContentMargin/Content" unique_id=1912760321]
+[node name="ContinueHint" type="Label" parent="Margin/Column/Actions"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
-size_flags_horizontal = 3
+theme_type_variation = &"UiSmall"
+text_overrun_behavior = 3
+
+[node name="Divider" type="HSeparator" parent="Margin/Column/Actions"]
+layout_mode = 2
+
+[node name="NewGameButton" type="Button" parent="Margin/Column/Actions"]
+script = ExtResource("button_script")
+icon_role = &"play"
+icon_alignment = 2
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0, 56)
+theme_type_variation = &"UiButtonSecondary"
+text = "UI_NEW_GAME"
+alignment = 0
+
+[node name="SaveSlotsButton" type="Button" parent="Margin/Column/Actions"]
+script = ExtResource("button_script")
+icon_role = &"save"
+icon_alignment = 2
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0, 56)
+theme_type_variation = &"UiButtonGhost"
 text = "UI_SAVE_SLOTS"
+alignment = 0
 
-[node name="SettingsButton" type="Button" parent="MarginContainer/VBoxContainer/MenuCard/ContentMargin/Content" unique_id=1646704431]
+[node name="SettingsButton" type="Button" parent="Margin/Column/Actions"]
+script = ExtResource("button_script")
+icon_role = &"gear"
+icon_alignment = 2
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
-size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 56)
+theme_type_variation = &"UiButtonGhost"
 text = "UI_SETTINGS"
+alignment = 0
 
-[node name="QuitButton" type="Button" parent="MarginContainer/VBoxContainer/MenuCard/ContentMargin/Content" unique_id=1000249497]
+[node name="QuitButton" type="Button" parent="Margin/Column/Actions"]
+script = ExtResource("button_script")
+icon_role = &"close"
+icon_alignment = 2
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
-size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 56)
+theme_type_variation = &"UiButtonGhost"
 text = "UI_QUIT"
+alignment = 0
