@@ -31,4 +31,3 @@ Safe mode ограничивает отправляемый Python, но не п
 Cyclops — дополнительный редактор блоков. Исходная комната: `authoring/cyclops_room.tscn`.
 Ее экспорт в штатные MeshInstance3D / StaticBody3D / CollisionShape3D: `features/levels/blockout_room.tscn`.
 Для новых набросков используйте Cyclops и **Export as Godot Scene**. Основные демонстрационные уровни от Cyclops не зависят.
-
