@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://features/ui/modals/save_slots_modal.gd" id="script"]
+[ext_resource type="Script" path="res://features/forest/forest_save_slots.gd" id="script"]
 [ext_resource type="PackedScene" path="res://features/ui/modals/base_modal.tscn" id="base"]
 
 [node name="SaveSlotsModal" instance=ExtResource("base")]

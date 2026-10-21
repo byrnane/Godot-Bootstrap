@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="GameConfigData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://core/types/game_config_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+input_actions = {
+&"keeper_left": {"label_key": "UI_FOREST_LEFT", "group_key": "UI_FOREST_CONTROLS", "conflict_group": "keeper_left"},
+&"keeper_right": {"label_key": "UI_FOREST_RIGHT", "group_key": "UI_FOREST_CONTROLS", "conflict_group": "keeper_right"},
+&"keeper_up": {"label_key": "UI_FOREST_UP", "group_key": "UI_FOREST_CONTROLS", "conflict_group": "keeper_up"},
+&"keeper_down": {"label_key": "UI_FOREST_DOWN", "group_key": "UI_FOREST_CONTROLS", "conflict_group": "keeper_down"},
+&"keeper_jump": {"label_key": "UI_FOREST_JUMP", "group_key": "UI_FOREST_CONTROLS", "conflict_group": "keeper_jump"},
+&"keeper_fire": {"label_key": "UI_FOREST_FIRE", "group_key": "UI_FOREST_CONTROLS", "conflict_group": "keeper_fire"},
+&"keeper_retry": {"label_key": "UI_FOREST_RETRY", "group_key": "UI_FOREST_CONTROLS", "conflict_group": "keeper_retry"}
+}

@@ -1,6 +1,8 @@
-# Godot Game Template
+# Forest Keeper — Godot 2D examples
 
-Current version: `0.4.0` + unreleased template variants and universal UI
+Current version: `0.4.0` + unreleased Forest Keeper 2D examples
+
+В этой ветке: три небольшие игры «Лесного хранителя». [Режимы, управление и сохранения](docs/2D_EXAMPLE.md).
 
 Ветки: `main` — общая база, `3d`, `2d`, `2d-pixelart` — производные варианты. Игры создаются в отдельных репозиториях клонированием выбранной ветки.
 
@@ -59,7 +61,7 @@ Choose `3d`, `2d`, or `2d-pixelart` and clone that branch into a separate game r
 ## RU
 
 Понятный стартовый шаблон на Godot 4.x для 2D- и 3D-игр.
-В нем есть готовая инфраструктура проекта, но нет игровых механик.
+В этой ветке общая инфраструктура дополнена платформером, аренным шутером и головоломкой.
 
 ### Что есть из коробки
 

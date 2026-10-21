@@ -1,9 +1,6 @@
-[gd_scene format=3]
+[gd_scene load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://features/gameplay/gameplay_stub.gd" id="1_script"]
+[ext_resource type="Script" path="res://features/forest/forest_game.gd" id="1"]
 
-[node name="Gameplay2D" type="Node2D"]
-script = ExtResource("1_script")
-level_scene_root_path = NodePath("LevelRoot")
-
-[node name="LevelRoot" type="Node2D" parent="."]
+[node name="ForestGame" type="Node2D"]
+script = ExtResource("1")

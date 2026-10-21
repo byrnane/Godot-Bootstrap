@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://cre517qra8jia"]
 
 [ext_resource type="PackedScene" uid="uid://bcpsvw3g07aos" path="res://features/ui/modals/base_modal.tscn" id="1_base"]
-[ext_resource type="Script" uid="uid://dqhlvq7ijywkm" path="res://features/ui/modals/settings_modal.gd" id="2_script"]
+[ext_resource type="Script" path="res://features/forest/forest_settings.gd" id="2_script"]
 [ext_resource type="PackedScene" path="res://shared/ui/navigation/ui_tab_strip.tscn" id="3_tabs"]
 [ext_resource type="PackedScene" path="res://shared/ui/components/ui_card.tscn" id="4_card"]
 [ext_resource type="PackedScene" path="res://shared/ui/components/ui_section_header.tscn" id="5_header"]
