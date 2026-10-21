@@ -1,43 +1,61 @@
-[gd_scene format=3 uid="uid://bstxoe4wciy87"]
+[gd_scene format=3]
 
-[ext_resource type="Script" path="res://shared/ui/feedback/toast_item.gd" id="1_script"]
-[ext_resource type="PackedScene" path="res://shared/ui/components/ui_status_badge.tscn" id="2_badge"]
+[ext_resource type="Script" path="res://shared/ui/feedback/toast_item.gd" id="script"]
+[ext_resource type="Script" path="res://shared/ui/components/ui_button.gd" id="button_script"]
 
 [node name="ToastItem" type="PanelContainer"]
-custom_minimum_size = Vector2(320, 0)
+custom_minimum_size = Vector2(420, 88)
 size_flags_horizontal = 3
-script = ExtResource("1_script")
 modulate = Color(1, 1, 1, 0)
+script = ExtResource("script")
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
+[node name="Margin" type="MarginContainer" parent="."]
 layout_mode = 2
-theme_override_constants/margin_left = 14
-theme_override_constants/margin_top = 12
-theme_override_constants/margin_right = 14
-theme_override_constants/margin_bottom = 12
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
 
-[node name="Row" type="HBoxContainer" parent="MarginContainer" unique_id=1013958656]
+
+[node name="Row" type="HBoxContainer" parent="Margin"]
 layout_mode = 2
-size_flags_horizontal = 3
 theme_override_constants/separation = 12
 
-[node name="StatusBadge" parent="MarginContainer/Row" index="0" instance=ExtResource("2_badge")]
+[node name="Icon" type="TextureRect" parent="Margin/Row"]
 unique_name_in_owner = true
 layout_mode = 2
+custom_minimum_size = Vector2(24, 24)
+size_flags_vertical = 4
+expand_mode = 1
+stretch_mode = 5
 
-[node name="Content" type="VBoxContainer" parent="MarginContainer/Row" index="1" unique_id=198487893]
+[node name="Content" type="VBoxContainer" parent="Margin/Row"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 2
 
-[node name="TitleLabel" type="Label" parent="MarginContainer/Row/Content" unique_id=1924991745]
+[node name="TitleLabel" type="Label" parent="Margin/Row/Content"]
 unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"UiLabel"
+text = ""
 visible = false
-layout_mode = 2
-text = "Toast title"
+autowrap_mode = 2
 
-[node name="MessageLabel" type="Label" parent="MarginContainer/Row/Content" unique_id=1515962620]
+[node name="MessageLabel" type="Label" parent="Margin/Row/Content"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_type_variation = &"UiSmall"
+text = ""
 autowrap_mode = 2
-text = "Toast"
+
+[node name="DismissButton" type="Button" parent="Margin/Row"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0, 56)
+theme_type_variation = &"UiButtonGhost"
+text = ""
+custom_minimum_size = Vector2(40, 40)
+size_flags_vertical = 4
+script = ExtResource("button_script")
+icon_role = &"close"
+tooltip_text = "UI_CLOSE"

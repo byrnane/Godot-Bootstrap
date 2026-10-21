@@ -25,7 +25,9 @@ text = ""
 [node name="FeedbackCard" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body" index="0" instance=ExtResource("3_card")]
 unique_name_in_owner = true
 layout_mode = 2
-elevated = true
+elevated = false
+inner_padding = 0
+theme_type_variation = &"UiTransparent"
 
 [node name="StatusBadge" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/FeedbackCard/ContentMargin/Content" index="0" instance=ExtResource("6_badge")]
 unique_name_in_owner = true
@@ -47,6 +49,7 @@ unique_name_in_owner = true
 layout_mode = 2
 
 [node name="ConfirmButton" type="Button" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/FeedbackCard/ContentMargin/Content/ButtonsRow" index="0" unique_id=26288651]
+theme_type_variation = &"UiButtonPrimary"
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3

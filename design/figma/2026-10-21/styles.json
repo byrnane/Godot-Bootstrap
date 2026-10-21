@@ -1,0 +1,241 @@
+{
+  "text": [
+    {
+      "id": "S:a410901d6bb0b82b3d75e588c1ee2d35221dcde5,",
+      "key": "a410901d6bb0b82b3d75e588c1ee2d35221dcde5",
+      "name": "UI/Hero",
+      "description": "",
+      "fontName": {
+        "family": "Manrope",
+        "style": "ExtraBold",
+        "variationSettings": {
+          "wght": 800
+        }
+      },
+      "fontSize": 64,
+      "letterSpacing": {
+        "unit": "PERCENT",
+        "value": -3
+      },
+      "lineHeight": {
+        "unit": "PIXELS",
+        "value": 70
+      },
+      "paragraphIndent": 0,
+      "paragraphSpacing": 0,
+      "textCase": "ORIGINAL",
+      "textDecoration": "NONE"
+    },
+    {
+      "id": "S:3df61b05d58f6027b702e66d1f765d258e9c5ef6,",
+      "key": "3df61b05d58f6027b702e66d1f765d258e9c5ef6",
+      "name": "UI/Display",
+      "description": "",
+      "fontName": {
+        "family": "Manrope",
+        "style": "ExtraBold",
+        "variationSettings": {
+          "wght": 800
+        }
+      },
+      "fontSize": 44,
+      "letterSpacing": {
+        "unit": "PERCENT",
+        "value": 0
+      },
+      "lineHeight": {
+        "unit": "PIXELS",
+        "value": 52
+      },
+      "paragraphIndent": 0,
+      "paragraphSpacing": 0,
+      "textCase": "ORIGINAL",
+      "textDecoration": "NONE"
+    },
+    {
+      "id": "S:c37e26c84ac333fb6593771edc672dd256aa4ac8,",
+      "key": "c37e26c84ac333fb6593771edc672dd256aa4ac8",
+      "name": "UI/Heading",
+      "description": "",
+      "fontName": {
+        "family": "Manrope",
+        "style": "Bold",
+        "variationSettings": {
+          "wght": 700
+        }
+      },
+      "fontSize": 32,
+      "letterSpacing": {
+        "unit": "PERCENT",
+        "value": 0
+      },
+      "lineHeight": {
+        "unit": "PIXELS",
+        "value": 40
+      },
+      "paragraphIndent": 0,
+      "paragraphSpacing": 0,
+      "textCase": "ORIGINAL",
+      "textDecoration": "NONE"
+    },
+    {
+      "id": "S:e0f9d3588b9a7db820b9c268b983622070ab5195,",
+      "key": "e0f9d3588b9a7db820b9c268b983622070ab5195",
+      "name": "UI/Section",
+      "description": "",
+      "fontName": {
+        "family": "Manrope",
+        "style": "Bold",
+        "variationSettings": {
+          "wght": 700
+        }
+      },
+      "fontSize": 24,
+      "letterSpacing": {
+        "unit": "PERCENT",
+        "value": 0
+      },
+      "lineHeight": {
+        "unit": "PIXELS",
+        "value": 32
+      },
+      "paragraphIndent": 0,
+      "paragraphSpacing": 0,
+      "textCase": "ORIGINAL",
+      "textDecoration": "NONE"
+    },
+    {
+      "id": "S:cb99d58eab232b18c9dae96a18dd21b095097c98,",
+      "key": "cb99d58eab232b18c9dae96a18dd21b095097c98",
+      "name": "UI/Button",
+      "description": "",
+      "fontName": {
+        "family": "Manrope",
+        "style": "Bold",
+        "variationSettings": {
+          "wght": 700
+        }
+      },
+      "fontSize": 20,
+      "letterSpacing": {
+        "unit": "PERCENT",
+        "value": 0
+      },
+      "lineHeight": {
+        "unit": "PIXELS",
+        "value": 28
+      },
+      "paragraphIndent": 0,
+      "paragraphSpacing": 0,
+      "textCase": "ORIGINAL",
+      "textDecoration": "NONE"
+    },
+    {
+      "id": "S:7c3b2c98c89501fc34e0e7307e18adc7ea3f5854,",
+      "key": "7c3b2c98c89501fc34e0e7307e18adc7ea3f5854",
+      "name": "UI/Body",
+      "description": "",
+      "fontName": {
+        "family": "Manrope",
+        "style": "Medium",
+        "variationSettings": {
+          "wght": 500
+        }
+      },
+      "fontSize": 20,
+      "letterSpacing": {
+        "unit": "PERCENT",
+        "value": 0
+      },
+      "lineHeight": {
+        "unit": "PIXELS",
+        "value": 28
+      },
+      "paragraphIndent": 0,
+      "paragraphSpacing": 0,
+      "textCase": "ORIGINAL",
+      "textDecoration": "NONE"
+    },
+    {
+      "id": "S:2a19de73b6738f6618014113a9a860871376686e,",
+      "key": "2a19de73b6738f6618014113a9a860871376686e",
+      "name": "UI/Label",
+      "description": "",
+      "fontName": {
+        "family": "Manrope",
+        "style": "SemiBold",
+        "variationSettings": {
+          "wght": 600
+        }
+      },
+      "fontSize": 18,
+      "letterSpacing": {
+        "unit": "PERCENT",
+        "value": 0
+      },
+      "lineHeight": {
+        "unit": "PIXELS",
+        "value": 26
+      },
+      "paragraphIndent": 0,
+      "paragraphSpacing": 0,
+      "textCase": "ORIGINAL",
+      "textDecoration": "NONE"
+    },
+    {
+      "id": "S:5b7a10aa0c9994643752ae84c677dc9576c7f83c,",
+      "key": "5b7a10aa0c9994643752ae84c677dc9576c7f83c",
+      "name": "UI/Small",
+      "description": "",
+      "fontName": {
+        "family": "Manrope",
+        "style": "Medium",
+        "variationSettings": {
+          "wght": 500
+        }
+      },
+      "fontSize": 16,
+      "letterSpacing": {
+        "unit": "PERCENT",
+        "value": 0
+      },
+      "lineHeight": {
+        "unit": "PIXELS",
+        "value": 24
+      },
+      "paragraphIndent": 0,
+      "paragraphSpacing": 0,
+      "textCase": "ORIGINAL",
+      "textDecoration": "NONE"
+    },
+    {
+      "id": "S:6c34f2020fc35625b3ba663349446b3c6e9b8a42,",
+      "key": "6c34f2020fc35625b3ba663349446b3c6e9b8a42",
+      "name": "UI/Caption",
+      "description": "",
+      "fontName": {
+        "family": "Manrope",
+        "style": "SemiBold",
+        "variationSettings": {
+          "wght": 600
+        }
+      },
+      "fontSize": 14,
+      "letterSpacing": {
+        "unit": "PERCENT",
+        "value": 0
+      },
+      "lineHeight": {
+        "unit": "PIXELS",
+        "value": 20
+      },
+      "paragraphIndent": 0,
+      "paragraphSpacing": 0,
+      "textCase": "ORIGINAL",
+      "textDecoration": "NONE"
+    }
+  ],
+  "paint": [],
+  "effect": [],
+  "grid": []
+}

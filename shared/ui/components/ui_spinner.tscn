@@ -1,0 +1,11 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://shared/ui/components/ui_spinner.gd" id="script"]
+
+[node name="UiSpinner" type="TextureRect"]
+script = ExtResource("script")
+custom_minimum_size = Vector2(32, 32)
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+

@@ -10,6 +10,11 @@ enum Mode {
 }
 
 
+const SLOT_SCENE: PackedScene = preload("res://shared/ui/components/ui_save_slot.tscn");
+
+var _selected_index: int = -1;
+var _slot_buttons: Array[Button] = [];
+
 var _mode: int = Mode.LOAD;
 var _entries: Array[Dictionary] = [];
 var _pending_action: StringName = &"";
@@ -17,7 +22,7 @@ var _pending_descriptor: Dictionary = {};
 
 
 @onready var mode_hint_label: Label = %ModeHintLabel;
-@onready var slot_list: ItemList = %SlotList;
+@onready var slot_list: VBoxContainer = %SlotList;
 @onready var title_line_edit: LineEdit = %TitleLineEdit;
 @onready var slot_title_label: Label = %SlotTitleLabel;
 @onready var slot_kind_label: Label = %SlotKindLabel;
@@ -36,7 +41,8 @@ var _pending_descriptor: Dictionary = {};
 
 func _ready() -> void:
 	super._ready();
-	slot_list.item_selected.connect(_on_slot_list_item_selected);
+	%LoadModeButton.pressed.connect(set_mode.bind(&"load"));
+	%SaveModeButton.pressed.connect(set_mode.bind(&"save"));
 	load_button.pressed.connect(_on_load_button_pressed);
 	save_button.pressed.connect(_on_save_button_pressed);
 	new_slot_button.pressed.connect(_on_new_slot_button_pressed);
@@ -57,40 +63,46 @@ func _sync_ui_state() -> void:
 	_refresh_selection_state();
 
 
-func _reload_entries() -> void:
+func _reload_entries(preferred_descriptor: Dictionary = {}) -> void:
 	var selected_key: String = _get_selected_slot_key();
 	_entries = SaveManager.list_slot_entries(true);
-	slot_list.clear();
-	var selected_index: int = -1;
+	for child: Node in slot_list.get_children():
+		slot_list.remove_child(child);
+		child.queue_free();
+	_slot_buttons.clear();
+	_selected_index = -1;
 	for index: int in range(_entries.size()):
 		var entry: Dictionary = _entries[index];
-		var label_text: String = _build_list_item_label(entry);
-		slot_list.add_item(label_text);
-		slot_list.set_item_metadata(index, String(entry.get("slot_key", "")));
-		if String(entry.get("slot_key", "")) == selected_key:
-			selected_index = index;
-
+		var slot: UiSaveSlot = SLOT_SCENE.instantiate() as UiSaveSlot;
+		slot.title = String(entry.get("title", ""));
+		slot.detail = "%s · %s" % [tr(String(entry.get("kind_label_key", "UI_SAVE_SLOT_KIND_MANUAL"))), String(entry.get("timestamp_text", ""))];
+		slot.preview = _load_thumbnail_texture(String(entry.get("thumbnail_path", "")));
+		slot.pressed.connect(_on_slot_list_item_selected.bind(index));
+		slot_list.add_child(slot);
+		_slot_buttons.append(slot);
+		var matches_preferred: bool = not preferred_descriptor.is_empty() and entry.get("descriptor", {}) == preferred_descriptor;
+		var matches_previous: bool = preferred_descriptor.is_empty() and String(entry.get("slot_key", "")) == selected_key;
+		if matches_preferred or matches_previous:
+			_selected_index = index;
+	if not _entries.is_empty() and _selected_index < 0:
+		_selected_index = 0;
 	if _entries.is_empty():
-		selected_index = -1;
-	elif selected_index < 0:
-		selected_index = 0;
-
-	if selected_index >= 0:
-		slot_list.select(selected_index);
+		var empty: Label = Label.new();
+		empty.text = tr("UI_SAVE_SLOT_EMPTY");
+		empty.theme_type_variation = &"UiMuted";
+		slot_list.add_child(empty);
+	_update_slot_buttons();
 	_refresh_selection_state();
-
-
-func _build_list_item_label(entry: Dictionary) -> String:
-	var kind_label: String = tr(String(entry.get("kind_label_key", "UI_SAVE_SLOT_KIND_MANUAL")));
-	var title_text: String = String(entry.get("title", ""));
-	var time_text: String = String(entry.get("timestamp_text", "-"));
-	return "[%s] %s (%s)" % [kind_label, title_text, time_text];
 
 
 func _refresh_mode_state() -> void:
 	var is_save_mode: bool = _mode == Mode.SAVE;
 	mode_hint_label.text = tr("UI_SAVE_SLOT_MODE_SAVE") if is_save_mode else tr("UI_SAVE_SLOT_MODE_LOAD");
 	var can_write: bool = _can_write_session();
+	%LoadModeButton.set_pressed_no_signal(not is_save_mode);
+	%SaveModeButton.set_pressed_no_signal(is_save_mode);
+	%SaveModeButton.disabled = not can_write;
+	title_line_edit.visible = is_save_mode;
 	title_line_edit.editable = is_save_mode and can_write;
 	save_button.visible = is_save_mode;
 	new_slot_button.visible = is_save_mode;
@@ -106,7 +118,7 @@ func _refresh_selection_state() -> void:
 	load_button.disabled = not has_selection;
 	delete_button.disabled = not has_selection;
 	if _mode == Mode.SAVE:
-		save_button.disabled = save_button.disabled or not has_selection;
+		save_button.disabled = not _can_write_session() or not has_selection;
 
 	if not has_selection:
 		slot_title_label.text = tr("UI_SAVE_SLOT_EMPTY");
@@ -139,13 +151,9 @@ func _load_thumbnail_texture(thumbnail_path: String) -> Texture2D:
 
 
 func _get_selected_entry() -> Dictionary:
-	var selected_items: PackedInt32Array = slot_list.get_selected_items();
-	if selected_items.is_empty():
+	if _selected_index < 0 or _selected_index >= _entries.size():
 		return {};
-	var selected_index: int = selected_items[0];
-	if selected_index < 0 or selected_index >= _entries.size():
-		return {};
-	return _entries[selected_index];
+	return _entries[_selected_index];
 
 
 func _get_selected_slot_key() -> String:
@@ -155,7 +163,15 @@ func _get_selected_slot_key() -> String:
 	return String(selected_entry.get("slot_key", ""));
 
 
-func _on_slot_list_item_selected(_index: int) -> void:
+func _update_slot_buttons() -> void:
+	for index: int in range(_slot_buttons.size()):
+		_slot_buttons[index].set_pressed_no_signal(index == _selected_index);
+
+
+func _on_slot_list_item_selected(index: int) -> void:
+	_selected_index = index;
+	_update_slot_buttons();
+	_refresh_mode_state();
 	_refresh_selection_state();
 
 
@@ -196,7 +212,7 @@ func _on_new_slot_button_pressed() -> void:
 		UiFeedback.toast(tr("UI_SAVE_SLOT_TOAST_SAVE_FAILED"), {"variant": "error"});
 		return;
 	UiFeedback.toast(tr("UI_SAVE_SLOT_TOAST_SAVE_SUCCESS"), {"variant": "success"});
-	_reload_entries();
+	_reload_entries(descriptor);
 
 
 func _on_quick_save_button_pressed() -> void:
@@ -227,6 +243,7 @@ func _on_delete_button_pressed() -> void:
 		_on_cancel_pending_action,
 		{
 			"title": tr("UI_SAVE_SLOT_CONFIRM_DELETE_TITLE"),
+			"destructive": true,
 			"confirm_text": tr("UI_SAVE_SLOT_CONFIRM_DELETE_ACTION"),
 			"cancel_text": tr("UI_FEEDBACK_CANCEL_BUTTON"),
 		}

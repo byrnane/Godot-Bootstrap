@@ -39,7 +39,7 @@ func _ready() -> void:
 
 func _run() -> void:
 	var suite: String = OS.get_environment("GAME_TEMPLATE_SMOKE_SUITE");
-	if suite not in ["flow", "persistence", "transitions", "audio", "localization", "all"]:
+	if suite not in ["flow", "ui", "persistence", "transitions", "audio", "localization", "all"]:
 		_check(false, "Unknown smoke suite: " + suite);
 		_finish();
 		return;
@@ -68,6 +68,10 @@ func _run() -> void:
 		await _check_audio_pipeline_contract();
 	if suite in ["flow", "all"]:
 		await _check_game_flow();
+	if suite in ["ui", "all"]:
+		var ui_failures: Array[String] = await preload("res://core/debug/ui_smoke_checks.gd").run(self);
+		for failure: String in ui_failures:
+			_check(false, failure);
 	# Retry can quit the application, so it must remain the last check.
 	if suite in ["persistence", "all"]:
 		await _check_exit_save_retry();

@@ -1,4 +1,4 @@
-extends VBoxContainer;
+extends BoxContainer;
 class_name UiTabStrip;
 
 signal tab_changed(tab_id: StringName, index: int);
@@ -7,12 +7,13 @@ signal tab_changed(tab_id: StringName, index: int);
 const UI_FOCUS_UTIL = preload("res://shared/ui/navigation/ui_focus.gd");
 
 
+@export var sidebar: bool = false;
 @export var tab_ids: Array[StringName] = [];
 @export var tab_title_keys: PackedStringArray = [];
 @export_range(0, 16, 1) var current_tab: int = 0;
 
 
-@onready var tabs_container: HBoxContainer = %TabsContainer;
+@onready var tabs_container: BoxContainer = %TabsContainer;
 @onready var pages_container: Control = %PagesContainer;
 
 
@@ -20,6 +21,12 @@ var _tab_buttons: Array[Button] = [];
 
 
 func _ready() -> void:
+	vertical = not sidebar;
+	tabs_container.vertical = sidebar;
+	tabs_container.custom_minimum_size.x = 216 if sidebar else 0;
+	tabs_container.size_flags_horizontal = Control.SIZE_FILL if sidebar else Control.SIZE_EXPAND_FILL;
+	tabs_container.size_flags_vertical = Control.SIZE_SHRINK_BEGIN;
+	add_theme_constant_override("separation", 80 if sidebar else 12);
 	_rebuild_tabs();
 	_apply_current_tab(false);
 
@@ -61,13 +68,13 @@ func _unhandled_input(event: InputEvent) -> void:
 	if _tab_buttons.find(focus_owner as Button) < 0:
 		return;
 
-	if event.is_action_pressed(&"ui_left"):
+	if event.is_action_pressed(&"ui_up" if sidebar else &"ui_left"):
 		set_current_tab((current_tab - 1 + get_tab_count()) % get_tab_count());
 		_focus_tab_button(current_tab);
 		get_viewport().set_input_as_handled();
 		return;
 
-	if event.is_action_pressed(&"ui_right"):
+	if event.is_action_pressed(&"ui_down" if sidebar else &"ui_right"):
 		set_current_tab((current_tab + 1) % get_tab_count());
 		_focus_tab_button(current_tab);
 		get_viewport().set_input_as_handled();
@@ -83,6 +90,7 @@ func _rebuild_tabs() -> void:
 	for tab_index: int in range(get_tab_count()):
 		var tab_button: Button = Button.new();
 		tab_button.toggle_mode = true;
+		tab_button.alignment = HORIZONTAL_ALIGNMENT_LEFT if sidebar else HORIZONTAL_ALIGNMENT_CENTER;
 		tab_button.focus_mode = Control.FOCUS_ALL;
 		tab_button.text = _get_tab_title(tab_index);
 		tab_button.pressed.connect(_on_tab_button_pressed.bind(tab_index));
@@ -147,36 +155,8 @@ func _apply_focus_neighbors() -> void:
 		_tab_buttons[button_index].focus_neighbor_right = _tab_buttons[button_index].get_path_to(right_button);
 
 
-func _apply_tab_button_style(button: Button, is_selected: bool) -> void:
-	var theme_type: StringName = &"TabBar";
-	var normal_style: StyleBox = get_theme_stylebox(&"tab_selected" if is_selected else &"tab_unselected", theme_type);
-	var hover_style: StyleBox = get_theme_stylebox(&"tab_hovered", theme_type);
-	var focus_style: StyleBox = get_theme_stylebox(&"tab_focus", theme_type);
-	var disabled_style: StyleBox = get_theme_stylebox(&"tab_disabled", theme_type);
-
-	if normal_style != null:
-		button.add_theme_stylebox_override("normal", normal_style);
-	if hover_style != null:
-		button.add_theme_stylebox_override("hover", hover_style);
-		button.add_theme_stylebox_override("pressed", normal_style if normal_style != null else hover_style);
-	if focus_style != null:
-		button.add_theme_stylebox_override("focus", focus_style);
-	if disabled_style != null:
-		button.add_theme_stylebox_override("disabled", disabled_style);
-
-	var font: Font = get_theme_font(&"font", theme_type);
-	if font != null:
-		button.add_theme_font_override("font", font);
-
-	var font_size: int = get_theme_font_size(&"font_size", theme_type);
-	if font_size > 0:
-		button.add_theme_font_size_override("font_size", font_size);
-
-	var color_name: StringName = &"font_selected_color" if is_selected else &"font_unselected_color";
-	button.add_theme_color_override("font_color", get_theme_color(color_name, theme_type));
-	button.add_theme_color_override("font_hover_color", get_theme_color(&"font_hovered_color", theme_type));
-	button.add_theme_color_override("font_pressed_color", get_theme_color(&"font_selected_color", theme_type));
-	button.add_theme_color_override("font_disabled_color", get_theme_color(&"font_disabled_color", theme_type));
+func _apply_tab_button_style(button: Button, _is_selected: bool) -> void:
+	button.theme_type_variation = &"UiNavigationItem" if sidebar else &"UiTabItem";
 
 
 func _on_tab_button_pressed(tab_index: int) -> void:

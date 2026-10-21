@@ -4,7 +4,7 @@ class_name UserSettings;
 
 const CURRENT_VERSION: int = 4;
 const DEFAULT_LANGUAGE: String = "en";
-const DEFAULT_MASTER_VOLUME: float = 1.0;
+const DEFAULT_MASTER_VOLUME: float = 0.15;
 const DEFAULT_MUSIC_VOLUME: float = 1.0;
 const DEFAULT_UI_VOLUME: float = 1.0;
 const DEFAULT_SFX_VOLUME: float = 1.0;

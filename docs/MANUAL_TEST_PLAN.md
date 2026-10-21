@@ -21,10 +21,9 @@ It focuses on:
 
 - Godot `4.7.2`
 - Fresh run with existing user data
-- Fresh run after deleting:
-- `user://settings.cfg`
-- `user://saves/` directory
-- `user://input_bindings.save`
+- Fresh run in a separate disposable profile; preserve real `user://settings.cfg`, saves and `input_bindings.save`.
+- Existing-data scenarios use a copied test profile, not deletion of the owner's data.
+- Start graphical automation with `--audio-driver Dummy`; perform audio acceptance separately at a comfortable volume. Default Master is 15%, existing settings take priority.
 
 
 ## Quick Automated Pre-Check
@@ -36,7 +35,7 @@ Run only the affected smoke suite in PowerShell 7 (it isolates user data); for f
 
 Expected:
 
-- `user://phase0_smoke_result.txt` contains `PASS`.
+- The current isolated `.local/smoke/<run-id>` contains exactly one `phase0_smoke_result.txt` with `PASS`, the process exits 0, and the log has no `SCRIPT ERROR`/`ERROR`.
 - No runtime errors.
 
 
@@ -45,7 +44,7 @@ Expected:
 ### A. Boot and Main Menu
 
 1. Launch project from `res://main/main.tscn`.
-2. Verify no warnings/errors in debug output.
+2. Verify no runtime errors. Record any warnings separately; known shutdown warnings are documented in [READINESS.md](READINESS.md).
 3. Verify main menu appears and buttons are interactive.
 4. Verify `Continue` is disabled when no save exists.
 
@@ -83,10 +82,10 @@ Expected:
 
 ### D. Save Slots and Continue
 
-1. In gameplay, change demo simulation state (Metric A/Counter B/level).
+1. In gameplay, expand the demo-actions panel and change health, score and level.
 2. Open save slots modal from pause.
 3. Create a new manual slot.
-4. Overwrite the same slot and verify confirmation flow.
+4. Verify the new slot is selected and overwrite becomes available; overwrite it and verify confirmation. Create another slot and check selection follows it. Cancel a delete confirmation and verify the slot remains.
 5. Run quick save and verify `quick` slot appears in list.
 6. Return to main menu.
 7. Verify `Continue` is enabled.
@@ -119,6 +118,7 @@ Expected:
 3. Restart project.
 4. Verify settings persisted and applied.
 5. Use reset settings and re-check persistence.
+6. Change a value without applying, close settings, cancel the discard confirmation, and verify the draft remains. Close again and confirm discard; persisted values must remain unchanged.
 
 Expected:
 
@@ -128,7 +128,7 @@ Expected:
 ### G. Input Rebinding
 
 1. Open controls tab in settings.
-2. Rebind keyboard keys and mouse buttons for several actions.
+2. Rebind keyboard keys and mouse buttons for several actions, including the second binding slot.
 3. Verify conflict behavior for compatible and incompatible actions.
 4. Restart project and verify bindings persist.
 5. Reset bindings and verify defaults restored.
@@ -184,6 +184,18 @@ Expected:
 
 - Runtime recovers cleanly, no irrecoverable state, no hard locks.
 
+
+### L. UI Theme, Components and Layout
+
+1. Open `shared/ui/catalog/ui_catalog.tscn` with F6; inspect controls, resource bars, input rows, save cards, feedback and result content.
+2. Check hover, pressed, disabled and visible focus states; keyboard focus must follow visual order.
+3. Check settings General/Graphics/Controls in RU/EN, scrolling of bindings and a footer that remains usable.
+4. Check menu, pause, saves in both modes, destructive confirmation, dismissible toast and loading/spinner.
+5. Verify the HUD over the actual 2D or 3D world; absent optional resources should be hidden.
+6. When changing a skin, verify inherited Theme variations in the catalog and full screens. Pixelart 640×360 requires separate layout acceptance.
+7. Record whether gamepad checks used physical hardware or injected events.
+
+Theme/component contracts: [UI Framework](UI_FRAMEWORK.md). This checklist describes required scenarios, not a claim that all were run.
 
 ## Exit Criteria
 

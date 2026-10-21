@@ -28,14 +28,16 @@
 - For static labels in `.tscn`, store `UI_*` keys as text values.
 - For dynamic labels in scripts, use `tr("UI_*")`.
 - Components that cache translated text must handle translation-change notifications.
+- Shared UI properties such as `title_key` and `caption_key` take localization keys; gameplay-facing `text` and view model fields may take already prepared display strings. See [UI Framework](UI_FRAMEWORK.md).
 - Change locale only through `LocalizationManager.set_locale(...)`.
 
 ## Update Flow
 
 1. Add or update keys in `translations/UI.csv` for all supported locales.
-2. Update scene/script references.
+2. Update scene/script references. Let the Godot CSV importer regenerate `UI.en.translation` and `UI.ru.translation`; do not edit the generated resources by hand.
 3. Launch the project and switch locale on active screens.
-4. Check static labels and dynamic labels for missing keys and stale text.
+4. Check static labels and dynamic labels for missing keys and stale text, including the component catalog.
+5. Run `pwsh -File scripts/run_smoke.ps1 -Headless -Suite localization` when localization behavior or keys change.
 
 ## Coverage Report Fields
 

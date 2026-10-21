@@ -54,7 +54,7 @@ export/convert_text_resources_to_binary=false
 
 [gui]
 
-theme/custom="res://shared/ui/theme/scifi_dark_theme.tres"
+theme/custom="res://shared/ui/theme/neutral_theme.tres"
 
 [input]
 
