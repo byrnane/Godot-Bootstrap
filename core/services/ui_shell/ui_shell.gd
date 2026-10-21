@@ -136,6 +136,13 @@ func close_all_modals() -> void:
 	_refresh_debug_overlay();
 
 
+func has_open_modals() -> bool:
+	for modal: Control in _modal_stack:
+		if is_instance_valid(modal) and modal.visible:
+			return true;
+	return false;
+
+
 func request_pause() -> void:
 	pause_requested.emit();
 

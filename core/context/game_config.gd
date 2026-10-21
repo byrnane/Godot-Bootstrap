@@ -12,6 +12,7 @@ const DEFAULT_MAIN_MENU_MUSIC_PATH: String = "res://assets/music/main_menu.mp3";
 var start_scene_id: StringName = DEFAULT_START_SCENE_ID;
 var gameplay_scene_id: StringName = DEFAULT_GAMEPLAY_SCENE_ID;
 var main_menu_music: AudioStream = null;
+var input_actions: Dictionary = {};
 
 
 var _reported_issues: Dictionary = {};
@@ -41,6 +42,7 @@ func get_main_menu_music() -> AudioStream:
 
 
 func reset_to_defaults() -> void:
+	input_actions.clear();
 	start_scene_id = DEFAULT_START_SCENE_ID;
 	gameplay_scene_id = DEFAULT_GAMEPLAY_SCENE_ID;
 	main_menu_music = load(DEFAULT_MAIN_MENU_MUSIC_PATH) as AudioStream;
@@ -53,12 +55,15 @@ func reload() -> void:
 	var resolved_gameplay_scene_id: StringName = DEFAULT_GAMEPLAY_SCENE_ID;
 	var resolved_main_menu_music: AudioStream = load(DEFAULT_MAIN_MENU_MUSIC_PATH) as AudioStream;
 
+	input_actions = {};
 	if default_data != null:
+		input_actions.merge(default_data.input_actions.duplicate(true), true);
 		resolved_start_scene_id = default_data.start_scene_id;
 		resolved_gameplay_scene_id = default_data.gameplay_scene_id;
 		resolved_main_menu_music = default_data.main_menu_music;
 
 	if override_data != null:
+		input_actions.merge(override_data.input_actions.duplicate(true), true);
 		if override_data.start_scene_id != StringName():
 			resolved_start_scene_id = override_data.start_scene_id;
 		if override_data.gameplay_scene_id != StringName():
