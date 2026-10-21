@@ -8,3 +8,6 @@
 
 Ветка `3d` дополнительно содержит установку Cyclops 1.5.1 (MIT) и собственный export plugin шаблона, исключающий его autoload из сборок.
 MCP for Blender и сам Blender устанавливаются отдельно от игрового репозитория и нужны только для работы с 3D-исходниками.
+
+Закрепленный 3D-аддон: [Cyclops 1.5.1](https://github.com/blackears/cyclopsLevelBuilder/releases/tag/v1.5.1), MIT.
+Blender MCP: [mcp-for-blender 2.2.2](https://pypi.org/project/mcp-for-blender/2.2.2/), вне репозитория; [preview-плагин 5a3618f](https://github.com/ahujasid/mcp-for-blender/tree/5a3618fccb2d982d0dd61e7a1879912c3100073b).

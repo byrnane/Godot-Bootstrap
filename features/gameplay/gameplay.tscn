@@ -1,49 +1,9 @@
-[gd_scene format=3 uid="uid://cb7ndtsl5wsbp"]
+[gd_scene format=3]
 
-[ext_resource type="Script" uid="uid://bdnhdyd7mir40" path="res://features/gameplay/gameplay_stub.gd" id="1_script"]
+[ext_resource type="Script" path="res://features/gameplay/gameplay_stub.gd" id="1"]
 
-[node name="GameplayStub" type="Control" unique_id=609727720]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-script = ExtResource("1_script")
-level_scene_root_path = NodePath("WorldRoot/ViewportFrame/LevelRoot")
+[node name="Gameplay3D" type="Node3D"]
+script = ExtResource("1")
+level_scene_root_path = NodePath("LevelRoot")
 
-[node name="WorldRoot" type="Control" parent="." unique_id=84729422]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="Backdrop" type="ColorRect" parent="WorldRoot" unique_id=816033411]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0.07, 0.09, 0.13, 1)
-
-[node name="ViewportFrame" type="PanelContainer" parent="WorldRoot" unique_id=756710773]
-custom_minimum_size = Vector2(640, 360)
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -320.0
-offset_top = -180.0
-offset_right = 320.0
-offset_bottom = 180.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="LevelRoot" type="Control" parent="WorldRoot/ViewportFrame" unique_id=955005587]
-unique_name_in_owner = true
-layout_mode = 2
+[node name="LevelRoot" type="Node3D" parent="."]
