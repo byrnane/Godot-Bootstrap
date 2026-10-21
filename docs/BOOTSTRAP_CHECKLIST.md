@@ -2,6 +2,14 @@
 
 Use this checklist when creating a new game from this template.
 
+## 0. Выбор варианта и отдельный репозиторий
+
+- Выберите ветку: `3d` для 3D, `2d` для обычного 2D, `2d-pixelart` для пиксельного 2D. `main` содержит только общую базу с нейтральными заглушками.
+- Клонируйте выбранную ветку в отдельный репозиторий игры и назначьте ему собственный `origin`: [команды](START_HERE.md).
+- Обновите `AGENTS.md` под игру. Правила обновления веток шаблона к игре не относятся; она развивается самостоятельно.
+- Установите закрепленные аддоны выбранной ветки командой `pwsh -File scripts/install_addons.ps1`.
+- Для `2d-pixelart` учтите: viewport уже 640×360, но текущий UI еще не адаптирован.
+
 ## 1. Identity and Metadata
 
 - Rename project in `project.godot` (`application/config/name`).
