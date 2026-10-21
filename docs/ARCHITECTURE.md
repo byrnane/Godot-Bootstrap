@@ -197,6 +197,8 @@ Global confirm, alert, and toast requests should go through `UiFeedback`.
 - `UiFormRow`
 - `UiActionBar`
 - `UiStatusBadge`
+- resource bars, counters, input hints and result content
+- volume/binding rows and save-slot cards
 - action rows are configured to keep long localized button labels readable on common template screens
 
 `shared/ui/navigation/`
@@ -209,7 +211,9 @@ Global confirm, alert, and toast requests should go through `UiFeedback`.
 
 - `UiMotion`
 
-The current proving grounds for these primitives are `SettingsModal`, `FeedbackModal`, `ToastItem`, and `LoadingScreen`.
+The shared appearance is `shared/ui/theme/neutral_theme.tres`: native Control states, semantic type variations, fonts and icons. Components receive data and emit intent signals; screen controllers connect them to existing managers.
+
+Run `shared/ui/catalog/ui_catalog.tscn` with F6 to inspect primitives independently. Menus, settings, saves, HUD, feedback and loading use the same library. Full contracts and skin extension: [UI Framework](UI_FRAMEWORK.md).
 
 ### Scene loading
 
@@ -383,6 +387,14 @@ This gives you:
 - игровая логика остаётся в world-сцене
 - HUD остаётся только слоем представления
 - `SceneRouter` монтирует и снимает его в контролируемом порядке
+
+### Оформление и общие компоненты
+
+`shared/ui/theme/neutral_theme.tres` задает состояния native Control, семантические роли, шрифты и иконки.
+Составные элементы в `shared/ui/components/` получают данные и выдают сигналы намерений; экраны связывают их с менеджерами.
+GameplayHud принимает view model и не читает контексты напрямую. Для нового стиля меняется Theme и при необходимости композиция, а общие контракты сохраняются.
+
+Каталог `shared/ui/catalog/ui_catalog.tscn` запускается через F6. Подробности: [UI_FRAMEWORK.md](UI_FRAMEWORK.md).
 
 ### Модель модалок
 

@@ -1,0 +1,306 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://shared/ui/catalog/ui_catalog.gd" id="script"]
+[ext_resource type="PackedScene" path="res://shared/ui/components/ui_resources.tscn" id="resources"]
+[ext_resource type="PackedScene" path="res://shared/ui/components/ui_objective.tscn" id="objective"]
+[ext_resource type="PackedScene" path="res://shared/ui/components/ui_interaction_prompt.tscn" id="prompt"]
+[ext_resource type="PackedScene" path="res://shared/ui/components/ui_binding_row.tscn" id="binding"]
+[ext_resource type="PackedScene" path="res://shared/ui/components/ui_save_slot.tscn" id="save"]
+[ext_resource type="PackedScene" path="res://shared/ui/components/ui_status_badge.tscn" id="status"]
+[ext_resource type="PackedScene" path="res://shared/ui/components/ui_result_content.tscn" id="result"]
+
+[sub_resource type="ButtonGroup" id="radio_group"]
+
+[node name="UiCatalog" type="PanelContainer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_type_variation = &"UiCanvas"
+script = ExtResource("script")
+
+[node name="Scroll" type="ScrollContainer" parent="."]
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="Margin" type="MarginContainer" parent="Scroll"]
+layout_mode = 2
+theme_override_constants/margin_left = 48
+theme_override_constants/margin_top = 48
+theme_override_constants/margin_right = 48
+theme_override_constants/margin_bottom = 48
+size_flags_horizontal = 3
+
+[node name="Content" type="VBoxContainer" parent="Scroll/Margin"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 24
+
+[node name="Heading" type="Label" parent="Scroll/Margin/Content"]
+layout_mode = 2
+theme_type_variation = &"UiHeading"
+text = "UI_COMPONENT_CATALOG"
+
+
+[node name="ButtonsTitle" type="Label" parent="Scroll/Margin/Content"]
+layout_mode = 2
+theme_type_variation = &"UiSection"
+text = "UI_KIT_BUTTONS"
+
+
+[node name="Buttons" type="HBoxContainer" parent="Scroll/Margin/Content"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Primary" type="Button" parent="Scroll/Margin/Content/Buttons"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 56)
+theme_type_variation = &"UiButtonPrimary"
+text = "UI_CONTINUE"
+custom_minimum_size = Vector2(220, 56)
+
+[node name="Secondary" type="Button" parent="Scroll/Margin/Content/Buttons"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 56)
+theme_type_variation = &"UiButtonSecondary"
+text = "UI_CONTINUE"
+custom_minimum_size = Vector2(220, 56)
+
+[node name="Ghost" type="Button" parent="Scroll/Margin/Content/Buttons"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 56)
+theme_type_variation = &"UiButtonGhost"
+text = "UI_CONTINUE"
+custom_minimum_size = Vector2(220, 56)
+
+[node name="Danger" type="Button" parent="Scroll/Margin/Content/Buttons"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 56)
+theme_type_variation = &"UiButtonDanger"
+text = "UI_CONTINUE"
+custom_minimum_size = Vector2(220, 56)
+
+[node name="StatesTitle" type="Label" parent="Scroll/Margin/Content"]
+layout_mode = 2
+theme_type_variation = &"UiSection"
+text = "UI_KIT_STATES"
+
+
+[node name="States" type="HBoxContainer" parent="Scroll/Margin/Content"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Default" type="Button" parent="Scroll/Margin/Content/States"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 56)
+theme_type_variation = &"UiButtonSecondary"
+text = "UI_CONTINUE"
+
+
+[node name="Disabled" type="Button" parent="Scroll/Margin/Content/States"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 56)
+theme_type_variation = &"UiButtonSecondary"
+text = "UI_CONTINUE"
+disabled = true
+
+[node name="Selected" type="Button" parent="Scroll/Margin/Content/States"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 56)
+theme_type_variation = &"UiButtonSecondary"
+text = "UI_CONTINUE"
+toggle_mode = true
+button_pressed = true
+
+[node name="FieldsTitle" type="Label" parent="Scroll/Margin/Content"]
+layout_mode = 2
+theme_type_variation = &"UiSection"
+text = "UI_KIT_FIELDS"
+
+
+[node name="Fields" type="HBoxContainer" parent="Scroll/Margin/Content"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Input" type="LineEdit" parent="Scroll/Margin/Content/Fields"]
+layout_mode = 2
+custom_minimum_size = Vector2(320, 56)
+placeholder_text = "UI_SAVE_SLOT_TITLE_PLACEHOLDER"
+
+[node name="Option" type="OptionButton" parent="Scroll/Margin/Content/Fields"]
+layout_mode = 2
+custom_minimum_size = Vector2(250, 52)
+item_count = 2
+selected = 0
+popup/item_0/text = "UI_SETTINGS_TAB_GENERAL"
+popup/item_0/id = 0
+popup/item_1/text = "UI_SETTINGS_TAB_GRAPHICS"
+popup/item_1/id = 1
+
+[node name="Number" type="SpinBox" parent="Scroll/Margin/Content/Fields"]
+layout_mode = 2
+custom_minimum_size = Vector2(140, 52)
+max_value = 3600.0
+value = 120.0
+
+[node name="ChoicesTitle" type="Label" parent="Scroll/Margin/Content"]
+layout_mode = 2
+theme_type_variation = &"UiSection"
+text = "UI_KIT_CHOICES"
+
+
+[node name="Choices" type="HBoxContainer" parent="Scroll/Margin/Content"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Checkbox" type="CheckBox" parent="Scroll/Margin/Content/Choices"]
+layout_mode = 2
+text = "UI_SETTINGS_AUTOSAVE_ENABLED"
+button_pressed = true
+
+
+[node name="Radio" type="CheckBox" parent="Scroll/Margin/Content/Choices"]
+layout_mode = 2
+text = "UI_SETTINGS_AUTOSAVE_ENABLED"
+button_pressed = true
+button_group = SubResource("radio_group")
+
+[node name="Toggle" type="CheckBox" parent="Scroll/Margin/Content/Choices"]
+layout_mode = 2
+text = "UI_SETTINGS_AUTOSAVE_ENABLED"
+button_pressed = true
+theme_type_variation = &"UiToggle"
+
+[node name="RangesTitle" type="Label" parent="Scroll/Margin/Content"]
+layout_mode = 2
+theme_type_variation = &"UiSection"
+text = "UI_KIT_RANGES"
+
+
+[node name="Ranges" type="HBoxContainer" parent="Scroll/Margin/Content"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Slider" type="HSlider" parent="Scroll/Margin/Content/Ranges"]
+layout_mode = 2
+custom_minimum_size = Vector2(460, 32)
+value = 70.0
+
+[node name="Progress" type="ProgressBar" parent="Scroll/Margin/Content/Ranges"]
+layout_mode = 2
+custom_minimum_size = Vector2(400, 12)
+size_flags_vertical = 4
+value = 60.0
+show_percentage = false
+
+[node name="ResourcesTitle" type="Label" parent="Scroll/Margin/Content"]
+layout_mode = 2
+theme_type_variation = &"UiSection"
+text = "UI_KIT_HUD"
+
+
+[node name="Resources" type="HBoxContainer" parent="Scroll/Margin/Content"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Resources" instance=ExtResource("resources") parent="Scroll/Margin/Content/Resources"]
+layout_mode = 2
+
+
+[node name="Objective" instance=ExtResource("objective") parent="Scroll/Margin/Content/Resources"]
+layout_mode = 2
+text = "UI_RESULT_MESSAGE"
+size_flags_vertical = 0
+
+[node name="Prompt" instance=ExtResource("prompt") parent="Scroll/Margin/Content/Resources"]
+layout_mode = 2
+text = "UI_CONTINUE"
+size_flags_vertical = 0
+
+[node name="BindingsTitle" type="Label" parent="Scroll/Margin/Content"]
+layout_mode = 2
+theme_type_variation = &"UiSection"
+text = "UI_SETTINGS_TAB_CONTROLS"
+
+
+[node name="Bindings" type="HBoxContainer" parent="Scroll/Margin/Content"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Binding" instance=ExtResource("binding") parent="Scroll/Margin/Content/Bindings"]
+layout_mode = 2
+title_key = "UI_INPUT_ACTION_ACCEPT"
+size_flags_horizontal = 3
+
+[node name="SavesTitle" type="Label" parent="Scroll/Margin/Content"]
+layout_mode = 2
+theme_type_variation = &"UiSection"
+text = "UI_SAVE_SLOTS"
+
+
+[node name="Saves" type="HBoxContainer" parent="Scroll/Margin/Content"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="SaveSlot" instance=ExtResource("save") parent="Scroll/Margin/Content/Saves"]
+layout_mode = 2
+title = "UI_SAVE_SLOT_KIND_MANUAL"
+detail = "UI_RESULT_MESSAGE"
+
+[node name="StatusesTitle" type="Label" parent="Scroll/Margin/Content"]
+layout_mode = 2
+theme_type_variation = &"UiSection"
+text = "UI_KIT_FEEDBACK"
+
+
+[node name="Statuses" type="HBoxContainer" parent="Scroll/Margin/Content"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Statusinfo" instance=ExtResource("status") parent="Scroll/Margin/Content/Statuses"]
+layout_mode = 2
+variant = "info"
+
+[node name="Statussuccess" instance=ExtResource("status") parent="Scroll/Margin/Content/Statuses"]
+layout_mode = 2
+variant = "success"
+
+[node name="Statuswarning" instance=ExtResource("status") parent="Scroll/Margin/Content/Statuses"]
+layout_mode = 2
+variant = "warning"
+
+[node name="Statuserror" instance=ExtResource("status") parent="Scroll/Margin/Content/Statuses"]
+layout_mode = 2
+variant = "error"
+
+[node name="ToastButton" type="Button" parent="Scroll/Margin/Content/Statuses"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0, 56)
+theme_type_variation = &"UiButtonSecondary"
+text = "UI_KIT_TOAST"
+
+
+[node name="DialogButton" type="Button" parent="Scroll/Margin/Content/Statuses"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0, 56)
+theme_type_variation = &"UiButtonSecondary"
+text = "UI_KIT_DIALOG"
+
+
+[node name="ResultsTitle" type="Label" parent="Scroll/Margin/Content"]
+layout_mode = 2
+theme_type_variation = &"UiSection"
+text = "UI_RESULT_MESSAGE"
+
+
+[node name="Results" type="HBoxContainer" parent="Scroll/Margin/Content"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Result" instance=ExtResource("result") parent="Scroll/Margin/Content/Results"]
+unique_name_in_owner = true
+layout_mode = 2

@@ -8,6 +8,8 @@
 [ext_resource type="PackedScene" path="res://shared/ui/components/ui_form_row.tscn" id="6_form_row"]
 [ext_resource type="PackedScene" path="res://shared/ui/components/ui_action_bar.tscn" id="7_action_bar"]
 
+[ext_resource type="PackedScene" path="res://shared/ui/components/ui_volume_row.tscn" id="8_volume_row"]
+
 [node name="SettingsModal" unique_id=804201977 instance=ExtResource("1_base")]
 offset_left = -420.0
 offset_top = -320.0
@@ -16,114 +18,128 @@ offset_bottom = 320.0
 script = ExtResource("2_script")
 default_focus_path = NodePath("MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/LanguageCard/ContentMargin/Content/LanguageRow/Content/LanguageOptionButton")
 fullscreen_mode = true
+theme_type_variation = &"UiCanvas"
 
-[node name="TitleLabel" parent="MarginContainer/VBoxContainer" parent_id_path=PackedInt32Array(1612714182) index="0" unique_id=1525170081]
+[node name="MarginContainer" parent="."]
+theme_override_constants/margin_left = 48
+theme_override_constants/margin_right = 48
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_bottom = 12
+
+[node name="BodyContentMargin" parent="MarginContainer/VBoxContainer/BodyScroll"]
+theme_override_constants/margin_top = 31
+
+[node name="TitleLabel" parent="MarginContainer/VBoxContainer" parent_id_path=PackedInt32Array(1612714182) unique_id=1525170081]
 text = "UI_SETTINGS_HEADER"
 
-[node name="SettingsTabs" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body" parent_id_path=PackedInt32Array(480076289) index="0" instance=ExtResource("3_tabs")]
+[node name="SettingsTabs" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body" parent_id_path=PackedInt32Array(480076289) instance=ExtResource("3_tabs")]
 unique_name_in_owner = true
 layout_mode = 2
+sidebar = true
 tab_title_keys = PackedStringArray("UI_SETTINGS_TAB_GENERAL", "UI_SETTINGS_TAB_GRAPHICS", "UI_SETTINGS_TAB_CONTROLS")
 
-[node name="GeneralPage" type="VBoxContainer" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer" index="0" unique_id=1843205367]
+[node name="GeneralPage" type="VBoxContainer" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer" unique_id=1843205367]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 0
 
-[node name="LanguageCard" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage" index="0" instance=ExtResource("4_card")]
+[node name="LanguageTopSpace" type="Control" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage"]
+custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
-elevated = true
 
-[node name="LanguageHeader" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/LanguageCard/ContentMargin/Content" index="0" instance=ExtResource("5_header")]
+[node name="LanguageCard" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage" instance=ExtResource("4_card")]
+layout_mode = 2
+elevated = false
+inner_padding = 0
+theme_type_variation = &"UiTransparent"
+
+[node name="LanguageHeader" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/LanguageCard/ContentMargin/Content" instance=ExtResource("5_header")]
+visible = false
 layout_mode = 2
 title_key = "UI_SETTINGS_LANG_SECTION"
 
-[node name="LanguageRow" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/LanguageCard/ContentMargin/Content" index="1" instance=ExtResource("6_form_row")]
+[node name="LanguageRow" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/LanguageCard/ContentMargin/Content" instance=ExtResource("6_form_row")]
 layout_mode = 2
 title_key = "UI_SETTINGS_LANGUAGE"
 
-[node name="LanguageOptionButton" type="OptionButton" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/LanguageCard/ContentMargin/Content/LanguageRow/Content" index="0" unique_id=1720710846]
+[node name="LanguageOptionButton" type="OptionButton" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/LanguageCard/ContentMargin/Content/LanguageRow/Content" unique_id=1720710846]
+custom_minimum_size = Vector2(250, 52)
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="AudioCard" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage" index="1" instance=ExtResource("4_card")]
+[node name="LanguageBottomSpace" type="Control" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage"]
+custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
-elevated = true
 
-[node name="AudioHeader" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/AudioCard/ContentMargin/Content" index="0" instance=ExtResource("5_header")]
+[node name="Columns" type="HBoxContainer" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage"]
+layout_mode = 2
+theme_override_constants/separation = 64
+
+[node name="AudioCard" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/Columns" instance=ExtResource("4_card")]
+custom_minimum_size = Vector2(460, 0)
+layout_mode = 2
+elevated = false
+inner_padding = 0
+theme_type_variation = &"UiTransparent"
+
+[node name="AudioHeader" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/Columns/AudioCard/ContentMargin/Content" instance=ExtResource("5_header")]
 layout_mode = 2
 title_key = "UI_SETTINGS_SOUND_SECTION"
 
-[node name="MasterVolumeRow" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/AudioCard/ContentMargin/Content" index="1" instance=ExtResource("6_form_row")]
+[node name="MasterVolumeRow" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/Columns/AudioCard/ContentMargin/Content" instance=ExtResource("8_volume_row")]
+unique_name_in_owner = true
 layout_mode = 2
 title_key = "UI_SETTINGS_SOUND"
 
-[node name="MasterVolumeSlider" type="HSlider" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/AudioCard/ContentMargin/Content/MasterVolumeRow/Content" index="0" unique_id=1002553580]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-max_value = 1.0
-step = 0.01
-value = 1.0
 
-[node name="MusicVolumeRow" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/AudioCard/ContentMargin/Content" index="2" instance=ExtResource("6_form_row")]
+[node name="MusicVolumeRow" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/Columns/AudioCard/ContentMargin/Content" instance=ExtResource("8_volume_row")]
+unique_name_in_owner = true
 layout_mode = 2
 title_key = "UI_SETTINGS_MUSIC"
 
-[node name="MusicVolumeSlider" type="HSlider" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/AudioCard/ContentMargin/Content/MusicVolumeRow/Content" index="0" unique_id=597293241]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-max_value = 1.0
-step = 0.01
-value = 1.0
 
-[node name="UiVolumeRow" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/AudioCard/ContentMargin/Content" index="3" instance=ExtResource("6_form_row")]
+[node name="UiVolumeRow" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/Columns/AudioCard/ContentMargin/Content" instance=ExtResource("8_volume_row")]
+unique_name_in_owner = true
 layout_mode = 2
 title_key = "UI_SETTINGS_UI"
 
-[node name="UiVolumeSlider" type="HSlider" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/AudioCard/ContentMargin/Content/UiVolumeRow/Content" index="0" unique_id=1453757690]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-max_value = 1.0
-step = 0.01
-value = 1.0
 
-[node name="SfxVolumeRow" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/AudioCard/ContentMargin/Content" index="4" instance=ExtResource("6_form_row")]
+[node name="SfxVolumeRow" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/Columns/AudioCard/ContentMargin/Content" instance=ExtResource("8_volume_row")]
+unique_name_in_owner = true
 layout_mode = 2
 title_key = "UI_SETTINGS_SFX"
 
-[node name="SfxVolumeSlider" type="HSlider" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/AudioCard/ContentMargin/Content/SfxVolumeRow/Content" index="0" unique_id=1180964372]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-max_value = 1.0
-step = 0.01
-value = 1.0
 
-[node name="AutosaveCard" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage" index="2" instance=ExtResource("4_card")]
+[node name="AutosaveCard" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/Columns" instance=ExtResource("4_card")]
+custom_minimum_size = Vector2(348, 0)
 layout_mode = 2
-elevated = true
+elevated = false
+inner_padding = 0
+theme_type_variation = &"UiTransparent"
 
-[node name="AutosaveHeader" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/AutosaveCard/ContentMargin/Content" index="0" instance=ExtResource("5_header")]
+[node name="AutosaveHeader" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/Columns/AutosaveCard/ContentMargin/Content" instance=ExtResource("5_header")]
 layout_mode = 2
 title_key = "UI_SETTINGS_AUTOSAVE_SECTION"
 
-[node name="AutosaveEnabledRow" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/AutosaveCard/ContentMargin/Content" index="1" instance=ExtResource("6_form_row")]
+[node name="AutosaveEnabledRow" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/Columns/AutosaveCard/ContentMargin/Content" instance=ExtResource("6_form_row")]
+compact = true
 layout_mode = 2
 title_key = "UI_SETTINGS_AUTOSAVE_ENABLED"
 
-[node name="AutosaveEnabledCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/AutosaveCard/ContentMargin/Content/AutosaveEnabledRow/Content" index="0" unique_id=209823594]
+[node name="AutosaveEnabledCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/Columns/AutosaveCard/ContentMargin/Content/AutosaveEnabledRow/Content" unique_id=209823594]
+theme_type_variation = &"UiToggle"
+custom_minimum_size = Vector2(52, 36)
 unique_name_in_owner = true
 layout_mode = 2
 text = ""
 
-[node name="AutosaveIntervalRow" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/AutosaveCard/ContentMargin/Content" index="2" instance=ExtResource("6_form_row")]
+[node name="AutosaveIntervalRow" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/Columns/AutosaveCard/ContentMargin/Content" instance=ExtResource("6_form_row")]
+compact = true
 layout_mode = 2
 title_key = "UI_SETTINGS_AUTOSAVE_INTERVAL"
 
-[node name="AutosaveIntervalSpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/AutosaveCard/ContentMargin/Content/AutosaveIntervalRow/Content" index="0" unique_id=552045306]
+[node name="AutosaveIntervalSpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/Columns/AutosaveCard/ContentMargin/Content/AutosaveIntervalRow/Content" unique_id=552045306]
+custom_minimum_size = Vector2(140, 36)
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -132,29 +148,37 @@ max_value = 3600.0
 step = 5.0
 value = 120.0
 
-[node name="AutosaveOnExitRow" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/AutosaveCard/ContentMargin/Content" index="3" instance=ExtResource("6_form_row")]
+[node name="AutosaveOnExitRow" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/Columns/AutosaveCard/ContentMargin/Content" instance=ExtResource("6_form_row")]
+compact = true
 layout_mode = 2
 title_key = "UI_SETTINGS_AUTOSAVE_ON_EXIT"
 
-[node name="AutosaveOnExitCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/AutosaveCard/ContentMargin/Content/AutosaveOnExitRow/Content" index="0" unique_id=992626965]
+[node name="AutosaveOnExitCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/Columns/AutosaveCard/ContentMargin/Content/AutosaveOnExitRow/Content" unique_id=992626965]
+theme_type_variation = &"UiToggle"
+custom_minimum_size = Vector2(52, 36)
 unique_name_in_owner = true
 layout_mode = 2
 text = ""
 
-[node name="AutosaveOnCheckpointRow" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/AutosaveCard/ContentMargin/Content" index="4" instance=ExtResource("6_form_row")]
+[node name="AutosaveOnCheckpointRow" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/Columns/AutosaveCard/ContentMargin/Content" instance=ExtResource("6_form_row")]
+compact = true
 layout_mode = 2
 title_key = "UI_SETTINGS_AUTOSAVE_ON_CHECKPOINT"
 
-[node name="AutosaveOnCheckpointCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/AutosaveCard/ContentMargin/Content/AutosaveOnCheckpointRow/Content" index="0" unique_id=465116140]
+[node name="AutosaveOnCheckpointCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/Columns/AutosaveCard/ContentMargin/Content/AutosaveOnCheckpointRow/Content" unique_id=465116140]
+theme_type_variation = &"UiToggle"
+custom_minimum_size = Vector2(52, 36)
 unique_name_in_owner = true
 layout_mode = 2
 text = ""
 
-[node name="AutosaveScoreStepRow" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/AutosaveCard/ContentMargin/Content" index="5" instance=ExtResource("6_form_row")]
+[node name="AutosaveScoreStepRow" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/Columns/AutosaveCard/ContentMargin/Content" instance=ExtResource("6_form_row")]
+compact = true
 layout_mode = 2
 title_key = "UI_SETTINGS_AUTOSAVE_SCORE_STEP"
 
-[node name="AutosaveScoreStepSpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/AutosaveCard/ContentMargin/Content/AutosaveScoreStepRow/Content" index="0" unique_id=911760333]
+[node name="AutosaveScoreStepSpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/Columns/AutosaveCard/ContentMargin/Content/AutosaveScoreStepRow/Content" unique_id=911760333]
+custom_minimum_size = Vector2(140, 36)
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -163,101 +187,140 @@ max_value = 100000.0
 step = 1.0
 value = 100.0
 
-[node name="AutosaveThumbnailRow" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/AutosaveCard/ContentMargin/Content" index="6" instance=ExtResource("6_form_row")]
+[node name="AutosaveThumbnailRow" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/Columns/AutosaveCard/ContentMargin/Content" instance=ExtResource("6_form_row")]
+compact = true
 layout_mode = 2
 title_key = "UI_SETTINGS_AUTOSAVE_CAPTURE_THUMBNAIL"
 
-[node name="AutosaveCaptureThumbnailCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/AutosaveCard/ContentMargin/Content/AutosaveThumbnailRow/Content" index="0" unique_id=1092905363]
+[node name="AutosaveCaptureThumbnailCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GeneralPage/Columns/AutosaveCard/ContentMargin/Content/AutosaveThumbnailRow/Content" unique_id=1092905363]
+theme_type_variation = &"UiToggle"
+custom_minimum_size = Vector2(52, 36)
 unique_name_in_owner = true
 layout_mode = 2
 text = ""
 
-[node name="GraphicsPage" type="VBoxContainer" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer" index="1" unique_id=1284658716]
+[node name="GraphicsPage" type="VBoxContainer" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer" unique_id=1284658716]
 visible = false
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="GraphicsCard" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GraphicsPage" index="0" instance=ExtResource("4_card")]
+[node name="GraphicsCard" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GraphicsPage" instance=ExtResource("4_card")]
 layout_mode = 2
-elevated = true
+elevated = false
+inner_padding = 0
+theme_type_variation = &"UiTransparent"
 
-[node name="GraphicsHeader" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GraphicsPage/GraphicsCard/ContentMargin/Content" index="0" instance=ExtResource("5_header")]
+[node name="GraphicsHeader" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GraphicsPage/GraphicsCard/ContentMargin/Content" instance=ExtResource("5_header")]
 layout_mode = 2
 title_key = "UI_SETTINGS_SCREEN_SECTION"
 
-[node name="FullscreenRow" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GraphicsPage/GraphicsCard/ContentMargin/Content" index="1" instance=ExtResource("6_form_row")]
+[node name="FullscreenRow" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GraphicsPage/GraphicsCard/ContentMargin/Content" instance=ExtResource("6_form_row")]
 layout_mode = 2
 title_key = "UI_SETTINGS_FULLSCREEN"
 
-[node name="FullscreenCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GraphicsPage/GraphicsCard/ContentMargin/Content/FullscreenRow/Content" index="0" unique_id=1267183957]
+[node name="FullscreenCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GraphicsPage/GraphicsCard/ContentMargin/Content/FullscreenRow/Content" unique_id=1267183957]
+theme_type_variation = &"UiToggle"
+custom_minimum_size = Vector2(52, 36)
 unique_name_in_owner = true
 layout_mode = 2
 text = ""
 
-[node name="VSyncRow" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GraphicsPage/GraphicsCard/ContentMargin/Content" index="2" instance=ExtResource("6_form_row")]
+[node name="VSyncRow" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GraphicsPage/GraphicsCard/ContentMargin/Content" instance=ExtResource("6_form_row")]
 layout_mode = 2
 title_key = "UI_SETTINGS_VSYNC"
 
-[node name="VSyncCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GraphicsPage/GraphicsCard/ContentMargin/Content/VSyncRow/Content" index="0" unique_id=968426595]
+[node name="VSyncCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/GraphicsPage/GraphicsCard/ContentMargin/Content/VSyncRow/Content" unique_id=968426595]
+theme_type_variation = &"UiToggle"
+custom_minimum_size = Vector2(52, 36)
 unique_name_in_owner = true
 layout_mode = 2
 text = ""
 
-[node name="ControlsPage" type="VBoxContainer" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer" index="2" unique_id=1036893566]
+[node name="ControlsPage" type="VBoxContainer" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer" unique_id=1036893566]
 visible = false
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="ControlsCard" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/ControlsPage" index="0" instance=ExtResource("4_card")]
+[node name="ControlsCard" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/ControlsPage" instance=ExtResource("4_card")]
 layout_mode = 2
-elevated = true
+elevated = false
+inner_padding = 0
+theme_type_variation = &"UiTransparent"
 
-[node name="ControlsHeader" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/ControlsPage/ControlsCard/ContentMargin/Content" index="0" instance=ExtResource("5_header")]
+[node name="ControlsHeader" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/ControlsPage/ControlsCard/ContentMargin/Content" instance=ExtResource("5_header")]
 layout_mode = 2
 title_key = "UI_SETTINGS_CONTROLS_SECTION"
 
-[node name="BindingsStatusLabel" type="Label" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/ControlsPage/ControlsCard/ContentMargin/Content" index="1" unique_id=1260056336]
+[node name="BindingsStatusLabel" type="Label" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/ControlsPage/ControlsCard/ContentMargin/Content" unique_id=1260056336]
 unique_name_in_owner = true
 layout_mode = 2
 text = "UI_INPUT_BINDINGS_HINT"
 autowrap_mode = 2
 
-[node name="BindingsContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/ControlsPage/ControlsCard/ContentMargin/Content" index="2" unique_id=336826643]
+[node name="BindingsScroll" type="ScrollContainer" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/ControlsPage/ControlsCard/ContentMargin/Content"]
+follow_focus = true
+custom_minimum_size = Vector2(0, 352)
+layout_mode = 2
+horizontal_scroll_mode = 0
+size_flags_vertical = 3
+
+[node name="BindingsContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/ControlsPage/ControlsCard/ContentMargin/Content/BindingsScroll" unique_id=336826643]
+size_flags_horizontal = 3
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="BindingsActionBar" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/ControlsPage/ControlsCard/ContentMargin/Content" index="3" instance=ExtResource("7_action_bar")]
+
+[node name="ButtonsRow" parent="MarginContainer/VBoxContainer" instance=ExtResource("7_action_bar")]
+unique_name_in_owner = true
 layout_mode = 2
 
-[node name="ResetBindingsButton" type="Button" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/SettingsTabs/PagesContainer/ControlsPage/ControlsCard/ContentMargin/Content/BindingsActionBar" index="0" unique_id=1130474353]
+[node name="ResetBindingsButton" type="Button" parent="MarginContainer/VBoxContainer/ButtonsRow" unique_id=1130474353]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 text = "UI_INPUT_RESET_BINDINGS"
 
-[node name="ButtonsRow" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body" parent_id_path=PackedInt32Array(480076289) index="1" instance=ExtResource("7_action_bar")]
+
+[node name="DirtyLabel" type="Label" parent="MarginContainer/VBoxContainer/ButtonsRow"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_type_variation = &"UiSmall"
+text = "UI_SETTINGS_DIRTY"
 
-[node name="ApplyButton" type="Button" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/ButtonsRow" index="0" unique_id=543644533]
-unique_name_in_owner = true
+[node name="FooterSpacer" type="Control" parent="MarginContainer/VBoxContainer/ButtonsRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "UI_APPLY"
 
-[node name="ResetButton" type="Button" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/ButtonsRow" index="1" unique_id=168368618]
+
+
+[node name="ResetButton" type="Button" parent="MarginContainer/VBoxContainer/ButtonsRow" unique_id=168368618]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 3
+size_flags_horizontal = 0
+custom_minimum_size = Vector2(220, 56)
 text = "UI_SETTINGS_RESET"
 
-[node name="CloseButton" type="Button" parent="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/ButtonsRow" index="2" unique_id=852648993]
+
+[node name="ApplyButton" type="Button" parent="MarginContainer/VBoxContainer/ButtonsRow" unique_id=543644533]
+theme_type_variation = &"UiButtonPrimary"
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 3
+size_flags_horizontal = 0
+custom_minimum_size = Vector2(220, 56)
+text = "UI_APPLY"
+
+
+[node name="CloseButton" type="Button" parent="MarginContainer/VBoxContainer/TitleLabel" unique_id=852648993]
+unique_name_in_owner = true
+theme_type_variation = &"UiButtonGhost"
+layout_mode = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -180.0
+offset_bottom = 52.0
 text = "UI_CLOSE"
 
-[connection signal="pressed" from="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/ButtonsRow/ApplyButton" to="." method="_on_apply_button_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/ButtonsRow/ResetButton" to="." method="_on_reset_button_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/ButtonsRow/CloseButton" to="." method="_on_close_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/ButtonsRow/ApplyButton" to="." method="_on_apply_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/ButtonsRow/ResetButton" to="." method="_on_reset_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/TitleLabel/CloseButton" to="." method="_on_close_button_pressed"]

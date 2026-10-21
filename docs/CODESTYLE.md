@@ -41,6 +41,8 @@ These are not abstract perfect rules. These are working agreements for this proj
 - `tr()` in code is for dynamic text only
 - modals should inherit from `BaseModal`
 - do not save `.tscn` files with BOM
+- in hand-authored `.tscn`, assign `script` before its exported properties; otherwise Godot can silently ignore their values
+- use semantic Theme variations for shared UI; component contracts are documented in [UI Framework](UI_FRAMEWORK.md)
 
 ### Architecture rules
 
@@ -103,6 +105,8 @@ When adding code, quickly ask:
 - `tr()` в коде используем только для динамического текста
 - модалки должны наследоваться от `BaseModal`
 - не сохраняем `.tscn` с BOM
+- в написанных вручную `.tscn` свойство `script` ставим перед экспортируемыми свойствами этого скрипта: иначе Godot может молча потерять их значения
+- для общего оформления используем семантические Theme variations; контракты компонентов описаны в [UI_FRAMEWORK.md](UI_FRAMEWORK.md)
 
 ### Архитектурные правила
 

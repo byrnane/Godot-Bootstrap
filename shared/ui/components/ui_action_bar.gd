@@ -1,3 +1,4 @@
+@tool
 extends HBoxContainer;
 class_name UiActionBar;
 
@@ -9,7 +10,7 @@ class_name UiActionBar;
 
 
 func _ready() -> void:
-	add_theme_constant_override("separation", 8);
+	add_theme_constant_override("separation", 12);
 	_apply_alignment();
 
 

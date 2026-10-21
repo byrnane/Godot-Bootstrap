@@ -4,7 +4,7 @@ class_name SettingsModal;
 
 const UI_CARD_SCENE: PackedScene = preload("res://shared/ui/components/ui_card.tscn");
 const UI_SECTION_HEADER_SCENE: PackedScene = preload("res://shared/ui/components/ui_section_header.tscn");
-const UI_FORM_ROW_SCENE: PackedScene = preload("res://shared/ui/components/ui_form_row.tscn");
+const UI_BINDING_ROW_SCENE: PackedScene = preload("res://shared/ui/components/ui_binding_row.tscn");
 
 
 var _is_syncing_controls: bool = false;
@@ -17,10 +17,10 @@ var _binding_buttons: Dictionary = {};
 
 @onready var settings_tabs = %SettingsTabs;
 @onready var language_option_button: OptionButton = %LanguageOptionButton;
-@onready var master_volume_slider: HSlider = %MasterVolumeSlider;
-@onready var music_volume_slider: HSlider = %MusicVolumeSlider;
-@onready var ui_volume_slider: HSlider = %UiVolumeSlider;
-@onready var sfx_volume_slider: HSlider = %SfxVolumeSlider;
+@onready var master_volume_slider: HSlider = %MasterVolumeRow.get_node("%Slider");
+@onready var music_volume_slider: HSlider = %MusicVolumeRow.get_node("%Slider");
+@onready var ui_volume_slider: HSlider = %UiVolumeRow.get_node("%Slider");
+@onready var sfx_volume_slider: HSlider = %SfxVolumeRow.get_node("%Slider");
 @onready var fullscreen_check_box: CheckBox = %FullscreenCheckBox;
 @onready var vsync_check_box: CheckBox = %VSyncCheckBox;
 @onready var autosave_enabled_check_box: CheckBox = %AutosaveEnabledCheckBox;
@@ -38,6 +38,8 @@ var _binding_buttons: Dictionary = {};
 
 func _ready() -> void:
 	super._ready();
+	settings_tabs.tab_changed.connect(_on_settings_tab_changed);
+	_on_settings_tab_changed(&"", settings_tabs.current_tab);
 	if OS.has_feature("web"):
 		vsync_check_box.get_parent().get_parent().hide();
 		autosave_on_exit_check_box.get_parent().get_parent().hide();
@@ -197,6 +199,11 @@ func _get_selected_locale_value() -> String:
 func _refresh_action_state() -> void:
 	apply_button.disabled = not _is_dirty;
 	reset_button.disabled = _is_syncing_controls;
+	%DirtyLabel.visible = _is_dirty;
+
+
+func _on_settings_tab_changed(_tab_id: StringName, index: int) -> void:
+	reset_bindings_button.visible = index == 2;
 
 
 func _refresh_autosave_controls_state() -> void:
@@ -229,7 +236,9 @@ func _build_bindings_ui() -> void:
 		if group_card == null:
 			continue;
 
-		group_card.elevated = true;
+		group_card.elevated = false;
+		group_card.inner_padding = 0;
+		group_card.theme_type_variation = &"UiTransparent";
 		bindings_container.add_child(group_card);
 		var group_content: VBoxContainer = group_card.get_node("%Content") as VBoxContainer;
 		var group_header = UI_SECTION_HEADER_SCENE.instantiate();
@@ -237,23 +246,11 @@ func _build_bindings_ui() -> void:
 		group_content.add_child(group_header);
 
 		for action_name: StringName in group_actions:
-			var row = UI_FORM_ROW_SCENE.instantiate();
-			if row == null:
-				continue;
-
+			var row: UiBindingRow = UI_BINDING_ROW_SCENE.instantiate() as UiBindingRow;
 			row.title_key = InputManager.get_action_label_key(action_name);
+			row.binding_requested.connect(func(slot: int) -> void: _on_binding_button_pressed(action_name, slot));
 			group_content.add_child(row);
-			var content_container: HBoxContainer = row.get_node("%Content") as HBoxContainer;
-
-			var buttons: Array[Button] = [];
-			for binding_slot: int in range(InputManager.get_binding_slot_count()):
-				var button: Button = Button.new();
-				button.size_flags_horizontal = Control.SIZE_EXPAND_FILL;
-				button.pressed.connect(_on_binding_button_pressed.bind(action_name, binding_slot));
-				content_container.add_child(button);
-				buttons.append(button);
-
-			_binding_buttons[action_name] = buttons;
+			_binding_buttons[action_name] = row.get_binding_buttons();
 
 	_refresh_bindings_ui();
 

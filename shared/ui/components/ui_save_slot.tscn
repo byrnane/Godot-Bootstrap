@@ -1,0 +1,57 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://shared/ui/components/ui_save_slot.gd" id="script"]
+
+[node name="UiSaveSlot" type="Button"]
+script = ExtResource("script")
+custom_minimum_size = Vector2(456, 104)
+theme_type_variation = &"UiSaveSlot"
+toggle_mode = true
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Row" type="HBoxContainer" parent="Margin"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 16
+
+[node name="Preview" type="TextureRect" parent="Margin/Row"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(128, 72)
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="Text" type="VBoxContainer" parent="Margin/Row"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="Title" type="Label" parent="Margin/Row/Text"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"UiLabel"
+text = ""
+text_overrun_behavior = 3
+mouse_filter = 2
+
+[node name="Detail" type="Label" parent="Margin/Row/Text"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"UiCaption"
+text = ""
+text_overrun_behavior = 3
+mouse_filter = 2

@@ -1,12 +1,12 @@
 # Godot Game Template
 
-Current version: `0.4.0` + unreleased template variants
+Current version: `0.4.0` + unreleased template variants and universal UI
 
-Ветки: `main` — общая база, `3d`, `2d`, `2d-pixelart` — готовые варианты. Игры создаются в отдельных репозиториях клонированием выбранной ветки.
+Ветки: `main` — общая база, `3d`, `2d`, `2d-pixelart` — производные варианты. Игры создаются в отдельных репозиториях клонированием выбранной ветки.
 
 Основная разработка шаблона ведется в `main`. Ветки вариантов получают его обновления через merge и сохраняют общую логику; в них меняются настройки, представление, примеры, ресурсы и дополнительные аддоны.
 
-Начать работу: [короткая инструкция](docs/START_HERE.md). Состав и обновления: [варианты шаблона](docs/VARIANTS.md).
+Начать работу: [короткая инструкция](docs/START_HERE.md). Состав и обновления: [варианты шаблона](docs/VARIANTS.md). Текущее состояние и границы проверки: [READINESS.md](docs/READINESS.md).
 
 ## EN
 
@@ -21,7 +21,9 @@ It gives you ready-to-use project infrastructure, but no gameplay mechanics.
 - settings (audio, video, language) with persistence;
 - input rebinding (keyboard/mouse) with persistence;
 - localization pipeline (`translations/UI.csv`);
-- shared UI shell (HUD host, modals, loading screen, feedback).
+- shared UI shell (HUD host, modals, loading screen, feedback);
+- native Godot Theme with semantic roles, reusable controls and HUD components, and an F6 component catalog;
+- a shared UI contract for 2D/3D; the 640×360 pixelart skin remains pending.
 
 ### Quick start
 
@@ -47,6 +49,8 @@ Choose `3d`, `2d`, or `2d-pixelart` and clone that branch into a separate game r
 - [Demo Replacement Guide](docs/DEMO_REPLACEMENT.md)
 - [Extension Guide](docs/EXTENSION_GUIDE.md)
 - [Localization Workflow](docs/LOCALIZATION.md)
+- [UI Framework](docs/UI_FRAMEWORK.md)
+- [Local Figma export](design/figma/README.md)
 
 ### About documentation
 
@@ -66,7 +70,9 @@ Choose `3d`, `2d`, or `2d-pixelart` and clone that branch into a separate game r
 - настройки (аудио, видео, язык) с сохранением;
 - ребинд ввода (клавиатура/мышь) с сохранением;
 - пайплайн локализации (`translations/UI.csv`);
-- общий UI-слой (HUD-хост, модалки, экран загрузки, feedback).
+- общий UI-слой (HUD-хост, модалки, экран загрузки, feedback);
+- нативная Godot Theme с семантическими ролями, компоненты экранов и HUD, каталог для запуска через F6;
+- общий UI-контракт для 2D/3D; пиксельная тема под 640×360 остается отдельной задачей.
 
 ### Быстрый старт
 
@@ -92,6 +98,8 @@ Choose `3d`, `2d`, or `2d-pixelart` and clone that branch into a separate game r
 - [Demo Replacement Guide](docs/DEMO_REPLACEMENT.md)
 - [Extension Guide](docs/EXTENSION_GUIDE.md)
 - [Localization Workflow](docs/LOCALIZATION.md)
+- [UI Framework](docs/UI_FRAMEWORK.md)
+- [Local Figma export](design/figma/README.md)
 
 ### О документации
 
