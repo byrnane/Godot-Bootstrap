@@ -9,11 +9,9 @@ static func capture(viewport: Viewport) -> Control:
 
 
 static func restore(control: Variant) -> bool:
-	if not (control is Control):
+	if not is_instance_valid(control) or not (control is Control):
 		return false;
 	var focus_target: Control = control as Control;
-	if not is_instance_valid(control):
-		return false;
 	if not focus_target.is_inside_tree():
 		return false;
 	if not focus_target.visible:

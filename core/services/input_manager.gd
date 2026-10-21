@@ -1,6 +1,7 @@
 extends Node;
 
 signal bindings_changed(action_name: StringName);
+signal device_changed;
 signal rebind_started(action_name: StringName);
 signal rebind_completed(action_name: StringName);
 signal rebind_canceled(action_name: StringName);
@@ -97,17 +98,36 @@ const REBINDABLE_ACTIONS: Array[StringName] = [
 
 
 var _default_bindings: Dictionary = {};
+var last_device: StringName = &"keyboard";
+var _project_gamepad_bindings: Dictionary = {};
+var _project_actions: Dictionary = {};
 var _pending_rebind_action: StringName = &"";
 var _pending_rebind_slot: int = -1;
 
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS;
+	_project_actions = GameConfig.input_actions.duplicate(true);
+	for action: Variant in _project_actions:
+		if InputMap.has_action(action):
+			var events: Array[InputEvent] = [];
+			for event: InputEvent in InputMap.action_get_events(action):
+				if event is InputEventJoypadButton or event is InputEventJoypadMotion:
+					events.append(event.duplicate());
+			_project_gamepad_bindings[action] = events;
 	_cache_default_bindings();
 	load_bindings();
 
 
 func _input(event: InputEvent) -> void:
+	var device: StringName = last_device;
+	if event is InputEventJoypadButton or (event is InputEventJoypadMotion and absf(event.axis_value) > 0.25):
+		device = &"gamepad";
+	elif event is InputEventKey or event is InputEventMouseButton or (event is InputEventMouseMotion and event.relative.length() > 2.0):
+		device = &"keyboard";
+	if device != last_device:
+		last_device = device;
+		device_changed.emit();
 	if not is_rebinding():
 		return;
 
@@ -119,7 +139,11 @@ func _input(event: InputEvent) -> void:
 
 
 func get_rebindable_actions() -> Array[StringName]:
-	return REBINDABLE_ACTIONS.duplicate();
+	var actions: Array[StringName] = REBINDABLE_ACTIONS.duplicate();
+	for action: Variant in _project_actions:
+		if InputMap.has_action(action) and not actions.has(StringName(action)):
+			actions.append(StringName(action));
+	return actions;
 
 
 func get_binding_slot_count() -> int:
@@ -131,12 +155,16 @@ func get_action_groups() -> Array[StringName]:
 	for group_key: StringName in ACTION_GROUP_ORDER:
 		if not get_actions_for_group(group_key).is_empty():
 			groups.append(group_key);
+	for action: StringName in get_rebindable_actions():
+		var key: StringName = get_action_group_key(action);
+		if not groups.has(key):
+			groups.append(key);
 	return groups;
 
 
 func get_actions_for_group(group_key: StringName) -> Array[StringName]:
 	var actions: Array[StringName] = [];
-	for action_name: StringName in REBINDABLE_ACTIONS:
+	for action_name: StringName in get_rebindable_actions():
 		if get_action_group_key(action_name) == group_key:
 			actions.append(action_name);
 	return actions;
@@ -186,7 +214,7 @@ func get_pending_rebind_slot() -> int:
 
 
 func start_rebind(action_name: StringName, binding_slot: int = 0) -> bool:
-	if not REBINDABLE_ACTIONS.has(action_name):
+	if not get_rebindable_actions().has(action_name):
 		return false;
 	if binding_slot < 0 or binding_slot >= MAX_BINDINGS_PER_ACTION:
 		return false;
@@ -216,7 +244,7 @@ func cancel_rebind() -> void:
 
 func reset_to_defaults() -> bool:
 	cancel_rebind();
-	for action_name: StringName in REBINDABLE_ACTIONS:
+	for action_name: StringName in get_rebindable_actions():
 		_restore_default_action(action_name);
 		bindings_changed.emit(action_name);
 	return save_bindings();
@@ -259,7 +287,7 @@ func load_bindings() -> void:
 		return;
 
 	var bindings: Dictionary = data as Dictionary;
-	for action_name: StringName in REBINDABLE_ACTIONS:
+	for action_name: StringName in get_rebindable_actions():
 		if not bindings.has(String(action_name)):
 			bindings_changed.emit(action_name);
 			continue;
@@ -282,7 +310,7 @@ func load_bindings() -> void:
 
 func _cache_default_bindings() -> void:
 	_default_bindings.clear();
-	for action_name: StringName in REBINDABLE_ACTIONS:
+	for action_name: StringName in get_rebindable_actions():
 		var action_events: Array[InputEvent] = _duplicate_events(get_action_events(action_name));
 		if action_events.is_empty():
 			action_events = _get_builtin_default_events(action_name);
@@ -290,13 +318,13 @@ func _cache_default_bindings() -> void:
 
 
 func _restore_defaults() -> void:
-	for action_name: StringName in REBINDABLE_ACTIONS:
+	for action_name: StringName in get_rebindable_actions():
 		_restore_default_action(action_name);
 
 
 func _serialize_bindings() -> Dictionary:
 	var serialized: Dictionary = {};
-	for action_name: StringName in REBINDABLE_ACTIONS:
+	for action_name: StringName in get_rebindable_actions():
 		serialized[String(action_name)] = _duplicate_events(get_action_events(action_name));
 	return serialized;
 
@@ -337,7 +365,7 @@ func _restore_default_action(action_name: StringName) -> void:
 
 
 func _emit_all_bindings_changed() -> void:
-	for action_name: StringName in REBINDABLE_ACTIONS:
+	for action_name: StringName in get_rebindable_actions():
 		bindings_changed.emit(action_name);
 
 
@@ -367,14 +395,14 @@ func _is_supported_stored_event(event: InputEvent) -> bool:
 
 
 func _apply_rebind(action_name: StringName, event: InputEvent) -> void:
-	if not REBINDABLE_ACTIONS.has(action_name):
+	if not get_rebindable_actions().has(action_name):
 		cancel_rebind();
 		return;
 
 	# We edit the shared Godot `InputMap` in place, so gameplay and UI keep using
 	# the native `Input.is_action_*` API without knowing about `InputManager`.
 	var replaced_actions: Array[StringName] = [];
-	for other_action_name: StringName in REBINDABLE_ACTIONS:
+	for other_action_name: StringName in get_rebindable_actions():
 		if other_action_name == action_name:
 			continue;
 		if _can_actions_share_binding(action_name, other_action_name):
@@ -398,6 +426,11 @@ func _apply_rebind(action_name: StringName, event: InputEvent) -> void:
 
 
 func _can_actions_share_binding(first_action: StringName, second_action: StringName) -> bool:
+	if _project_actions.has(first_action) != _project_actions.has(second_action):
+		var ui_action: StringName = second_action if _project_actions.has(first_action) else first_action;
+		# Navigation runs in menus; pause/cancel/debug still run during gameplay.
+		if get_action_group_key(ui_action) == &"UI_INPUT_GROUP_NAVIGATION":
+			return true;
 	var first_conflict_group: String = _get_action_conflict_group(first_action);
 	var second_conflict_group: String = _get_action_conflict_group(second_action);
 	if first_conflict_group.is_empty() or second_conflict_group.is_empty():
@@ -412,7 +445,7 @@ func _get_action_conflict_group(action_name: StringName) -> String:
 
 
 func _get_action_metadata(action_name: StringName) -> Dictionary:
-	return ACTION_METADATA.get(action_name, {});
+	return _project_actions.get(action_name, ACTION_METADATA.get(action_name, {}));
 
 
 func _build_rebound_event_list(action_name: StringName, event: InputEvent, binding_slot: int) -> Array[InputEvent]:
@@ -462,6 +495,8 @@ func _append_fixed_gamepad_events(action_name: StringName, events: Array[InputEv
 
 
 func _get_fixed_gamepad_events(action_name: StringName) -> Array[InputEvent]:
+	if _project_gamepad_bindings.has(action_name):
+		return _duplicate_events(_project_gamepad_bindings[action_name]);
 	match action_name:
 		&"ui_accept":
 			return [_create_joypad_button_event(DEFAULT_GAMEPAD_ACCEPT)];

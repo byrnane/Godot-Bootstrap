@@ -56,7 +56,7 @@ func refresh_policy() -> void:
 func request_autosave(reason: StringName, payload: Dictionary = {}) -> bool:
 	if not _can_autosave(reason):
 		return false;
-	if reason != REASON_EXIT and _is_in_cooldown():
+	if reason == REASON_TIMER and _is_in_cooldown():
 		return false;
 
 	var options: Dictionary = {
@@ -128,7 +128,12 @@ func _refresh_timer_state() -> void:
 
 
 func _can_autosave(reason: StringName) -> bool:
-	if not _session_active:
+	# Returning to the menu stops the gameplay timer, but retains the session.
+	# Its latest snapshot must still participate in save-on-exit.
+	if reason == REASON_EXIT:
+		if not SessionContext.session_exists:
+			return false;
+	elif not _session_active:
 		return false;
 	if AppContext == null or AppContext.settings == null:
 		return false;

@@ -65,27 +65,35 @@ func start_session(params: SESSION_START_PARAMS_TYPE = null) -> void:
 		SESSION_START_PARAMS_TYPE.Mode.NEW_GAME:
 			SessionContext.reset();
 			transition_kind = SCENE_TRANSITION_PAYLOAD_TYPE.Kind.NEW_GAME;
-		SESSION_START_PARAMS_TYPE.Mode.CONTINUE_ONLY, SESSION_START_PARAMS_TYPE.Mode.CONTINUE_OR_NEW:
-			var save_data: SaveData = SaveManager.load_latest_for_continue();
-			if save_data == null or not save_data.session_exists:
-				if session_params.mode == SESSION_START_PARAMS_TYPE.Mode.CONTINUE_ONLY:
-					push_warning("AppFlow: continue-only session start requested but no save exists.");
+		SESSION_START_PARAMS_TYPE.Mode.CONTINUE_ONLY, SESSION_START_PARAMS_TYPE.Mode.CONTINUE_OR_NEW, SESSION_START_PARAMS_TYPE.Mode.RESUME_OR_CONTINUE_OR_NEW:
+			if session_params.mode == SESSION_START_PARAMS_TYPE.Mode.RESUME_OR_CONTINUE_OR_NEW and SessionContext.session_exists:
+				transition_kind = SCENE_TRANSITION_PAYLOAD_TYPE.Kind.CONTINUE_GAME;
+				# Keep the current profile; loading disk here can discard unsaved modes.
+			else:
+				if not _load_saved_session(session_params):
 					_pending_flow.clear();
 					return;
-				SessionContext.reset();
-				transition_kind = SCENE_TRANSITION_PAYLOAD_TYPE.Kind.NEW_GAME;
-			else:
-				SessionContext.apply_save_data(save_data);
-				transition_kind = SCENE_TRANSITION_PAYLOAD_TYPE.Kind.CONTINUE_GAME;
+				transition_kind = SCENE_TRANSITION_PAYLOAD_TYPE.Kind.NEW_GAME if SessionContext.is_new_session else SCENE_TRANSITION_PAYLOAD_TYPE.Kind.CONTINUE_GAME;
 		_:
 			SessionContext.reset();
-			transition_kind = SCENE_TRANSITION_PAYLOAD_TYPE.Kind.NEW_GAME;
 
 	AppContext.set_state(AppState.Value.IN_GAME);
 	SceneRouter.go_to(
 		session_params.gameplay_scene_id,
 		_build_gameplay_payload(transition_kind, session_params.gameplay_scene_id, session_params.payload_data)
 	);
+
+
+func _load_saved_session(session_params: SESSION_START_PARAMS_TYPE) -> bool:
+	var save_data: SaveData = SaveManager.load_latest_for_continue();
+	if save_data == null or not save_data.session_exists:
+		if session_params.mode == SESSION_START_PARAMS_TYPE.Mode.CONTINUE_ONLY:
+			push_warning("AppFlow: continue-only session start requested but no save exists.");
+			return false;
+		SessionContext.reset();
+	else:
+		SessionContext.apply_save_data(save_data);
+	return true;
 
 
 func load_session_from_slot(slot_descriptor: Dictionary) -> bool:
@@ -303,6 +311,8 @@ func _on_scene_changed(_scene_id: StringName, scene_root: Node) -> void:
 
 
 func _connect_main_menu(scene_root: Node) -> void:
+	if scene_root.has_signal("session_start_requested"):
+		_connect_scene_signal(scene_root, &"session_start_requested", Callable(self, "start_session"));
 	_connect_scene_signal(scene_root, &"new_game_requested", Callable(self, "start_new_game"));
 	_connect_scene_signal(scene_root, &"continue_requested", Callable(self, "continue_game"));
 	_connect_scene_signal(scene_root, &"settings_requested", Callable(self, "open_settings"));
