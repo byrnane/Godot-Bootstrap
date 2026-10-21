@@ -21,14 +21,20 @@ var _tab_buttons: Array[Button] = [];
 
 
 func _ready() -> void:
+	set_sidebar(sidebar);
+	_rebuild_tabs();
+	_apply_current_tab(false);
+
+
+func set_sidebar(value: bool) -> void:
+	sidebar = value;
 	vertical = not sidebar;
 	tabs_container.vertical = sidebar;
 	tabs_container.custom_minimum_size.x = 216 if sidebar else 0;
 	tabs_container.size_flags_horizontal = Control.SIZE_FILL if sidebar else Control.SIZE_EXPAND_FILL;
 	tabs_container.size_flags_vertical = Control.SIZE_SHRINK_BEGIN;
 	add_theme_constant_override("separation", 80 if sidebar else 12);
-	_rebuild_tabs();
-	_apply_current_tab(false);
+	_apply_focus_neighbors();
 
 
 func _notification(what: int) -> void:

@@ -1,6 +1,10 @@
 extends PanelContainer;
 
 func _ready() -> void:
+	if preload("res://shared/ui/theme/ui_density.gd").apply(self):
+		for row: Node in $Scroll/Margin/Content.get_children():
+			if row is BoxContainer:
+				row.vertical = true;
 	%Result.configure(tr("UI_RESULT_WIN"), tr("UI_RESULT_MESSAGE"), {
 		tr("UI_RESOURCE_HEALTH"): "80 / 100",
 		tr("UI_RESOURCE_MANA"): "18 / 100",

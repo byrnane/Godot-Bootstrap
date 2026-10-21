@@ -1,5 +1,5 @@
 @tool
-extends HBoxContainer;
+extends BoxContainer;
 class_name UiActionBar;
 
 
@@ -11,6 +11,16 @@ class_name UiActionBar;
 
 func _ready() -> void:
 	add_theme_constant_override("separation", 12);
+	if preload("res://shared/ui/theme/ui_density.gd").is_compact(self):
+		var actions: Array[Node] = get_children();
+		var flow: HFlowContainer = HFlowContainer.new();
+		flow.size_flags_horizontal = Control.SIZE_EXPAND_FILL;
+		flow.alignment = FlowContainer.ALIGNMENT_END;
+		flow.add_theme_constant_override("h_separation", 8);
+		flow.add_theme_constant_override("v_separation", 8);
+		add_child(flow);
+		for action: Node in actions:
+			action.reparent(flow);
 	_apply_alignment();
 
 

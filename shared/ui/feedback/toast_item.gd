@@ -15,6 +15,7 @@ var _lifetime: Timer;
 
 
 func _ready() -> void:
+	preload("res://shared/ui/theme/ui_density.gd").apply(self);
 	%DismissButton.pressed.connect(_expire);
 	_lifetime = Timer.new();
 	_lifetime.one_shot = true;

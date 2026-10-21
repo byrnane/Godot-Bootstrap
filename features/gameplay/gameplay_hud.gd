@@ -23,6 +23,8 @@ var _view_model: Dictionary = {};
 
 
 func _ready() -> void:
+	if preload("res://shared/ui/theme/ui_density.gd").apply(self):
+		_apply_compact_layout();
 	AudioManager.bind_ui_sounds(self);
 	%DemoToggle.toggled.connect(func(show_controls: bool) -> void: %DemoPanel.visible = show_controls);
 	damage_button.pressed.connect(_on_damage_button_pressed);
@@ -39,6 +41,26 @@ func _ready() -> void:
 func _exit_tree() -> void:
 	if LocalizationManager.locale_changed.is_connected(_on_locale_changed):
 		LocalizationManager.locale_changed.disconnect(_on_locale_changed);
+
+
+func _apply_compact_layout() -> void:
+	var density = preload("res://shared/ui/theme/ui_density.gd");
+	%Resources.custom_minimum_size.x = 252;
+	%Objective.custom_minimum_size.x = 0;
+	%Interaction.custom_minimum_size.x = 0;
+	%Interaction.get_node("%Text").autowrap_mode = TextServer.AUTOWRAP_WORD_SMART;
+	%Interaction.get_node("%Text").size_flags_horizontal = Control.SIZE_EXPAND_FILL;
+	density.place(%Resources, Control.PRESET_TOP_LEFT, Rect2(16, 16, 252, 0));
+	density.place(%Level, Control.PRESET_TOP_LEFT, Rect2(16, 160, 252, 0));
+	density.place(%ScoreCounter, Control.PRESET_TOP_RIGHT, Rect2(-172, 16, 156, 32));
+	density.place(%PauseButton, Control.PRESET_TOP_RIGHT, Rect2(-48, 56, 32, 32));
+	%PauseButton.custom_minimum_size = Vector2(32, 32);
+	density.place(%DemoToggle, Control.PRESET_TOP_RIGHT, Rect2(-204, 104, 188, 32));
+	density.place(%Objective, Control.PRESET_BOTTOM_LEFT, Rect2(16, -100, 288, 84));
+	density.place(%Interaction, Control.PRESET_BOTTOM_RIGHT, Rect2(-304, -100, 288, 84));
+	density.place(%TimerLabel, Control.PRESET_BOTTOM_RIGHT, Rect2(-172, -132, 156, 24));
+	density.place(%DemoPanel, Control.PRESET_BOTTOM_WIDE, Rect2(16, -160, get_viewport_rect().size.x - 32, 144));
+	%DemoPanel.get_node("Margin/Grid").columns = 2;
 
 
 func apply_view_model(view_model: Dictionary) -> void:

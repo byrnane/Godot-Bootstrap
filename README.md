@@ -25,7 +25,7 @@ It gives you ready-to-use project infrastructure, but no gameplay mechanics.
 - localization pipeline (`translations/UI.csv`);
 - shared UI shell (HUD host, modals, loading screen, feedback);
 - native Godot Theme with semantic roles, reusable controls and HUD components, and an F6 component catalog;
-- a shared UI contract for 2D/3D; the 640×360 pixelart skin remains pending.
+- a shared UI contract for all variants, with a compact layout for the 640×360 pixelart viewport.
 
 ### Quick start
 
@@ -73,7 +73,7 @@ Choose `3d`, `2d`, or `2d-pixelart` and clone that branch into a separate game r
 - пайплайн локализации (`translations/UI.csv`);
 - общий UI-слой (HUD-хост, модалки, экран загрузки, feedback);
 - нативная Godot Theme с семантическими ролями, компоненты экранов и HUD, каталог для запуска через F6;
-- общий UI-контракт для 2D/3D; пиксельная тема под 640×360 остается отдельной задачей.
+- общий UI-контракт для всех вариантов и компактная компоновка под viewport 640×360.
 
 ### Быстрый старт
 
