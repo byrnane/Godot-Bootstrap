@@ -1,6 +1,7 @@
 # Documentation Index
 
-- [Быстрый старт 2D/3D, Blender и экспорт](START_HERE.md)
+- [Быстрый старт и экспорт](START_HERE.md)
+- [Варианты и обновление шаблона](VARIANTS.md)
 - [Результаты подготовки и оставшиеся ограничения](READINESS.md)
 
 ## EN

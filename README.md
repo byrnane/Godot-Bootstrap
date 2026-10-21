@@ -1,8 +1,10 @@
-# Godot 2D/3D Game Template
+# Godot Game Template
 
-Current version: `0.4.0` + unreleased 2D/3D preparation
+Current version: `0.4.0` + unreleased template variants
 
-Начать работу: [короткая инструкция](docs/START_HERE.md).
+Ветки: `main` — общая база, `3d`, `2d`, `2d-pixelart` — готовые варианты. Игры создаются в отдельных репозиториях клонированием выбранной ветки.
+
+Начать работу: [короткая инструкция](docs/START_HERE.md). Состав и обновления: [варианты шаблона](docs/VARIANTS.md).
 
 ## EN
 

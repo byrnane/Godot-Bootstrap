@@ -32,17 +32,20 @@ UiFeedback="*res://core/services/ui_feedback.gd"
 UiShell="*res://core/services/ui_shell/ui_shell.tscn"
 AppFlow="*res://core/flow/app_flow.gd"
 _mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
-CyclopsAutoload="*res://addons/cyclops_level_builder/cyclops_autoload.tscn"
 
 [display]
 
 window/size/viewport_width=1280
 window/size/viewport_height=720
+window/size/window_width_override=1280
+window/size/window_height_override=720
 window/stretch/mode="canvas_items"
+window/stretch/aspect="keep"
+window/stretch/scale_mode="fractional"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/godot_ai/plugin.cfg", "res://addons/cyclops_level_builder/plugin.cfg", "res://addons/template_export/plugin.cfg")
+enabled=PackedStringArray("res://addons/godot_ai/plugin.cfg")
 
 [editor]
 
@@ -74,12 +77,8 @@ ui_debug_overlay={
 
 locale/translations=PackedStringArray("res://translations/UI.en.translation", "res://translations/UI.ru.translation")
 
-[physics]
-
-3d/physics_engine="Jolt Physics"
-
 [rendering]
 
-rendering_device/driver.windows="d3d12"
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
+textures/canvas_textures/default_texture_filter=1

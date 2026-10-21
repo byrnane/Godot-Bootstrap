@@ -3,10 +3,11 @@ name: Smoke Checks
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [main, 3d, 2d, 2d-pixelart]
 
 env:
   GODOT_VERSION: 4.7.2
+  GAME_TEMPLATE_VARIANT: ${{ github.head_ref || github.ref_name }}
 
 jobs:
   smoke:

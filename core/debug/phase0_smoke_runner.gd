@@ -71,6 +71,8 @@ func _run() -> void:
 		);
 		_check(not get_tree().paused, "cycle %d: tree should not stay paused after gameplay load" % [cycle_number]);
 		_validate_gameplay_hud_focus_navigation(cycle_number);
+		if cycle_index == 0:
+			await _check_template_scenes();
 
 		AppFlow.request_pause();
 		var paused_state_reached: bool = await _wait_until(
@@ -122,6 +124,59 @@ func _run() -> void:
 	await _expect_feedback_modal_backdrop_behavior();
 	await _check_exit_save_retry();
 	_finish();
+
+
+func _check_template_scenes() -> void:
+	var gameplay: Node = SceneRouter.current_scene_root;
+	if gameplay == null:
+		_check(false, "template: gameplay is missing");
+		return;
+	var level_root_path: NodePath = gameplay.get("level_scene_root_path");
+	var level_root: Node = gameplay.get_node_or_null(level_root_path);
+	if level_root == null:
+		_check(false, "template: level root is missing");
+		return;
+	var world_type: String = gameplay.get_class();
+	for level_id: StringName in [Scenes.LEVEL_STUB_A, Scenes.LEVEL_STUB_B]:
+		gameplay.call("load_level_a" if level_id == Scenes.LEVEL_STUB_A else "load_level_b");
+		await get_tree().process_frame;
+		_check(SessionContext.current_level_id == level_id, "template: level id did not change");
+		_check(level_root.get_child_count() == 1, "template: expected one active level");
+		if level_root.get_child_count() != 1:
+			continue;
+		var level: Node = level_root.get_child(0);
+		_check(level.get_class() == world_type, "template: gameplay and level dimensions differ");
+		if world_type in ["Node2D", "Node3D"]:
+			var suffix: String = "2D" if world_type == "Node2D" else "3D";
+			for node_type: String in ["Camera", "StaticBody", "RigidBody"]:
+				_check(
+					not level.find_children("*", node_type + suffix, true, false).is_empty(),
+					"template: level is missing " + node_type + suffix
+				);
+	gameplay.call("load_level_a");
+	await get_tree().process_frame;
+
+	# CI/maintainer validation supplies the branch; game copies can keep using smoke without Git.
+	var variant: String = OS.get_environment("GAME_TEMPLATE_VARIANT");
+	if variant not in ["main", "3d", "2d", "2d-pixelart"]:
+		return;
+	var expected_type: String = "Control" if variant == "main" else ("Node3D" if variant == "3d" else "Node2D");
+	_check(world_type == expected_type, "template: wrong world type for " + variant);
+	var pixel_art: bool = variant == "2d-pixelart";
+	_check(ProjectSettings.get_setting("rendering/renderer/rendering_method") == "gl_compatibility", "template: expected Compatibility renderer");
+	_check(ProjectSettings.get_setting("display/window/size/viewport_width") == (640 if pixel_art else 1280), "template: wrong viewport width");
+	_check(ProjectSettings.get_setting("display/window/size/viewport_height") == (360 if pixel_art else 720), "template: wrong viewport height");
+	_check(ProjectSettings.get_setting("display/window/size/window_width_override") == 1280, "template: wrong initial window width");
+	_check(ProjectSettings.get_setting("display/window/size/window_height_override") == 720, "template: wrong initial window height");
+	_check(ProjectSettings.get_setting("display/window/stretch/mode") == ("viewport" if pixel_art else "canvas_items"), "template: wrong stretch mode");
+	_check(ProjectSettings.get_setting("display/window/stretch/aspect") == "keep", "template: aspect ratio must be preserved");
+	_check(ProjectSettings.get_setting("display/window/stretch/scale_mode") == ("integer" if pixel_art else "fractional"), "template: wrong scale mode");
+	var expected_filter: int = Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_NEAREST if pixel_art else Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_LINEAR;
+	_check(ProjectSettings.get_setting("rendering/textures/canvas_textures/default_texture_filter") == expected_filter, "template: wrong texture filter");
+	_check(ProjectSettings.has_setting("autoload/CyclopsAutoload") == (variant == "3d"), "template: wrong Cyclops autoload configuration");
+	_check(FileAccess.file_exists("res://features/props/demo_crate.tscn") == (variant == "3d"), "template: wrong 3D resource composition");
+	if variant == "3d":
+		_check(ProjectSettings.get_setting("physics/3d/physics_engine") == "Jolt Physics", "template: expected Jolt physics");
 
 
 func _check_exit_save_retry() -> void:
