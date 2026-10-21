@@ -66,6 +66,11 @@ static func run(host: Node) -> Array[String]:
 				_check_bounds(screen.get_node("%Resources"), failures);
 				if screen.get_node("%Objective").get_global_rect().intersects(screen.get_node("%Interaction").get_global_rect()):
 					failures.append("compact: objective overlaps interaction prompt");
+				screen.get_node("%DemoToggle").button_pressed = true;
+				await _settle(host);
+				_check_bounds(screen.get_node("%DemoPanel"), failures);
+				for button_name: String in ["DamageButton", "HealButton", "ScoreButton", "LevelAButton", "LevelBButton"]:
+					_check_bounds(screen.get_node("%" + button_name), failures);
 			elif screen is BaseModal:
 				_check_bounds(screen, failures);
 				if screen is FeedbackModal:
