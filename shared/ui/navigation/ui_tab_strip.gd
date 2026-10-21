@@ -34,6 +34,10 @@ func set_sidebar(value: bool) -> void:
 	tabs_container.size_flags_horizontal = Control.SIZE_FILL if sidebar else Control.SIZE_EXPAND_FILL;
 	tabs_container.size_flags_vertical = Control.SIZE_SHRINK_BEGIN;
 	add_theme_constant_override("separation", 80 if sidebar else 12);
+	for button_index: int in range(_tab_buttons.size()):
+		var button: Button = _tab_buttons[button_index];
+		button.alignment = HORIZONTAL_ALIGNMENT_LEFT if sidebar else HORIZONTAL_ALIGNMENT_CENTER;
+		_apply_tab_button_style(button, button_index == current_tab);
 	_apply_focus_neighbors();
 
 

@@ -3,6 +3,9 @@ extends BoxContainer;
 class_name UiActionBar;
 
 
+var _compact_flow: HFlowContainer;
+
+
 @export_enum("start", "center", "end") var content_alignment: String = "end":
 	set(value):
 		content_alignment = value;
@@ -14,8 +17,8 @@ func _ready() -> void:
 	if preload("res://shared/ui/theme/ui_density.gd").is_compact(self):
 		var actions: Array[Node] = get_children();
 		var flow: HFlowContainer = HFlowContainer.new();
+		_compact_flow = flow;
 		flow.size_flags_horizontal = Control.SIZE_EXPAND_FILL;
-		flow.alignment = FlowContainer.ALIGNMENT_END;
 		flow.add_theme_constant_override("h_separation", 8);
 		flow.add_theme_constant_override("v_separation", 8);
 		add_child(flow);
@@ -35,3 +38,5 @@ func _apply_alignment() -> void:
 			alignment = BoxContainer.ALIGNMENT_CENTER;
 		_:
 			alignment = BoxContainer.ALIGNMENT_END;
+	if _compact_flow != null:
+		_compact_flow.alignment = alignment as FlowContainer.AlignmentMode;
