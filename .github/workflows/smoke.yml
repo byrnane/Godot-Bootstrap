@@ -7,7 +7,7 @@ on:
 
 env:
   GODOT_VERSION: 4.7.2
-  GAME_TEMPLATE_VARIANT: ${{ github.head_ref || github.ref_name }}
+  GAME_TEMPLATE_VARIANT: ${{ github.base_ref || github.ref_name }}
 
 jobs:
   smoke:
