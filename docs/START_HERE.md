@@ -77,6 +77,7 @@ godot --headless --path . --export-release Web
 pwsh -File scripts/run_smoke.ps1 -Headless
 ```
 
+По умолчанию запускается только `flow`: один игровой маршрут. Остальные группы и правила запуска — в [TESTING.md](TESTING.md).
 Нужен PowerShell 7. Smoke использует отдельный профиль в `.local/smoke/<run-id>` и не трогает настоящие сохранения.
 Успех требует PASS текущего запуска, кода 0 и отсутствия SCRIPT ERROR/ERROR.
 Для проверки конфигурации конкретной ветки перед запуском задайте `$env:GAME_TEMPLATE_VARIANT = '3d'` (или `main`, `2d`, `2d-pixelart`).
