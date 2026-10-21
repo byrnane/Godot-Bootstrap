@@ -73,6 +73,8 @@ You can safely extend:
 
 If you touch `AppFlow`, `SceneRouter`, `UiShell`, `TransitionManager`, or persistence managers:
 
-1. Run smoke checks.
-2. Re-run manual checklist sections for transitions/modals/save/settings.
+1. Run only the affected smoke suites from `TESTING.md`.
+2. Use the relevant manual checklist section only when the changed behavior needs native or visual acceptance.
 3. Document behavior changes in `CHANGELOG.md`.
+
+Run `-Suite all` only before the final task commit, on owner request, or for a concrete extreme necessity. GitHub Actions are not used.

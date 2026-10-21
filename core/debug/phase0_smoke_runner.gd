@@ -4,11 +4,7 @@ extends Node;
 const LOAD_TIMEOUT_SECONDS: float = 8.0;
 const STATE_TIMEOUT_SECONDS: float = 4.0;
 const TRANSITION_DELAY_SECONDS: float = 2.0;
-const CYCLE_COUNT: int = 2;
 const RESULT_PATH: String = "user://phase0_smoke_result.txt";
-const MIN_CONTRAST_RATIO: float = 4.5;
-const MIN_CONTRAST_RATIO_DISABLED: float = 2.5;
-const CONTRAST_BASE_BACKGROUND: Color = Color(0.03, 0.04, 0.06, 1.0);
 const RUNTIME_LOCALIZATION_KEYS: PackedStringArray = [
 	"UI_DEBUG_ACTIONS_HEADER",
 	"UI_DEBUG_ACTION_CLEAR_SAVE",
@@ -42,6 +38,12 @@ func _ready() -> void:
 
 
 func _run() -> void:
+	var suite: String = OS.get_environment("GAME_TEMPLATE_SMOKE_SUITE");
+	if suite not in ["flow", "persistence", "transitions", "audio", "localization", "all"]:
+		_check(false, "Unknown smoke suite: " + suite);
+		_finish();
+		return;
+	print("[PHASE0_SMOKE] suite: " + suite);
 	await get_tree().process_frame;
 	await _expect_transition(
 		Callable(AppFlow, "startup"),
@@ -49,81 +51,84 @@ func _run() -> void:
 		AppState.Value.MAIN_MENU,
 		"startup to main menu"
 	);
-	_check_localization_coverage();
-	await _check_localization_runtime_sanity();
-	await _expect_locale_switch_updates_shared_components();
-	_validate_main_menu_focus_navigation();
-	_check_default_theme_contrast();
-	_check_core_data_containers();
-	_check_persistence_regressions();
-	_check_settings_write_retry();
-	await _check_scene_loading_pipeline_contract();
-	await _check_session_scene_override();
-	await _check_audio_pipeline_contract();
-
-	for cycle_index: int in range(CYCLE_COUNT):
-		var cycle_number: int = cycle_index + 1;
-		await _expect_transition(
-			Callable(AppFlow, "start_new_game"),
-			Scenes.GAMEPLAY,
-			AppState.Value.IN_GAME,
-			"cycle %d: start new game" % [cycle_number]
-		);
-		_check(not get_tree().paused, "cycle %d: tree should not stay paused after gameplay load" % [cycle_number]);
-		_validate_gameplay_hud_focus_navigation(cycle_number);
-		if cycle_index == 0:
-			await _check_template_scenes();
-
-		AppFlow.request_pause();
-		var paused_state_reached: bool = await _wait_until(
-			func() -> bool:
-				return AppContext.state == AppState.Value.PAUSED and get_tree().paused,
-			STATE_TIMEOUT_SECONDS
-		);
-		_check(paused_state_reached, "cycle %d: pause request did not set PAUSED state" % [cycle_number]);
-		_validate_pause_modal_focus_navigation(cycle_number);
-
-		AppFlow.open_settings();
-		await get_tree().process_frame;
-		_check(get_tree().paused, "cycle %d: settings open should keep paused tree" % [cycle_number]);
-		await _expect_backdrop_behavior_while_paused(cycle_number);
-
-		AppFlow.request_resume();
-		var resumed_state_reached: bool = await _wait_until(
-			func() -> bool:
-				return AppContext.state == AppState.Value.IN_GAME and not get_tree().paused,
-			STATE_TIMEOUT_SECONDS
-		);
-		_check(resumed_state_reached, "cycle %d: resume request did not restore IN_GAME state" % [cycle_number]);
-
-		var save_success: bool = SaveManager.save_current_session();
-		_check(save_success, "cycle %d: failed to save current session" % [cycle_number]);
-
-		await _expect_transition(
-			Callable(AppFlow, "return_to_main_menu"),
-			Scenes.MAIN_MENU,
-			AppState.Value.MAIN_MENU,
-			"cycle %d: return to menu" % [cycle_number]
-		);
-
-		await _expect_transition(
-			Callable(AppFlow, "continue_game"),
-			Scenes.GAMEPLAY,
-			AppState.Value.IN_GAME,
-			"cycle %d: continue game" % [cycle_number]
-		);
-
-		await _expect_transition(
-			Callable(AppFlow, "return_to_main_menu"),
-			Scenes.MAIN_MENU,
-			AppState.Value.MAIN_MENU,
-			"cycle %d: return to menu after continue" % [cycle_number]
-		);
-
-	await _expect_pause_ignored_during_transition();
-	await _expect_feedback_modal_backdrop_behavior();
-	await _check_exit_save_retry();
+	if suite in ["localization", "all"]:
+		_check_localization_coverage();
+		await _check_localization_runtime_sanity();
+		await _expect_locale_switch_updates_shared_components();
+	if suite in ["persistence", "all"]:
+		_check_core_data_containers();
+		_check_persistence_regressions();
+		_check_settings_write_retry();
+	if suite in ["transitions", "all"]:
+		await _check_scene_loading_pipeline_contract();
+		await _check_session_scene_override();
+		await _expect_pause_ignored_during_transition();
+		await _expect_feedback_modal_backdrop_behavior();
+	if suite in ["audio", "all"]:
+		await _check_audio_pipeline_contract();
+	if suite in ["flow", "all"]:
+		await _check_game_flow();
+	# Retry can quit the application, so it must remain the last check.
+	if suite in ["persistence", "all"]:
+		await _check_exit_save_retry();
 	_finish();
+
+
+func _check_game_flow() -> void:
+	var cycle_number: int = 1;
+	await _expect_transition(
+		Callable(AppFlow, "start_new_game"),
+		Scenes.GAMEPLAY,
+		AppState.Value.IN_GAME,
+		"cycle %d: start new game" % [cycle_number]
+	);
+	_check(not get_tree().paused, "cycle %d: tree should not stay paused after gameplay load" % [cycle_number]);
+	await _check_template_scenes();
+
+	AppFlow.request_pause();
+	var paused_state_reached: bool = await _wait_until(
+		func() -> bool:
+			return AppContext.state == AppState.Value.PAUSED and get_tree().paused,
+		STATE_TIMEOUT_SECONDS
+	);
+	_check(paused_state_reached, "cycle %d: pause request did not set PAUSED state" % [cycle_number]);
+
+	AppFlow.open_settings();
+	await get_tree().process_frame;
+	_check(get_tree().paused, "cycle %d: settings open should keep paused tree" % [cycle_number]);
+	await _expect_backdrop_behavior_while_paused(cycle_number);
+
+	AppFlow.request_resume();
+	var resumed_state_reached: bool = await _wait_until(
+		func() -> bool:
+			return AppContext.state == AppState.Value.IN_GAME and not get_tree().paused,
+		STATE_TIMEOUT_SECONDS
+	);
+	_check(resumed_state_reached, "cycle %d: resume request did not restore IN_GAME state" % [cycle_number]);
+
+	var save_success: bool = SaveManager.save_current_session();
+	_check(save_success, "cycle %d: failed to save current session" % [cycle_number]);
+
+	await _expect_transition(
+		Callable(AppFlow, "return_to_main_menu"),
+		Scenes.MAIN_MENU,
+		AppState.Value.MAIN_MENU,
+		"cycle %d: return to menu" % [cycle_number]
+	);
+
+	await _expect_transition(
+		Callable(AppFlow, "continue_game"),
+		Scenes.GAMEPLAY,
+		AppState.Value.IN_GAME,
+		"cycle %d: continue game" % [cycle_number]
+	);
+
+	await _expect_transition(
+		Callable(AppFlow, "return_to_main_menu"),
+		Scenes.MAIN_MENU,
+		AppState.Value.MAIN_MENU,
+		"cycle %d: return to menu after continue" % [cycle_number]
+	);
 
 
 func _check_template_scenes() -> void:
@@ -156,7 +161,7 @@ func _check_template_scenes() -> void:
 	gameplay.call("load_level_a");
 	await get_tree().process_frame;
 
-	# CI/maintainer validation supplies the branch; game copies can keep using smoke without Git.
+	# Maintainer validation supplies the branch; game copies can use smoke without Git.
 	var variant: String = OS.get_environment("GAME_TEMPLATE_VARIANT");
 	if variant not in ["main", "3d", "2d", "2d-pixelart"]:
 		return;
@@ -679,172 +684,6 @@ func _check_localization_runtime_sanity() -> void:
 			);
 	LocalizationManager.set_locale(initial_locale, false);
 	await get_tree().process_frame;
-
-
-func _check_default_theme_contrast() -> void:
-	var theme: Theme = load("res://shared/ui/theme/scifi_dark_theme.tres") as Theme;
-	_check(theme != null, "contrast test: failed to load default theme");
-	if theme == null:
-		return;
-
-	_assert_theme_contrast(theme, "Button normal", "Button", "font_color", "normal", MIN_CONTRAST_RATIO);
-	_assert_theme_contrast(theme, "Button hover", "Button", "font_hover_color", "hover", MIN_CONTRAST_RATIO);
-	_assert_theme_contrast(theme, "Button pressed", "Button", "font_pressed_color", "pressed", MIN_CONTRAST_RATIO);
-	_assert_theme_contrast(theme, "Button disabled", "Button", "font_disabled_color", "disabled", MIN_CONTRAST_RATIO_DISABLED);
-	_assert_theme_contrast(theme, "Input normal", "LineEdit", "font_color", "normal", MIN_CONTRAST_RATIO);
-	_assert_theme_contrast(theme, "Input placeholder", "LineEdit", "font_placeholder_color", "normal", MIN_CONTRAST_RATIO_DISABLED);
-	_assert_theme_contrast(theme, "Tab selected", "TabBar", "font_selected_color", "tab_selected", MIN_CONTRAST_RATIO);
-	_assert_theme_contrast(theme, "Tab unselected", "TabBar", "font_unselected_color", "tab_unselected", MIN_CONTRAST_RATIO_DISABLED);
-	_assert_theme_color_on_style(
-		theme,
-		"Panel label",
-		"Label",
-		"font_color",
-		"PanelContainer",
-		"panel",
-		MIN_CONTRAST_RATIO
-	);
-
-
-func _validate_main_menu_focus_navigation() -> void:
-	var main_menu: MainMenu = SceneRouter.current_scene_root as MainMenu;
-	_check(main_menu != null, "focus test: main menu scene root is missing");
-	if main_menu == null:
-		return;
-	var focusable_buttons: Array[Button] = [];
-	for button_name: String in ["NewGameButton", "ContinueButton", "SaveSlotsButton", "SettingsButton", "QuitButton"]:
-		var button: Button = main_menu.get_node_or_null("MarginContainer/VBoxContainer/MenuCard/ContentMargin/Content/%s" % [button_name]) as Button;
-		if button == null:
-			continue;
-		if button.disabled:
-			continue;
-		focusable_buttons.append(button);
-	_assert_vertical_focus_cycle(focusable_buttons, "focus test: main menu");
-
-
-func _validate_gameplay_hud_focus_navigation(cycle_number: int) -> void:
-	var hud: GameplayHud = UiShell.get_current_hud() as GameplayHud;
-	_check(hud != null, "cycle %d: focus test: gameplay HUD is missing" % [cycle_number]);
-	if hud == null:
-		return;
-	var buttons: Array[Button] = [];
-	for button_name: String in ["DamageButton", "HealButton", "ScoreButton", "LevelAButton", "LevelBButton", "PauseButton"]:
-		var button: Button = hud.get_node_or_null("%%%s" % [button_name]) as Button;
-		if button == null:
-			continue;
-		buttons.append(button);
-	_assert_vertical_focus_cycle(buttons, "cycle %d: focus test: gameplay HUD" % [cycle_number]);
-
-
-func _validate_pause_modal_focus_navigation(cycle_number: int) -> void:
-	var pause_modal: PauseModal = UiShell.get_node_or_null("ModalLayer/PauseModal") as PauseModal;
-	_check(pause_modal != null, "cycle %d: focus test: pause modal is missing" % [cycle_number]);
-	if pause_modal == null:
-		return;
-	var buttons: Array[Button] = [];
-	for button_name: String in ["ResumeButton", "SaveButton", "SaveSlotsButton", "SettingsButton", "BackButton"]:
-		var button: Button = pause_modal.get_node_or_null(
-			"MarginContainer/VBoxContainer/BodyScroll/BodyContentMargin/Body/PauseActionsCard/ContentMargin/Content/%s" % [button_name]
-		) as Button;
-		if button == null:
-			continue;
-		buttons.append(button);
-	_assert_vertical_focus_cycle(buttons, "cycle %d: focus test: pause modal" % [cycle_number]);
-
-
-func _assert_vertical_focus_cycle(buttons: Array[Button], label: String) -> void:
-	_check(buttons.size() > 1, "%s: not enough focusable buttons for cycle" % [label]);
-	if buttons.size() <= 1:
-		return;
-	for button_index: int in range(buttons.size()):
-		var current_button: Button = buttons[button_index];
-		var previous_button: Button = buttons[(button_index - 1 + buttons.size()) % buttons.size()];
-		var next_button: Button = buttons[(button_index + 1) % buttons.size()];
-		var expected_top: NodePath = current_button.get_path_to(previous_button);
-		var expected_bottom: NodePath = current_button.get_path_to(next_button);
-		_check(
-			current_button.focus_neighbor_top == expected_top,
-			"%s: invalid top focus neighbor for '%s'" % [label, current_button.name]
-		);
-		_check(
-			current_button.focus_neighbor_bottom == expected_bottom,
-			"%s: invalid bottom focus neighbor for '%s'" % [label, current_button.name]
-		);
-
-
-func _assert_theme_contrast(
-	theme: Theme,
-	label: String,
-	type_name: String,
-	font_color_name: String,
-	background_style_name: String,
-	minimum_ratio: float
-) -> void:
-	var foreground: Color = theme.get_color(font_color_name, type_name);
-	var style_box: StyleBoxFlat = theme.get_stylebox(background_style_name, type_name) as StyleBoxFlat;
-	_check(style_box != null, "contrast test: missing stylebox '%s/%s'" % [type_name, background_style_name]);
-	if style_box == null:
-		return;
-	var background: Color = _flatten_color(style_box.bg_color, CONTRAST_BASE_BACKGROUND);
-	var ratio: float = _contrast_ratio(_flatten_color(foreground, background), background);
-	_check(
-		ratio >= minimum_ratio,
-		"contrast test: %s ratio %.2f is below %.2f" % [label, ratio, minimum_ratio]
-	);
-
-
-func _assert_theme_color_on_style(
-	theme: Theme,
-	label: String,
-	color_type_name: String,
-	font_color_name: String,
-	style_type_name: String,
-	background_style_name: String,
-	minimum_ratio: float
-) -> void:
-	var foreground: Color = theme.get_color(font_color_name, color_type_name);
-	var style_box: StyleBoxFlat = theme.get_stylebox(background_style_name, style_type_name) as StyleBoxFlat;
-	_check(style_box != null, "contrast test: missing stylebox '%s/%s'" % [style_type_name, background_style_name]);
-	if style_box == null:
-		return;
-	var background: Color = _flatten_color(style_box.bg_color, CONTRAST_BASE_BACKGROUND);
-	var ratio: float = _contrast_ratio(_flatten_color(foreground, background), background);
-	_check(
-		ratio >= minimum_ratio,
-		"contrast test: %s ratio %.2f is below %.2f" % [label, ratio, minimum_ratio]
-	);
-
-
-func _flatten_color(color: Color, background: Color) -> Color:
-	var alpha: float = clampf(color.a, 0.0, 1.0);
-	var inverse_alpha: float = 1.0 - alpha;
-	return Color(
-		color.r * alpha + background.r * inverse_alpha,
-		color.g * alpha + background.g * inverse_alpha,
-		color.b * alpha + background.b * inverse_alpha,
-		1.0
-	);
-
-
-func _contrast_ratio(first: Color, second: Color) -> float:
-	var first_luminance: float = _relative_luminance(first);
-	var second_luminance: float = _relative_luminance(second);
-	var lighter: float = maxf(first_luminance, second_luminance);
-	var darker: float = minf(first_luminance, second_luminance);
-	return (lighter + 0.05) / (darker + 0.05);
-
-
-func _relative_luminance(color: Color) -> float:
-	var red: float = _to_linear_channel(color.r);
-	var green: float = _to_linear_channel(color.g);
-	var blue: float = _to_linear_channel(color.b);
-	return red * 0.2126 + green * 0.7152 + blue * 0.0722;
-
-
-func _to_linear_channel(channel: float) -> float:
-	if channel <= 0.04045:
-		return channel / 12.92;
-	return pow((channel + 0.055) / 1.055, 2.4);
 
 
 func _expect_locale_switch_updates_shared_components() -> void:

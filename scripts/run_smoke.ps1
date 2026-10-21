@@ -1,6 +1,8 @@
 param(
     [string]$GodotExecutable = "",
     [switch]$Headless,
+    [ValidateSet("flow", "persistence", "transitions", "audio", "localization", "all")]
+    [string]$Suite = "flow",
     [string]$Scene = "res://core/debug/phase0_smoke_runner.tscn"
 )
 $ErrorActionPreference = "Stop"
@@ -36,6 +38,7 @@ $startInfo.Environment["LOCALAPPDATA"] = Join-Path $runRoot "LocalAppData"
 $startInfo.Environment["XDG_DATA_HOME"] = Join-Path $runRoot "data"
 $startInfo.Environment["XDG_CONFIG_HOME"] = Join-Path $runRoot "config"
 $startInfo.Environment["GAME_TEMPLATE_SMOKE_ISOLATED"] = "1"
+$startInfo.Environment["GAME_TEMPLATE_SMOKE_SUITE"] = $Suite
 $process = [System.Diagnostics.Process]::new()
 $process.StartInfo = $startInfo
 $null = $process.Start()
@@ -55,4 +58,4 @@ $results = @(Get-ChildItem -LiteralPath $runRoot -Filter phase0_smoke_result.txt
 if ($process.ExitCode -ne 0 -or $stderr -match '(?m)^(SCRIPT ERROR|ERROR):' -or $results.Count -ne 1 -or (Get-Content -LiteralPath $results[0].FullName -Raw).Trim() -ne "PASS") {
     throw "Smoke failed (exit $($process.ExitCode)). Artifacts: $runRoot"
 }
-Write-Host "PASS. Artifacts: $runRoot"
+Write-Host "PASS ($Suite). Artifacts: $runRoot"
