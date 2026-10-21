@@ -3,6 +3,9 @@ extends RefCounted;
 ## UI contracts, exercised through the isolated smoke wrapper.
 static func run(host: Node) -> Array[String]:
 	var failures: Array[String] = [];
+	var freed_focus: Variant = Button.new();
+	freed_focus.free();
+	_check(not UiFocus.restore(freed_focus), "closing modal restored a freed scene control", failures);
 	var mount: Control = Control.new();
 	host.add_child(mount);
 	var resources: UiResources = load("res://shared/ui/components/ui_resources.tscn").instantiate();

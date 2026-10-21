@@ -85,3 +85,29 @@ If data should survive while app is open globally, keep it in `AppContext`.
 - Add a standalone example to `shared/ui/catalog/ui_catalog.tscn`.
 
 See [UI Framework](UI_FRAMEWORK.md) for the component contracts and skin workflow. A new visual style does not need a separate autoload, modal stack or persistence implementation.
+
+## Дополнительные игровые данные и ввод
+
+`SaveData.game_data` и `SessionContext.game_data` — словарь конкретной игры. Общая база
+не интерпретирует его содержимое. При загрузке прежних сейвов словарь пустой; при
+снимках, восстановлении и преобразовании данных он копируется глубоко.
+
+`SessionContext.session_exists` изначально false; `reset()` создает новую сессию.
+Режим `SessionStartParams.Mode.RESUME_OR_CONTINUE_OR_NEW` сохраняет текущую сессию
+в памяти, если она есть, иначе загружает последнее сохранение или создает новую.
+Существующие режимы запуска сохраняют прежний смысл. Меню может объявить
+`session_start_requested(params: SessionStartParams)`; AppFlow подключит его
+к общему запуску сессии.
+
+Игровые действия объявляются в ProjectSettings/InputMap. Их метаданные задаются в
+`GameConfigData.input_actions`: имя действия и словарь `label_key`, `group_key`,
+`conflict_group`. Привязки клавиатуры/мыши редактирует существующий InputManager,
+геймпадные события проекта сохраняются как фиксированные. Игровые действия могут
+использовать клавиши навигации меню; системные пауза/отмена и отладка участвуют
+в обычном разрешении конфликтов. Противоположные игровые направления должны
+иметь разные conflict_group. `InputManager.last_device` и `device_changed`
+помогают обновлять подсказки. `UiShell.has_open_modals()` позволяет блокировать
+игровой ввод, пока открыто общее окно.
+
+Начальный fullscreen следует `display/window/size/mode`; значение из settings.cfg
+имеет приоритет. В Web fullscreen запрашивается только из обработчика ввода.

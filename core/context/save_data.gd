@@ -2,7 +2,7 @@ extends Resource;
 class_name SaveData;
 
 
-const CURRENT_VERSION: int = 2;
+const CURRENT_VERSION: int = 3;
 const MIN_COMPATIBLE_VERSION: int = 0;
 const INVALID_SOURCE_VERSION: int = -1;
 const DEFAULT_LEVEL_ID: StringName = &"level_stub_a";
@@ -23,9 +23,11 @@ enum VersionCompatibility {
 @export var current_level_id: StringName = DEFAULT_LEVEL_ID;
 @export var player_health: int = DEFAULT_PLAYER_HEALTH;
 @export var score: int = DEFAULT_SCORE;
+@export var game_data: Dictionary = {};
 
 
 func clear() -> void:
+	game_data.clear();
 	version = CURRENT_VERSION;
 	session_exists = false;
 	current_level_id = DEFAULT_LEVEL_ID;
@@ -40,6 +42,7 @@ func to_dictionary() -> Dictionary:
 		"current_level_id": String(current_level_id),
 		"player_health": player_health,
 		"score": score,
+		"game_data": game_data.duplicate(true),
 	};
 
 
@@ -62,6 +65,7 @@ static func _from_resource(resource: SaveData) -> SaveData:
 	migrated.current_level_id = resource.current_level_id;
 	migrated.player_health = resource.player_health;
 	migrated.score = resource.score;
+	migrated.game_data = resource.game_data.duplicate(true);
 	migrated._sanitize();
 	return migrated;
 
@@ -76,6 +80,10 @@ static func _from_dictionary(data: Dictionary) -> SaveData:
 	migrated.current_level_id = StringName(String(data.get("current_level_id", String(DEFAULT_LEVEL_ID))));
 	migrated.player_health = int(data.get("player_health", DEFAULT_PLAYER_HEALTH));
 	migrated.score = int(data.get("score", DEFAULT_SCORE));
+	var extra: Variant = data.get("game_data", {});
+	if not extra is Dictionary:
+		return null;
+	migrated.game_data = (extra as Dictionary).duplicate(true);
 	migrated._sanitize();
 	return migrated;
 
