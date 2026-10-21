@@ -59,6 +59,15 @@ Why: prevents hidden reset/persistence bugs.
 
 Why: smoke checks and runtime locale switch rely on this convention.
 
+## 7. UI Appearance and Component Boundary
+
+- Use native Godot Theme roles for appearance; keep reusable component scenes in `shared/ui/components/`.
+- Components receive values and emit intent signals. They do not read contexts, write files, choose routes or implement game rules.
+- Screen controllers adapt manager/context data to component properties and view models.
+- A different skin preserves these contracts and the existing `UiShell` / `BaseModal` stack.
+
+The catalog and extension rules are in [UI Framework](UI_FRAMEWORK.md). Figma prototype context copies are a design-preview workaround, not additional runtime modal stacks.
+
 ## Safe Customization Surface
 
 You can safely extend:
