@@ -17,6 +17,10 @@ class_name UiSaveSlot;
 		_refresh();
 
 func _ready() -> void:
+	if preload("res://shared/ui/theme/ui_density.gd").is_compact(self) and not Engine.is_editor_hint():
+		preload("res://shared/ui/theme/ui_density.gd").fit_controls(self);
+		custom_minimum_size = Vector2(0, 64);
+		%Preview.custom_minimum_size = Vector2(64, 36);
 	_refresh();
 
 func _refresh() -> void:

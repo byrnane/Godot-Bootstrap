@@ -51,6 +51,10 @@ enabled=PackedStringArray("res://addons/godot_ai/plugin.cfg")
 
 export/convert_text_resources_to_binary=false
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/godot_ai/plugin.cfg")
+
 [gui]
 
 theme/custom="res://shared/ui/theme/neutral_theme.tres"

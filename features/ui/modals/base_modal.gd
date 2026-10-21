@@ -29,6 +29,14 @@ var _is_closing: bool = false;
 
 func _ready() -> void:
 	_apply_layout_mode();
+	if preload("res://shared/ui/theme/ui_density.gd").apply(self):
+		preload("res://shared/ui/theme/ui_density.gd").fill(self);
+		body_scroll.custom_minimum_size.y = 64;
+		var close_button: Control = get_node_or_null("%CloseButton");
+		if close_button != null:
+			close_button.offset_left = -100;
+			close_button.offset_top = 0;
+			close_button.offset_bottom = 32;
 	process_mode = Node.PROCESS_MODE_ALWAYS;
 	set_process_unhandled_input(false);
 	visible = false;

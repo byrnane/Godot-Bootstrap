@@ -13,6 +13,11 @@ func _ready() -> void:
 	%Primary.pressed.connect(func() -> void: binding_requested.emit(0));
 	%Secondary.pressed.connect(func() -> void: binding_requested.emit(1));
 	_refresh_title();
+	if preload("res://shared/ui/theme/ui_density.gd").is_compact(self) and not Engine.is_editor_hint():
+		preload("res://shared/ui/theme/ui_density.gd").fit_controls(self);
+		%Primary.custom_minimum_size.x = 100;
+		%Secondary.custom_minimum_size.x = 100;
+		%Title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART;
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED:

@@ -64,6 +64,7 @@ static func run(host: Node) -> Array[String]:
 	mount.queue_free();
 	await host.get_tree().process_frame;
 	await _check_screen_actions(host, failures);
+	failures.append_array(await preload("res://core/debug/compact_ui_checks.gd").run(host));
 	return failures;
 
 
