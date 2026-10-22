@@ -72,6 +72,7 @@ grow_vertical = 2
 mouse_filter = 2
 
 [node name="ToastMargin" type="MarginContainer" parent="ToastLayer" unique_id=2013104446]
+mouse_filter = 2
 layout_mode = 1
 anchors_preset = 10
 anchor_left = 1.0
@@ -87,6 +88,7 @@ theme_override_constants/margin_right = 0
 theme_override_constants/margin_bottom = 0
 
 [node name="ToastStack" type="VBoxContainer" parent="ToastLayer/ToastMargin" unique_id=937644671]
+mouse_filter = 2
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3

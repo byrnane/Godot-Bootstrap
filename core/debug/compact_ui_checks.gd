@@ -44,6 +44,7 @@ static func run(host: Node) -> Array[String]:
 		binding.grab_focus();
 		await _settle(host);
 		_check_bounds(binding, failures);
+		preload("res://core/debug/settings_ui_checks.gd").check_binding_layout(settings, failures);
 		settings.queue_free();
 		await _settle(host);
 		var saves: Control = load("res://features/ui/modals/save_slots_modal.tscn").instantiate();

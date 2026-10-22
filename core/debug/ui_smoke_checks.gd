@@ -63,6 +63,7 @@ static func run(host: Node) -> Array[String]:
 	_check(result.get_node("%Metrics").get_child_count() == 1, "result retained previous metrics", failures);
 	mount.queue_free();
 	await host.get_tree().process_frame;
+	failures.append_array(await preload("res://core/debug/settings_ui_checks.gd").run(host));
 	await _check_screen_actions(host, failures);
 	failures.append_array(await preload("res://core/debug/compact_ui_checks.gd").run(host));
 	return failures;
