@@ -21,6 +21,7 @@ static func apply(root: Control) -> bool:
 	var compact_theme: Theme = source.duplicate(true);
 	compact_theme.default_font_size = 16;
 	compact_theme.set_constant("icon_max_width", "Button", 20);
+	compact_theme.set_constant("scrollbar_h_separation", "ScrollContainer", 8);
 	for type_name: StringName in compact_theme.get_type_list():
 		for font_size_name: StringName in compact_theme.get_font_size_list(type_name):
 			compact_theme.set_font_size(font_size_name, type_name, mini(compact_theme.get_font_size(font_size_name, type_name), 16));
