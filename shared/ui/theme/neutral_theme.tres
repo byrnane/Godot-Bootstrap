@@ -883,6 +883,7 @@ VSlider/icons/grabber_highlight = ExtResource("VSlidergrabber_highlight")
 VSlider/icons/grabber_disabled = ExtResource("VSlidergrabber_disabled")
 VSlider/constants/center_grabber = 1
 VScrollBar/styles/scroll = SubResource("VScrollBartrack")
+ScrollContainer/constants/scrollbar_h_separation = 16
 VScrollBar/styles/grabber = SubResource("VScrollBargrab")
 VScrollBar/styles/grabber_highlight = SubResource("VScrollBarhover")
 VScrollBar/styles/grabber_pressed = SubResource("fill")

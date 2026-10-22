@@ -279,6 +279,7 @@ func _refresh_bindings_ui() -> void:
 			else:
 				button.text = InputManager.get_action_binding_text(action_name, binding_slot);
 			button.disabled = InputManager.is_rebinding() and not InputManager.is_rebinding_slot(action_name, binding_slot);
+	_align_binding_columns();
 
 	if InputManager.is_rebinding():
 		var pending_action: StringName = InputManager.get_pending_rebind_action();
@@ -289,6 +290,16 @@ func _refresh_bindings_ui() -> void:
 	else:
 		bindings_status_label.text = tr("UI_INPUT_BINDINGS_HINT");
 	reset_bindings_button.disabled = InputManager.is_rebinding();
+
+
+func _align_binding_columns() -> void:
+	var width: float = 100.0 if preload("res://shared/ui/theme/ui_density.gd").is_compact(self) else 144.0;
+	for buttons: Array in _binding_buttons.values():
+		for button: Button in buttons:
+			width = maxf(width, button.get_minimum_size().x);
+	for buttons: Array in _binding_buttons.values():
+		for button: Button in buttons:
+			button.custom_minimum_size.x = width;
 
 
 func _on_apply_button_pressed() -> void:
