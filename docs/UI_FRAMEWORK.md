@@ -2,7 +2,8 @@
 
 Общая база для 2D и 3D использует Godot Control, контейнеры и Theme. В ней нет
 собственного рендера, второго стека окон или обязательного плагина.
-Исходный макет: [Game Template UI](https://www.figma.com/design/le33QeQV2WWwvlW0hGpT0M/Game-Template-UI).
+Исходный макет OpenPencil: [Game Template UI](<../Game Template UI.fig>).
+Порядок работы — в [OPENPENCIL.md](OPENPENCIL.md).
 Текущее состояние приемки и переноса между ветками: [READINESS.md](READINESS.md).
 
 ## Где что менять
