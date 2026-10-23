@@ -86,4 +86,4 @@ If you touch `AppFlow`, `SceneRouter`, `UiShell`, `TransitionManager`, or persis
 2. Use the relevant manual checklist section only when the changed behavior needs native or visual acceptance.
 3. Document behavior changes in `CHANGELOG.md`.
 
-Run `-Suite all` only before the final task commit, on owner request, or for a concrete extreme necessity. GitHub Actions are not used.
+Use `-Suite all` only on owner request or when a concrete broad risk cannot be checked with selected suites; explain that risk first. A commit or review alone does not require it. Reuse current results. GitHub Actions are not used.
