@@ -382,6 +382,8 @@ func _refresh_modal_visibility() -> void:
 		if modal.visible or is_stacked:
 			has_visible_modals = true;
 		modal.mouse_filter = Control.MOUSE_FILTER_STOP if is_top_modal else Control.MOUSE_FILTER_IGNORE;
+		modal.mouse_behavior_recursive = Control.MOUSE_BEHAVIOR_ENABLED if is_top_modal else Control.MOUSE_BEHAVIOR_DISABLED;
+		modal.focus_behavior_recursive = Control.FOCUS_BEHAVIOR_ENABLED if is_top_modal else Control.FOCUS_BEHAVIOR_DISABLED;
 		modal.set_process_unhandled_input(is_top_modal);
 		modal.z_index = _modal_stack.find(modal) + 1 if is_stacked else 0;
 

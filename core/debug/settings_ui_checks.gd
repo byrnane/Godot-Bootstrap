@@ -79,8 +79,9 @@ static func _check_toggle(button: BaseButton, host: Node, failures: Array[String
 	_check(button.button_pressed == before, "%s did not toggle back" % button.name, failures);
 
 
-static func click(control: Control, host: Node) -> void:
-	control.grab_focus();
+static func click(control: Control, host: Node, focus_before_click: bool = true) -> void:
+	if focus_before_click:
+		control.grab_focus();
 	await _settle(host);
 	var viewport: Viewport = control.get_viewport();
 	var position: Vector2 = viewport.get_final_transform() * control.get_global_rect().get_center();

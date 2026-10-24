@@ -74,6 +74,21 @@ static func _from_dictionary(data: Dictionary) -> SaveData:
 	var source_version: int = _extract_source_version(data);
 	if _classify_source_version(source_version) != VersionCompatibility.COMPATIBLE:
 		return null;
+	var level_id: Variant = data.get("current_level_id", String(DEFAULT_LEVEL_ID));
+	if not (level_id is String or level_id is StringName):
+		return null;
+	var exists: Variant = data.get("session_exists", false);
+	if not (exists is bool or exists is int):
+		return null;
+	for key: String in ["player_health", "score"]:
+		var value: Variant = data.get(key, 0);
+		if value is int:
+			continue;
+		if value is float and is_finite(value):
+			continue;
+		if value is String and value.is_valid_int():
+			continue;
+		return null;
 	var migrated: SaveData = SaveData.new();
 	migrated.version = source_version;
 	migrated.session_exists = bool(data.get("session_exists", false));
@@ -121,7 +136,7 @@ static func _extract_source_version(data: Variant) -> int:
 		var raw_version: Variant = dictionary_data.get("version");
 		if raw_version is int:
 			return raw_version;
-		if raw_version is float:
+		if raw_version is float and is_finite(raw_version) and raw_version == floorf(raw_version):
 			return int(raw_version);
 		if raw_version is String and (raw_version as String).is_valid_int():
 			return int(raw_version);

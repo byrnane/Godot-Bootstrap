@@ -20,6 +20,7 @@ If you are building your own game on top of the template, start from `README.md`
 - [Architecture Guardrails](ARCHITECTURE_GUARDRAILS.md)
 - [Code Style](CODESTYLE.md)
 - [UI Framework](UI_FRAMEWORK.md)
+- [Figma source and backup](FIGMA.md)
 
 ## Quality and Validation
 
