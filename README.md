@@ -8,6 +8,9 @@ Current version: `0.4.0` + unreleased template variants and universal UI
 
 Начать работу: [короткая инструкция](docs/START_HERE.md). Состав и обновления: [варианты шаблона](docs/VARIANTS.md). Текущее состояние и границы проверки: [READINESS.md](docs/READINESS.md).
 
+В этой ветке: [3D-прототип](docs/3D_EXAMPLE.md) — три комнаты, зомби, пистолет,
+переключение первого и третьего лица. [Рабочий процесс Blender/MCP/Godot](docs/3D_WORKFLOW.md).
+
 ## EN
 
 A clean Godot 4.x starter for 2D and 3D games.
@@ -59,7 +62,7 @@ Choose `3d`, `2d`, or `2d-pixelart` and clone that branch into a separate game r
 ## RU
 
 Понятный стартовый шаблон на Godot 4.x для 2D- и 3D-игр.
-В нем есть готовая инфраструктура проекта, но нет игровых механик.
+Общая база `main` предоставляет инфраструктуру; эта ветка добавляет игровой 3D-пример.
 
 ### Что есть из коробки
 

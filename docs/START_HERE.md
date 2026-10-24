@@ -1,13 +1,14 @@
 # Начало нового проекта
 
-Текущая ветка — **3d**. [Модель, Blender и Cyclops](3D_PIPELINE.md).
+Текущая ветка — **3d**. [Игровой пример и управление](3D_EXAMPLE.md),
+[рабочий процесс Blender/MCP/Godot](3D_WORKFLOW.md).
 
 Это репозиторий шаблона. Игры разрабатываются в отдельных репозиториях, созданных из выбранной ветки.
 
 ## Выберите вариант
 
 - `main` — общая база с нейтральными заглушками.
-- `3d` — технический 3D-пример, Jolt, Cyclops и Blender → GLB.
+- `3d` — трехкомнатный шутер с зомби, первым/третьим лицом, Jolt и Blender → GLB.
 - `2d` — «Лесной хранитель»: платформер, аренный шутер и головоломка на Node2D.
 - `2d-pixelart` — 2D-пример и пиксельный viewport 640×360.
 
@@ -58,7 +59,8 @@ Scene IDs и gameplay/HUD-контракты одинаковы во всех в
 
 ## Windows и Web
 
-Все варианты используют Compatibility. В **Project → Export** доступны Windows x86_64 и Web без потоков/GDExtension.
+Ветка `3d` использует Mobile с Direct3D 12 на Windows; Web использует Compatibility.
+Остальные варианты используют Compatibility. В **Project → Export** доступны Windows x86_64 и Web без потоков/GDExtension.
 
 ```powershell
 New-Item -ItemType Directory -Force builds/windows, builds/web
