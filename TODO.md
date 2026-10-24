@@ -22,7 +22,7 @@ The checked baseline phases below record implemented infrastructure, not uncondi
 - [ ] Physical gamepad acceptance of the updated UI.
 - [x] Fresh Windows/Web exports; native Theme/font/full OFL and absence of design/editor payload verified in the packages.
 - [ ] Graphical target-platform acceptance of these fresh exports.
-- [ ] Diagnose the known ObjectDB shutdown warning; 3D editor shutdown also has resource warnings.
+- [x] Eliminate the ObjectDB scene-loading leak and Cyclops 3D editor shutdown errors; see the focused acceptance in READINESS.md.
 
 ## Non-Goals
 
