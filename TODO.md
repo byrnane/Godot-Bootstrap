@@ -2,11 +2,12 @@
 
 ## Goal
 
-Maintain a reusable Godot template with a common `main` base and `3d`, `2d`, `2d-pixelart` variants:
+Maintain a universal Godot game-development template in `main` and specialized 2D, 2D PixelArt and 3D templates in `2d`, `2d-pixelart` and `3d`:
 
 - suitable as a base for 2D and 3D games;
-- focused on infrastructure only;
-- common infrastructure without genre mechanics; replaceable gameplay examples stay in variant branches;
+- core and shared development in `main`; all variants depend directly on its current committed base;
+- variant branches develop only their own specific systems, gameplay features and content;
+- common infrastructure stays independent of genre mechanics and variant resources;
 - stable, debuggable, testable, and easy to extend.
 
 
@@ -25,8 +26,8 @@ The checked baseline phases below record implemented infrastructure, not uncondi
 
 ## Non-Goals
 
-- No genre-specific gameplay systems.
-- No hardcoded game loop mechanics.
+- No genre-specific gameplay systems in the common `main` core; specialized variants may provide them.
+- No game loop mechanics hardcoded into shared infrastructure.
 - No feature logic that cannot be cleanly removed by template users.
 
 
@@ -210,8 +211,8 @@ Focus: make the template easy to adopt and evolve.
 
 ### 5.2 Demo simulation scope
 
-- [x] Keep demo scenes simulation-only (state/view/input/save demonstration).
-- [x] Remove any remaining mechanic-like behavior that is not template infrastructure.
+- [x] Keep common `main` demo scenes simulation-only (state/view/input/save demonstration); variant examples may include gameplay.
+- [x] Keep genre mechanics out of the common infrastructure; place them in specialized variants.
 - [x] Ensure demo content is easy to replace in first integration pass.
 
 ### 5.3 Release process
