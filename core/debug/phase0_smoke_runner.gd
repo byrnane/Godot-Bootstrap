@@ -249,6 +249,15 @@ func _expect_transition(action: Callable, expected_scene_id: StringName, expecte
 
 
 func _check_scene_loading_pipeline_contract() -> void:
+	var loader_owner: Node = load("res://core/services/scene_router.gd").new();
+	add_child(loader_owner);
+	var worker: Thread = Thread.new();
+	_check(worker.start(OS.delay_msec.bind(30)) == OK, "scene pipeline test: shutdown worker did not start");
+	loader_owner.set("_load_thread", worker);
+	loader_owner.free();
+	_check(not worker.is_started(), "scene pipeline test: router shutdown did not join its worker");
+	if worker.is_started():
+		worker.wait_to_finish();
 	SceneRouter.go_to(Scenes.GAMEPLAY, null, {"warn_if_queued": false});
 	var loading_started: bool = await _wait_until(
 		func() -> bool:
@@ -280,6 +289,7 @@ func _check_scene_loading_pipeline_contract() -> void:
 	);
 	_check(queue_drained, "scene pipeline test: queued transition did not resolve to main menu");
 	_check(not TransitionManager.is_active(), "scene pipeline test: transition manager stayed active after queue drain");
+	_check(SceneRouter.get("_load_thread") == null, "scene pipeline test: completed transition retained its worker");
 	_check(AppContext.state == AppState.Value.MAIN_MENU, "scene pipeline test: app state should be MAIN_MENU after queue drain");
 
 	SceneRouter.go_to(&"__smoke_unknown_scene__", null, {"warn_if_unknown": false});
