@@ -1,0 +1,147 @@
+diff --git a/cyclops_level_builder.gd b/cyclops_level_builder.gd
+index 8a86086..daeeb17 100644
+--- a/cyclops_level_builder.gd
++++ b/cyclops_level_builder.gd
+@@ -320,6 +320,7 @@ func _exit_tree():
+ 	file.close()
+ 
+ 	remove_child(viewport_3d_manager)
++	viewport_3d_manager.queue_free()
+ 	
+ 	
+ 	# Clean-up of the plugin goes here.
+@@ -344,8 +345,12 @@ func _exit_tree():
+ 		
+ 		remove_dock(overlays_dock)
+ 		overlays_dock.queue_free()
+-		
+-		remove_control_from_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_MENU, editor_toolbar)
++	else:
++		tool_properties_panel.queue_free()
++		snapping_properties_panel.queue_free()
++		overlays_panel.queue_free()
++
++	remove_control_from_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_MENU, editor_toolbar)
+ 
+ 	if upgrade_cyclops_blocks_toolbar.activated:
+ 		remove_control_from_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_MENU, upgrade_cyclops_blocks_toolbar)
+@@ -604,6 +609,8 @@ func switch_to_snapping_system(_snapping_system:CyclopsSnappingSystem):
+ 	snapping_system = _snapping_system
+ 	
+ 	if snapping_system:
++		if snapping_system.get_parent() == null:
++			add_child(snapping_system)
+ 		snapping_system._activate(self)
+ 		var control:Control = snapping_system._get_properties_editor()
+ 		snapping_properties_panel.set_editor(control)
+diff --git a/actions/io/action_export_as_cyclops.gd b/actions/io/action_export_as_cyclops.gd
+index 25eecd9..d9974ea 100644
+--- a/actions/io/action_export_as_cyclops.gd
++++ b/actions/io/action_export_as_cyclops.gd
+@@ -27,6 +27,10 @@ extends CyclopsAction
+ 
+ var wizard:ExporterCyclopsWizard = preload("res://addons/cyclops_level_builder/io/exporter/exporter_cyclops_wizard.tscn").instantiate()
+ 
++func _notification(what: int) -> void:
++	if what == NOTIFICATION_PREDELETE and is_instance_valid(wizard):
++		wizard.free()
++
+ const ACTION_ID:String = "export_as_cyclops"
+ 
+ func _get_action_id():
+diff --git a/actions/io/action_export_as_gltf.gd b/actions/io/action_export_as_gltf.gd
+index 2e7f1fb..0167961 100644
+--- a/actions/io/action_export_as_gltf.gd
++++ b/actions/io/action_export_as_gltf.gd
+@@ -27,6 +27,10 @@ extends CyclopsAction
+ 
+ var wizard:ExporterGltfWizard = preload("res://addons/cyclops_level_builder/io/exporter/exporter_gltf_wizard.tscn").instantiate()
+ 
++func _notification(what: int) -> void:
++	if what == NOTIFICATION_PREDELETE and is_instance_valid(wizard):
++		wizard.free()
++
+ const ACTION_ID:String = "export_as_gltf"
+ 
+ func _get_action_id():
+diff --git a/actions/io/action_export_as_godot_scene.gd b/actions/io/action_export_as_godot_scene.gd
+index b8386f4..7568429 100644
+--- a/actions/io/action_export_as_godot_scene.gd
++++ b/actions/io/action_export_as_godot_scene.gd
+@@ -27,6 +27,10 @@ extends CyclopsAction
+ 
+ var wizard:ExporterGodotSceneWizard = preload("res://addons/cyclops_level_builder/io/exporter/exporter_godot_scene_wizard.tscn").instantiate()
+ 
++func _notification(what: int) -> void:
++	if what == NOTIFICATION_PREDELETE and is_instance_valid(wizard):
++		wizard.free()
++
+ const ACTION_ID:String = "export_as_godot_scene"
+ 
+ func _get_action_id():
+diff --git a/actions/io/action_import_cyclops_file.gd b/actions/io/action_import_cyclops_file.gd
+index 3b4baa0..3f028f6 100644
+--- a/actions/io/action_import_cyclops_file.gd
++++ b/actions/io/action_import_cyclops_file.gd
+@@ -27,6 +27,10 @@ extends CyclopsAction
+ 
+ var wizard:ImporterCyclopsFileWizard = preload("res://addons/cyclops_level_builder/io/importer/importer_cyclops_file_wizard.tscn").instantiate()
+ 
++func _notification(what: int) -> void:
++	if what == NOTIFICATION_PREDELETE and is_instance_valid(wizard):
++		wizard.free()
++
+ const ACTION_ID:String = "import_cyclops_file"
+ 
+ func _get_action_id():
+diff --git a/gui/docks/uv_editor/actions/action_uv_triplanar_layout.gd b/gui/docks/uv_editor/actions/action_uv_triplanar_layout.gd
+index a6973f6..e6a5f89 100644
+--- a/gui/docks/uv_editor/actions/action_uv_triplanar_layout.gd
++++ b/gui/docks/uv_editor/actions/action_uv_triplanar_layout.gd
+@@ -28,6 +28,13 @@ extends CyclopsAction
+ var control:UvTriplanarLayoutPanel = preload("res://addons/cyclops_level_builder/gui/docks/uv_editor/actions/uv_triplanar_layout_panel.tscn").instantiate()
+ var window:Window
+ 
++func _notification(what: int) -> void:
++	if what == NOTIFICATION_PREDELETE:
++		if is_instance_valid(window):
++			window.free()
++		elif is_instance_valid(control):
++			control.free()
++
+ func _ready():
+ 	control.canceled.connect(func(): window.hide())
+ 	control.finished.connect(do_layout)
+diff --git a/gui/docks/tool_properties/tool_properties_dock.gd b/gui/docks/tool_properties/tool_properties_dock.gd
+index 972b150..816dfe3 100644
+--- a/gui/docks/tool_properties/tool_properties_dock.gd
++++ b/gui/docks/tool_properties/tool_properties_dock.gd
+@@ -38,8 +38,11 @@ func _process(delta):
+ 	pass
+ 
+ func set_editor(control:Control):
++	if control != null and control.get_parent() == $ScrollContainer:
++		return
+ 	for child in $ScrollContainer.get_children():
+ 		$ScrollContainer.remove_child(child)
++		child.queue_free()
+ 	
+ 	if control:
+ 		$ScrollContainer.add_child(control)
+diff --git a/gui/docks/snapping_properties/snapping_properties_dock.gd b/gui/docks/snapping_properties/snapping_properties_dock.gd
+index 2da1b85..492f6cc 100644
+--- a/gui/docks/snapping_properties/snapping_properties_dock.gd
++++ b/gui/docks/snapping_properties/snapping_properties_dock.gd
+@@ -75,9 +75,12 @@ func _process(delta):
+ 
+ 
+ func set_editor(control:Control):
++	if control != null and control.get_parent() == $ScrollContainer:
++		return
+ 	
+ 	for child in $ScrollContainer.get_children():
+ 		$ScrollContainer.remove_child(child)
++		child.queue_free()
+ 	
+ 	if control:
+ 		$ScrollContainer.add_child(control)

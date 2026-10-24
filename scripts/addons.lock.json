@@ -8,6 +8,7 @@
   {
     "folder": "cyclops_level_builder",
     "version": "1.5.1",
+    "patches": ["addon-patches/cyclops-1.5.1-cleanup.patch"],
     "url": "https://github.com/blackears/cyclopsLevelBuilder/releases/download/v1.5.1/cyclops_level_builder_1.5.1_for_Godot_4.7.zip",
     "sha256": "46d6586b2c4843202318794aefca8e7f4be31bde5b52da3424c9313f21691c11"
   }

@@ -1,2 +1,5 @@
 # Normalize EOL for all files that Git considers text files.
 * text=auto eol=lf
+
+# Unified diff context preserves the upstream source's whitespace.
+scripts/addon-patches/cyclops-1.5.1-cleanup.patch whitespace=-blank-at-eol,-space-before-tab
