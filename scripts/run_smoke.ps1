@@ -63,7 +63,7 @@ $stderr = $stderrTask.GetAwaiter().GetResult()
 Write-Host $stdout
 if ($stderr) { Write-Host $stderr }
 $results = @(Get-ChildItem -LiteralPath $runRoot -Filter phase0_smoke_result.txt -File -Recurse)
-if ($process.ExitCode -ne 0 -or ($stdout + "`n" + $stderr) -match '(?m)^(SCRIPT ERROR|ERROR):' -or $results.Count -ne 1 -or (Get-Content -LiteralPath $results[0].FullName -Raw).Trim() -ne "PASS") {
+if ($process.ExitCode -ne 0 -or ($stdout + "`n" + $stderr) -match '(?m)^(SCRIPT ERROR|ERROR):|^WARNING:.*ObjectDB.*leaked' -or $results.Count -ne 1 -or (Get-Content -LiteralPath $results[0].FullName -Raw).Trim() -ne "PASS") {
     throw "Smoke failed (exit $($process.ExitCode)). Artifacts: $runRoot"
 }
 Write-Host "PASS ($Suite). Artifacts: $runRoot"

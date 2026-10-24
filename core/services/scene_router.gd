@@ -25,6 +25,13 @@ var _reported_scene_contract_issues: Dictionary = {};
 var _has_queued_transition: bool = false;
 var _queued_scene_id: StringName = &"";
 var _queued_payload: SCENE_TRANSITION_PAYLOAD_TYPE = null;
+var _load_thread: Thread = null;
+
+
+func _exit_tree() -> void:
+	if _load_thread != null and _load_thread.is_started():
+		_load_thread.wait_to_finish();
+	_load_thread = null;
 
 
 func configure(root_container: Node) -> void:
@@ -87,32 +94,20 @@ func _go_to_async(scene_id: StringName, payload: SCENE_TRANSITION_PAYLOAD_TYPE =
 		"tips_provider": Callable(self, "_build_loading_tips_for_scene").bind(resolved_scene_id),
 	});
 
-	var load_request: Error = ResourceLoader.load_threaded_request(scene_path);
+	# Godot 4.7.2 leaks LoadToken through load_threaded_request (godot#120661).
+	# A user thread keeps loading asynchronous without the leaking worker-pool path.
+	_load_thread = Thread.new();
+	var load_request: Error = _load_thread.start(ResourceLoader.load.bind(scene_path, "PackedScene"));
 	if load_request != OK:
-		await _fail_scene_load(resolved_scene_id, scene_path, "failed to request threaded load");
+		_load_thread = null;
+		await _fail_scene_load(resolved_scene_id, scene_path, "failed to start scene loading thread");
 		return;
 
-	var progress: Array = [];
-	while true:
-		progress.clear();
-		var load_status: ResourceLoader.ThreadLoadStatus = ResourceLoader.load_threaded_get_status(scene_path, progress);
-		match load_status:
-			ResourceLoader.ThreadLoadStatus.THREAD_LOAD_IN_PROGRESS:
-				var normalized_progress: float = 0.0;
-				if not progress.is_empty():
-					normalized_progress = float(progress[0]);
-				scene_load_progress.emit(resolved_scene_id, normalized_progress);
-				TransitionManager.update_loading_progress(normalized_progress);
-				await get_tree().process_frame;
-			ResourceLoader.ThreadLoadStatus.THREAD_LOAD_LOADED:
-				break;
-			ResourceLoader.ThreadLoadStatus.THREAD_LOAD_INVALID_RESOURCE, ResourceLoader.ThreadLoadStatus.THREAD_LOAD_FAILED:
-				await _fail_scene_load(resolved_scene_id, scene_path, "threaded load failed");
-				return;
-			_:
-				await get_tree().process_frame;
-
-	var packed_scene: PackedScene = ResourceLoader.load_threaded_get(scene_path) as PackedScene;
+	scene_load_progress.emit(resolved_scene_id, 0.0);
+	while _load_thread.is_alive():
+		await get_tree().process_frame;
+	var packed_scene: PackedScene = _load_thread.wait_to_finish() as PackedScene;
+	_load_thread = null;
 	if packed_scene == null:
 		await _fail_scene_load(resolved_scene_id, scene_path, "failed to load scene");
 		return;
@@ -137,6 +132,7 @@ func _go_to_async(scene_id: StringName, payload: SCENE_TRANSITION_PAYLOAD_TYPE =
 	_mount_scene_hud(scene_instance);
 	_call_on_enter(scene_instance, transition_payload);
 	scene_changed.emit(current_scene_id, current_scene_root);
+	scene_load_progress.emit(resolved_scene_id, 1.0);
 	TransitionManager.update_loading_progress(1.0, tr("UI_LOADING_READY"), &"success");
 	await TransitionManager.finish_loading();
 	_restore_state_after_loading();
