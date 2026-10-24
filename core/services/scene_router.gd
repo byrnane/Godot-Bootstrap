@@ -94,20 +94,24 @@ func _go_to_async(scene_id: StringName, payload: SCENE_TRANSITION_PAYLOAD_TYPE =
 		"tips_provider": Callable(self, "_build_loading_tips_for_scene").bind(resolved_scene_id),
 	});
 
-	# Godot 4.7.2 leaks LoadToken through load_threaded_request (godot#120661).
-	# A user thread keeps loading asynchronous without the leaking worker-pool path.
-	_load_thread = Thread.new();
-	var load_request: Error = _load_thread.start(ResourceLoader.load.bind(scene_path, "PackedScene"));
-	if load_request != OK:
-		_load_thread = null;
-		await _fail_scene_load(resolved_scene_id, scene_path, "failed to start scene loading thread");
-		return;
-
 	scene_load_progress.emit(resolved_scene_id, 0.0);
-	while _load_thread.is_alive():
-		await get_tree().process_frame;
-	var packed_scene: PackedScene = _load_thread.wait_to_finish() as PackedScene;
-	_load_thread = null;
+	var packed_scene: PackedScene;
+	if OS.has_feature("web"):
+		# The template's Web export has thread_support=false.
+		packed_scene = ResourceLoader.load(scene_path, "PackedScene") as PackedScene;
+	else:
+		# Godot 4.7.2 leaks LoadToken through load_threaded_request (godot#120661).
+		# A user thread keeps loading asynchronous without the leaking worker-pool path.
+		_load_thread = Thread.new();
+		var load_request: Error = _load_thread.start(ResourceLoader.load.bind(scene_path, "PackedScene"));
+		if load_request != OK:
+			_load_thread = null;
+			await _fail_scene_load(resolved_scene_id, scene_path, "failed to start scene loading thread");
+			return;
+		while _load_thread.is_alive():
+			await get_tree().process_frame;
+		packed_scene = _load_thread.wait_to_finish() as PackedScene;
+		_load_thread = null;
 	if packed_scene == null:
 		await _fail_scene_load(resolved_scene_id, scene_path, "failed to load scene");
 		return;
