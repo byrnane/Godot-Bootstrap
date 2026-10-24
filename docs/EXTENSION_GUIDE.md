@@ -51,6 +51,7 @@ If data should survive while app is open globally, keep it in `AppContext`.
 - Add fields to `core/context/save_data.gd`.
 - Update migration/normalization in `SaveData.from_variant(...)`.
 - Keep compatibility rules explicit and deterministic.
+- Use `SaveManager.saves_changed` to refresh save-dependent UI after a successful write or a delete request. Technical recovery preserves the original timestamp and thumbnail; it does not make a save newer.
 
 ### Autosave Hooks
 

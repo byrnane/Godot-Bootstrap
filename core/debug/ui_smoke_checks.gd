@@ -8,6 +8,14 @@ static func run(host: Node) -> Array[String]:
 	_check(not UiFocus.restore(freed_focus), "closing modal restored a freed scene control", failures);
 	var mount: Control = Control.new();
 	host.add_child(mount);
+	var focus_button: Button = Button.new();
+	mount.add_child(focus_button);
+	mount.hide();
+	_check(not UiFocus.restore(focus_button), "focus restored a control under a hidden parent", failures);
+	mount.show();
+	mount.focus_behavior_recursive = Control.FOCUS_BEHAVIOR_DISABLED;
+	_check(not UiFocus.restore(focus_button), "focus restored a recursively blocked control", failures);
+	mount.focus_behavior_recursive = Control.FOCUS_BEHAVIOR_INHERITED;
 	var resources: UiResources = load("res://shared/ui/components/ui_resources.tscn").instantiate();
 	mount.add_child(resources);
 	resources.apply_resources({"health": 150.0, "max_health": 100.0, "mana": -20.0});
@@ -128,11 +136,41 @@ static func _check_screen_actions(host: Node, failures: Array[String]) -> void:
 	saves.get_node("%NewSlotButton").pressed.emit();
 	await tree.process_frame;
 	_check(saves._get_selected_entry().get("slot_key", "") != first_key, "new slot left the old slot selected", failures);
+	await preload("res://core/debug/settings_ui_checks.gd").click(saves.get_node("%SaveButton"), host);
+	await tree.create_timer(0.3).timeout;
+	_check(feedback.visible, "overwrite confirmation did not open", failures);
+	var pending_descriptor: Dictionary = saves.get("_pending_descriptor").duplicate(true);
+	var delete_button: Button = saves.get_node("%DeleteButton");
+	_check(delete_button.get_focus_mode_with_override() == Control.FOCUS_NONE, "covered modal retained keyboard focus", failures);
+	await preload("res://core/debug/settings_ui_checks.gd").click(delete_button, host, false);
+	_check(saves.get("_pending_action") == &"save_selected" and saves.get("_pending_descriptor") == pending_descriptor,
+		"covered modal changed the action being confirmed", failures);
+	feedback.request_close();
+	await tree.create_timer(0.3).timeout;
+	_check(delete_button.get_focus_mode_with_override() != Control.FOCUS_NONE, "uncovered modal did not regain focus", failures);
+	# Discard queued requests from a failed regression before continuing the suite.
+	shell.close_all_modals();
+	await tree.create_timer(0.3).timeout;
+	shell.open_save_slots(&"load");
+	await tree.create_timer(0.3).timeout;
 	saves.set_mode(&"load");
 	_check(not saves.get_node("%LoadButton").disabled, "load mode lost selected slot", failures);
 	_check(not saves.get_node("%SaveButton").visible, "load mode exposes overwrite action", failures);
 	saves.request_close();
 	await tree.create_timer(0.3).timeout;
+	flow.return_to_main_menu();
+	await _wait_for_route(host);
+	var menu: Node = tree.root.get_node("SceneRouter").current_scene_root;
+	if menu is MainMenu:
+		_check(not menu.continue_button.disabled, "menu lost Continue while saves exist", failures);
+		tree.root.get_node("SaveManager").clear_all_saves();
+		_check(menu.continue_button.disabled, "menu retained Continue after the last save was removed", failures);
+	var debug: Node = shell.get("_debug_overlay");
+	var option: OptionButton = debug.scene_option_button;
+	var target: int = (option.selected + 1) % option.item_count;
+	option.select(target);
+	shell._refresh_debug_overlay();
+	_check(option.selected == target, "debug refresh discarded the selected jump target", failures);
 
 
 static func _wait_for_route(host: Node) -> void:

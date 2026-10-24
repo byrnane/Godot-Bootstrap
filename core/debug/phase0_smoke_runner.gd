@@ -304,7 +304,119 @@ func _check_scene_loading_pipeline_contract() -> void:
 	_check(fallback_loaded, "scene pipeline test: unknown scene fallback did not resolve to default scene");
 
 
+func _is_fixture_profile() -> bool:
+	var fixture_root: String = ProjectSettings.globalize_path("res://.local/smoke/").replace("\\", "/");
+	return OS.get_environment("GAME_TEMPLATE_SMOKE_ISOLATED") == "1" and OS.get_user_data_dir().replace("\\", "/").begins_with(fixture_root);
+
+
+func _check_precise_save_order() -> void:
+	if not _is_fixture_profile():
+		_check(false, "save order: refusing to write outside the isolated smoke profile");
+		return;
+	var data: SaveData = SaveData.new();
+	data.session_exists = true;
+	for kind: String in ["quick", "autosave"]:
+		data.score = 10 if kind == "quick" else 20;
+		var descriptor: Dictionary = {"kind": kind};
+		_check(SaveManager.save_game_to_descriptor(data, descriptor), "save order: fixture write failed");
+		var path: String = "user://saves/%s.save" % kind;
+		var file: FileAccess = FileAccess.open(path, FileAccess.READ);
+		var payload: Dictionary = file.get_var(true);
+		file.close();
+		payload.metadata.timestamp_unix = 2000000000.125 if kind == "quick" else 2000000000.875;
+		file = FileAccess.open(path, FileAccess.WRITE);
+		file.store_var(payload, true);
+		file.close();
+	var latest: Dictionary = SaveManager.get_latest_slot_for_continue();
+	_check(latest == SaveManager.descriptor_for_autosave(), "save order: Continue lost a newer save within the same second");
+	var entries: Array[Dictionary] = SaveManager.list_slot_entries();
+	_check(not entries.is_empty() and entries[0].descriptor == latest, "save order: list and Continue disagree");
+	SaveManager.delete_save_descriptor(SaveManager.descriptor_for_quick());
+	SaveManager.delete_save_descriptor(SaveManager.descriptor_for_autosave());
+
+
+func _check_high_slot_legacy_isolation() -> void:
+	if not _is_fixture_profile():
+		_check(false, "high slot: refusing to write outside the isolated smoke profile");
+		return;
+	var data: SaveData = SaveData.new();
+	data.session_exists = true;
+	var legacy_path: String = "user://saves/slot_00.save";
+	var file: FileAccess = FileAccess.open(legacy_path, FileAccess.WRITE);
+	file.store_var(data.to_dictionary());
+	file.close();
+	var original: PackedByteArray = FileAccess.get_file_as_bytes(legacy_path);
+	var descriptor: Dictionary = SaveManager.descriptor_for_manual(100);
+	_check(not SaveManager.has_save_descriptor(descriptor), "high slot: aliased an unrelated legacy save");
+	_check(SaveManager.save_game_to_descriptor(data, descriptor), "high slot: write failed");
+	_check(FileAccess.file_exists(legacy_path), "high slot: saving removed legacy slot zero");
+	SaveManager.delete_save_descriptor(descriptor);
+	_check(FileAccess.file_exists(legacy_path), "high slot: deleting removed legacy slot zero");
+	if FileAccess.file_exists(legacy_path):
+		_check(FileAccess.get_file_as_bytes(legacy_path) == original, "high slot: changed legacy slot zero");
+	SaveManager.delete_save(0);
+
+
+func _check_malformed_save_recovery() -> void:
+	if not _is_fixture_profile():
+		_check(false, "save validation: refusing to write outside the isolated smoke profile");
+		return;
+	var data: SaveData = SaveData.new();
+	data.session_exists = true;
+	data.score = 10;
+	_check(SaveManager.save_game(data, 96), "save validation: first write failed");
+	data.score = 20;
+	_check(SaveManager.save_game(data, 96), "save validation: backup write failed");
+	var path: String = "user://saves/manual_96.save";
+	var backup: PackedByteArray = FileAccess.get_file_as_bytes(path + ".bak");
+	var malformed: Array[Dictionary] = [];
+	for key: String in ["current_level_id", "player_health", "score", "session_exists", "game_data", "version"]:
+		var payload: Dictionary = data.to_dictionary();
+		payload[key] = [];
+		malformed.append(payload);
+	for key: String in ["title", "reason", "thumbnail_path", "timestamp_unix"]:
+		malformed.append({"container_version": 1, "save_data": data.to_dictionary(), "metadata": {key: []}});
+	malformed.append({"container_version": [], "save_data": data.to_dictionary()});
+	for payload: Dictionary in malformed:
+		var file: FileAccess = FileAccess.open(path, FileAccess.WRITE);
+		file.store_var(payload, true);
+		file.close();
+		var recovered: SaveData = SaveManager.load_game(96);
+		_check(recovered != null and recovered.score == 10, "save validation: malformed field bypassed backup recovery");
+		_check(FileAccess.get_file_as_bytes(path + ".bak") == backup, "save validation: recovery changed the backup");
+	SaveManager.delete_save(96);
+
+
+func _check_recovery_preserves_metadata() -> void:
+	if not _is_fixture_profile():
+		_check(false, "save recovery: refusing to write outside the isolated smoke profile");
+		return;
+	var data: SaveData = SaveData.new();
+	data.session_exists = true;
+	var descriptor: Dictionary = SaveManager.descriptor_for_manual(95);
+	_check(SaveManager.save_game_to_descriptor(data, descriptor), "save recovery: fixture write failed");
+	var path: String = "user://saves/manual_95.save";
+	var file: FileAccess = FileAccess.open(path, FileAccess.READ);
+	var payload: Dictionary = file.get_var(true);
+	file.close();
+	payload.metadata.timestamp_unix = 1500000000.125;
+	payload.metadata.thumbnail_path = "user://saves/thumbnails/original.png";
+	file = FileAccess.open(path + ".bak", FileAccess.WRITE);
+	file.store_var(payload, true);
+	file.close();
+	DirAccess.remove_absolute(path);
+	_check(SaveManager.load_game_from_descriptor(descriptor) != null, "save recovery: backup could not load");
+	var metadata: Dictionary = SaveManager.get_slot_metadata(descriptor);
+	_check(metadata.get("timestamp_unix") == payload.metadata.timestamp_unix, "save recovery: reading made an old save newer");
+	_check(metadata.get("thumbnail_path") == payload.metadata.thumbnail_path, "save recovery: reading lost the thumbnail");
+	SaveManager.delete_save_descriptor(descriptor);
+
+
 func _check_persistence_regressions() -> void:
+	_check_precise_save_order();
+	_check_high_slot_legacy_isolation();
+	_check_malformed_save_recovery();
+	_check_recovery_preserves_metadata();
 	var pause_key: InputEventKey = InputEventKey.new();
 	pause_key.keycode = KEY_F10;
 	_check(InputMap.action_has_event(&"ui_pause", pause_key), "input regression: default pause key must be F10");

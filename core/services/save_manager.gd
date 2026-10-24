@@ -1,5 +1,7 @@
 extends Node;
 
+signal saves_changed;
+
 const SLOT_DIRECTORY: String = "user://saves";
 const THUMBNAIL_DIRECTORY: String = "user://saves/thumbnails";
 const MANUAL_FILE_TEMPLATE: String = "manual_%d.save";
@@ -125,6 +127,7 @@ func save_game_to_descriptor(data: SaveData, slot_descriptor: Dictionary, option
 		DirAccess.remove_absolute(pending_path);
 		return false;
 	_cleanup_legacy_paths_after_save(descriptor);
+	saves_changed.emit();
 	return true;
 
 
@@ -161,6 +164,7 @@ func delete_save_descriptor(slot_descriptor: Dictionary) -> void:
 		return;
 	for path: String in _get_related_paths(descriptor):
 		_delete_path_and_backup(path);
+	saves_changed.emit();
 
 
 func clear_all_saves() -> int:
@@ -196,8 +200,8 @@ func list_slot_entries(include_system_slots: bool = true) -> Array[Dictionary]:
 			continue;
 		entries.append(entry);
 	entries.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
-		var a_time: int = int(a.get("timestamp_unix", 0));
-		var b_time: int = int(b.get("timestamp_unix", 0));
+		var a_time: float = float(a.get("timestamp_unix", 0));
+		var b_time: float = float(b.get("timestamp_unix", 0));
 		if a_time == b_time:
 			return String(a.get("slot_key", "")) < String(b.get("slot_key", ""));
 		return a_time > b_time;
@@ -223,11 +227,11 @@ func get_slot_metadata(slot_descriptor: Dictionary) -> Dictionary:
 
 func get_latest_slot_for_continue() -> Dictionary:
 	var best_descriptor: Dictionary = {};
-	var best_timestamp: int = -1;
+	var best_timestamp: float = -1.0;
 	for entry: Dictionary in list_slot_entries(true):
 		if not bool(entry.get("session_exists", false)):
 			continue;
-		var timestamp_unix: int = int(entry.get("timestamp_unix", 0));
+		var timestamp_unix: float = float(entry.get("timestamp_unix", 0));
 		if timestamp_unix < best_timestamp:
 			continue;
 		best_timestamp = timestamp_unix;
@@ -263,6 +267,8 @@ func _read_payload(path: String, descriptor: Dictionary) -> Dictionary:
 func _parse_payload(source_data: Variant, descriptor: Dictionary, source_path: String) -> Dictionary:
 	if source_data is Dictionary and (source_data as Dictionary).has("save_data"):
 		var payload: Dictionary = source_data as Dictionary;
+		if not payload.get("container_version", 0) is int or not _is_valid_metadata(payload.get("metadata", {})):
+			return {};
 		var save_data: SaveData = SaveData.from_variant(payload.get("save_data"));
 		if save_data == null:
 			return {};
@@ -284,13 +290,24 @@ func _parse_payload(source_data: Variant, descriptor: Dictionary, source_path: S
 	};
 
 
+func _is_valid_metadata(value: Variant) -> bool:
+	if not value is Dictionary:
+		return false;
+	for key: String in ["title", "reason", "thumbnail_path"]:
+		var text: Variant = value.get(key, "");
+		if not (text is String or text is StringName):
+			return false;
+	var timestamp: Variant = value.get("timestamp_unix", 0);
+	return (timestamp is int or timestamp is float) and is_finite(float(timestamp));
+
+
 func _normalize_metadata(raw_metadata: Variant, descriptor: Dictionary, save_data: SaveData, source_path: String) -> Dictionary:
 	var metadata: Dictionary = raw_metadata if raw_metadata is Dictionary else {};
 	var kind: StringName = _get_descriptor_kind(descriptor);
 	var slot_id: int = int(descriptor.get("id", -1));
-	var timestamp_unix: int = int(metadata.get("timestamp_unix", FileAccess.get_modified_time(source_path)));
+	var timestamp_unix: float = float(metadata.get("timestamp_unix", FileAccess.get_modified_time(source_path)));
 	if timestamp_unix <= 0:
-		timestamp_unix = int(Time.get_unix_time_from_system());
+		timestamp_unix = float(FileAccess.get_modified_time(source_path));
 	var reason: String = String(metadata.get("reason", "manual")).strip_edges();
 	var title: String = String(metadata.get("title", "")).strip_edges();
 	if title.is_empty():
@@ -319,9 +336,9 @@ func _build_metadata(descriptor: Dictionary, save_data: SaveData, options: Dicti
 		"kind": String(kind),
 		"manual_slot_id": slot_id,
 		"title": title,
-		"timestamp_unix": Time.get_unix_time_from_system(),
+		"timestamp_unix": options.get("timestamp_unix", Time.get_unix_time_from_system()),
 		"reason": reason,
-		"thumbnail_path": _capture_thumbnail(descriptor, options),
+		"thumbnail_path": String(options["thumbnail_path"]) if options.has("thumbnail_path") else _capture_thumbnail(descriptor, options),
 		"level_id": String(save_data.current_level_id),
 		"score": save_data.score,
 		"session_exists": save_data.session_exists,
@@ -336,7 +353,7 @@ func _build_entry(descriptor: Dictionary, metadata: Dictionary, save_data: SaveD
 		"kind": String(kind),
 		"kind_label_key": _kind_label_key(kind),
 		"title": String(metadata.get("title", _default_title(kind, int(descriptor.get("id", -1)), ""))),
-		"timestamp_unix": int(metadata.get("timestamp_unix", 0)),
+		"timestamp_unix": float(metadata.get("timestamp_unix", 0)),
 		"timestamp_text": _format_time(int(metadata.get("timestamp_unix", 0))),
 		"reason": String(metadata.get("reason", "")),
 		"level_id": StringName(String(metadata.get("level_id", String(save_data.current_level_id)))),
@@ -490,7 +507,7 @@ func _get_manual_path(slot_id: int) -> String:
 
 
 func _get_legacy_slot_path(slot_id: int) -> String:
-	return "%s/%s" % [SLOT_DIRECTORY, LEGACY_FILE_TEMPLATE % [_normalize_slot_id(slot_id)]];
+	return "%s/%s" % [SLOT_DIRECTORY, LEGACY_FILE_TEMPLATE % [maxi(slot_id, 0)]];
 
 
 func _get_quick_path() -> String:

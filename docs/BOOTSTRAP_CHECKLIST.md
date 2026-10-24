@@ -47,7 +47,7 @@ Use this checklist when creating a new game from this template.
 - Reuse shared components from `shared/ui/components` before creating custom duplicates.
 - Open `shared/ui/catalog/ui_catalog.tscn` with F6 and choose or duplicate `shared/ui/theme/neutral_theme.tres`; preserve semantic Theme variations. See [UI Framework](UI_FRAMEWORK.md).
 - Replace the menu illustration in `shared/ui/theme/art/` if needed; keep licenses for bundled fonts and any replacement assets.
-- Check long RU/EN labels, visible keyboard focus, scrolling, and your target viewport. Pixelart needs its own skin and layout acceptance.
+- Check long RU/EN labels, visible keyboard focus, scrolling, and your target viewport. Pixelart includes the shared compact layout at 640×360; verify it after customization. A separate skin is optional.
 
 ## 6. Quality Gates Before First Milestone
 
