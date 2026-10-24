@@ -249,3 +249,30 @@ UI_KIT_DIALOG,Диалог,Dialog
 UI_LOAD_MODE_TAB,Загрузка,Load
 UI_SAVE_MODE_TAB,Сохранение,Save
 UI_NO_CONTINUE,Пока нет сохраненной игры,No saved game yet
+P3_INPUT_GROUP,Прототип 3D,3D Prototype
+P3_ACTION_FORWARD,Вперед,Move forward
+P3_ACTION_BACK,Назад,Move backward
+P3_ACTION_LEFT,Влево,Strafe left
+P3_ACTION_RIGHT,Вправо,Strafe right
+P3_ACTION_SPRINT,Бег,Sprint
+P3_ACTION_JUMP,Прыжок,Jump
+P3_ACTION_RELOAD,Перезарядка,Reload
+P3_ACTION_INTERACT,Взаимодействие,Interact
+P3_ACTION_VIEW,Смена камеры,Switch camera
+P3_ACTION_FIRE,Выстрел,Fire
+P3_OBJECTIVE,Зачистить служебный блок. Осталось: {count},Clear the service block. Remaining: {count}
+P3_OBJECTIVE_EXIT,Зачистка завершена. Найдите выход,Area clear. Find the exit
+P3_INTERACT_MEDKIT,Взять аптечку (+35 здоровья),Take medkit (+35 health)
+P3_INTERACT_AMMO,Взять патроны (+16),Take ammunition (+16)
+P3_INTERACT_EXIT,Покинуть блок,Leave the block
+P3_EXIT_LOCKED,Сначала уничтожьте всех зомби,Eliminate all zombies first
+P3_RELOADING,Перезарядка…,Reloading…
+P3_HINTS,"{view} — камера  ·  {reload} — перезарядка
+{pause} — пауза","{view} — camera  ·  {reload} — reload
+{pause} — pause"
+P3_CLICK_TO_PLAY,"Щелкните, чтобы вернуться в игру",Click to return to the game
+P3_WON,Блок зачищен,Block cleared
+P3_DEAD,Вы погибли,You died
+P3_RESULT_COPY,Три комнаты. Один пистолет. Еще одна попытка?,Three rooms. One pistol. One more try?
+P3_RESTART,Начать заново,Try again
+P3_MENU,В главное меню,Main menu

@@ -1,0 +1,58 @@
+[gd_resource type="Resource" script_class="GameConfigData" format=3]
+
+[ext_resource type="Script" path="res://core/types/game_config_data.gd" id="1_0wo3t"]
+
+[resource]
+script = ExtResource("1_0wo3t")
+input_actions = {
+&"proto_back": {
+"conflict_group": "prototype_back",
+"group_key": "P3_INPUT_GROUP",
+"label_key": "P3_ACTION_BACK"
+},
+&"proto_fire": {
+"conflict_group": "prototype_fire",
+"group_key": "P3_INPUT_GROUP",
+"label_key": "P3_ACTION_FIRE"
+},
+&"proto_forward": {
+"conflict_group": "prototype_forward",
+"group_key": "P3_INPUT_GROUP",
+"label_key": "P3_ACTION_FORWARD"
+},
+&"proto_interact": {
+"conflict_group": "prototype_interact",
+"group_key": "P3_INPUT_GROUP",
+"label_key": "P3_ACTION_INTERACT"
+},
+&"proto_jump": {
+"conflict_group": "prototype_jump",
+"group_key": "P3_INPUT_GROUP",
+"label_key": "P3_ACTION_JUMP"
+},
+&"proto_left": {
+"conflict_group": "prototype_left",
+"group_key": "P3_INPUT_GROUP",
+"label_key": "P3_ACTION_LEFT"
+},
+&"proto_reload": {
+"conflict_group": "prototype_reload",
+"group_key": "P3_INPUT_GROUP",
+"label_key": "P3_ACTION_RELOAD"
+},
+&"proto_right": {
+"conflict_group": "prototype_right",
+"group_key": "P3_INPUT_GROUP",
+"label_key": "P3_ACTION_RIGHT"
+},
+&"proto_sprint": {
+"conflict_group": "prototype_sprint",
+"group_key": "P3_INPUT_GROUP",
+"label_key": "P3_ACTION_SPRINT"
+},
+&"proto_view": {
+"conflict_group": "prototype_view",
+"group_key": "P3_INPUT_GROUP",
+"label_key": "P3_ACTION_VIEW"
+}
+}
