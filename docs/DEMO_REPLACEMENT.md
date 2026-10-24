@@ -1,6 +1,6 @@
 # Demo Replacement Guide
 
-This template ships with simulation-only demo content.
+The common `main` template ships with simulation-only demo content. Specialized branches may add gameplay systems and content; replace those alongside the shared demo surfaces when starting your own game.
 
 Use this guide to replace demo surfaces in the first integration pass.
 
