@@ -30,6 +30,7 @@ signal restart_session_requested;
 var _snapshot: Dictionary = {};
 var _time_since_refresh: float = 0.0;
 var _scene_targets: PackedStringArray = [];
+var _current_scene_id: StringName = &"";
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS;
@@ -75,10 +76,13 @@ func set_scene_targets(scene_ids: Array[StringName], current_scene_id: StringNam
 	scene_ids_text.sort();
 
 	if _scene_targets == scene_ids_text:
-		_select_scene_target(current_scene_id);
+		if _current_scene_id != current_scene_id:
+			_select_scene_target(current_scene_id);
+		_current_scene_id = current_scene_id;
 		return;
 
 	_scene_targets = scene_ids_text;
+	_current_scene_id = current_scene_id;
 	scene_option_button.clear();
 	for scene_id_text: String in _scene_targets:
 		scene_option_button.add_item(scene_id_text);

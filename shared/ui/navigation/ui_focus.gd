@@ -14,9 +14,9 @@ static func restore(control: Variant) -> bool:
 	var focus_target: Control = control as Control;
 	if not focus_target.is_inside_tree():
 		return false;
-	if not focus_target.visible:
+	if not focus_target.is_visible_in_tree():
 		return false;
-	if focus_target.focus_mode == Control.FOCUS_NONE:
+	if focus_target.get_focus_mode_with_override() == Control.FOCUS_NONE:
 		return false;
 
 	focus_target.grab_focus();
@@ -34,7 +34,7 @@ static func find_first_focusable(node: Node) -> Control:
 		return null;
 	if node is Control:
 		var control: Control = node as Control;
-		if control.visible and control.focus_mode != Control.FOCUS_NONE:
+		if control.is_visible_in_tree() and control.get_focus_mode_with_override() != Control.FOCUS_NONE:
 			return control;
 
 	for child: Node in node.get_children():
