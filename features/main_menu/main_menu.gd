@@ -30,6 +30,7 @@ func _ready() -> void:
 	settings_button.pressed.connect(_on_settings_button_pressed);
 	save_slots_button.pressed.connect(_on_save_slots_button_pressed);
 	quit_button.pressed.connect(_on_quit_button_pressed);
+	SaveManager.saves_changed.connect(_refresh_continue_state);
 	_refresh_continue_state();
 
 

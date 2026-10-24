@@ -1,6 +1,9 @@
+#requires -Version 7.0
 param(
     [string]$GodotExecutable = "",
     [switch]$Headless,
+    [switch]$VerboseGodot,
+    [switch]$DummyAudio,
     [ValidateSet("flow", "ui", "persistence", "transitions", "audio", "localization", "all")]
     [string]$Suite = "flow",
     [string]$Scene = "res://core/debug/phase0_smoke_runner.tscn"
@@ -33,6 +36,11 @@ $startInfo.RedirectStandardOutput = $true
 $startInfo.RedirectStandardError = $true
 foreach ($argument in @("--path", $projectRoot, "--scene", $Scene, "--max-fps", "60")) { $startInfo.ArgumentList.Add($argument) }
 if ($Headless) { $startInfo.ArgumentList.Add("--headless") }
+if ($VerboseGodot) { $startInfo.ArgumentList.Add("--verbose") }
+if ($DummyAudio) {
+    $startInfo.ArgumentList.Add("--audio-driver")
+    $startInfo.ArgumentList.Add("Dummy")
+}
 $startInfo.Environment["APPDATA"] = Join-Path $runRoot "AppData"
 $startInfo.Environment["LOCALAPPDATA"] = Join-Path $runRoot "LocalAppData"
 $startInfo.Environment["XDG_DATA_HOME"] = Join-Path $runRoot "data"
@@ -55,7 +63,7 @@ $stderr = $stderrTask.GetAwaiter().GetResult()
 Write-Host $stdout
 if ($stderr) { Write-Host $stderr }
 $results = @(Get-ChildItem -LiteralPath $runRoot -Filter phase0_smoke_result.txt -File -Recurse)
-if ($process.ExitCode -ne 0 -or $stderr -match '(?m)^(SCRIPT ERROR|ERROR):' -or $results.Count -ne 1 -or (Get-Content -LiteralPath $results[0].FullName -Raw).Trim() -ne "PASS") {
+if ($process.ExitCode -ne 0 -or ($stdout + "`n" + $stderr) -match '(?m)^(SCRIPT ERROR|ERROR):' -or $results.Count -ne 1 -or (Get-Content -LiteralPath $results[0].FullName -Raw).Trim() -ne "PASS") {
     throw "Smoke failed (exit $($process.ExitCode)). Artifacts: $runRoot"
 }
 Write-Host "PASS ($Suite). Artifacts: $runRoot"
