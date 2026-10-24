@@ -2,8 +2,8 @@
 
 Ветка `2d` остается шаблоном с законченными игровыми примерами. `main` содержит
 общую песочницу; механики и рисованные ресурсы этого примера находятся только здесь.
-Запуск: Godot 4.7.2, обычный F5 / `main/main.tscn`. Готовые локальные сборки:
-`builds/windows/ForestKeeper.exe` и `builds/web/index.html`.
+Запуск: Godot 4.7.2, обычный F5 / `main/main.tscn`. После экспорта сборки находятся в
+`builds/windows/ForestKeeper.exe` и `builds/web/index.html`; в Git они не входят.
 
 ## Режимы
 
