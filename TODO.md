@@ -6,18 +6,18 @@ Maintain a reusable Godot template with a common `main` base and `3d`, `2d`, `2d
 
 - suitable as a base for 2D and 3D games;
 - focused on infrastructure only;
-- no built-in gameplay mechanics (demo simulation only);
+- common infrastructure without genre mechanics; replaceable gameplay examples stay in variant branches;
 - stable, debuggable, testable, and easy to extend.
 
 
-## Current Status — 2026-10-21
+## Current Status — 2026-10-24
 
 The checked baseline phases below record implemented infrastructure, not unconditional current release acceptance. The universal native UI is implemented in the common base; variants receive its commits through merge. See [READINESS.md](docs/READINESS.md) for actual checks and limits, [UI_FRAMEWORK.md](docs/UI_FRAMEWORK.md) for extension.
 
 - [x] Native Theme roles, reusable screen/HUD components and standalone catalog.
 - [x] Shared UI integration in menus, settings, saves, feedback and loading.
 - [x] Focused smoke and native 2D/3D UI checks.
-- [ ] Separate pixelart skin and layout acceptance at 640×360.
+- [x] Shared compact UI and layout acceptance at 640×360; a separate pixelart skin is optional.
 - [ ] Physical gamepad acceptance of the updated UI.
 - [x] Fresh Windows/Web exports; native Theme/font/full OFL and absence of design/editor payload verified in the packages.
 - [ ] Graphical target-platform acceptance of these fresh exports.
@@ -222,7 +222,7 @@ Focus: make the template easy to adopt and evolve.
 
 ### Exit criteria for Phase 5
 
-- [x] New team can select a 2D/3D variant and start a separate game repository; pixelart UI adaptation remains pending.
+- [x] New team can select a 2D/3D/pixelart variant and start a separate game repository; compact UI is included.
 - [x] Documentation matches actual architecture and workflows.
 - [x] Template release process is repeatable.
 

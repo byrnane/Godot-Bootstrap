@@ -41,7 +41,7 @@
 
 ## Макеты
 
-Рабочий исходник — `Game Template UI.fig` в корне проекта. Для макетов, UI-kit
-и компонентов используй OpenPencil, официальный навык `open-pencil`, MCP или CLI.
-Порядок работы — в [docs/OPENPENCIL.md](docs/OPENPENCIL.md). Сохраняй компоненты,
-переменные и индивидуальные правки экземпляров. Старые облачные ссылки — история.
+Рабочий исходник — [Game Template](https://www.figma.com/design/le33QeQV2WWwvlW0hGpT0M/Game-Template-UI). Макеты, UI-kit и компоненты
+редактируй в Figma Desktop через локальный figma-console-mcp и Desktop Bridge.
+Правила работы — в [FIGMA.md](docs/FIGMA.md); локальный .fig хранится как резервный
+снимок. Сохраняй компоненты, переменные и индивидуальные правки экземпляров.

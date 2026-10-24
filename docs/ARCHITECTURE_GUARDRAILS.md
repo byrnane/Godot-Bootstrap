@@ -66,7 +66,7 @@ Why: smoke checks and runtime locale switch rely on this convention.
 - Screen controllers adapt manager/context data to component properties and view models.
 - A different skin preserves these contracts and the existing `UiShell` / `BaseModal` stack.
 
-The catalog and extension rules are in [UI Framework](UI_FRAMEWORK.md). Prototype context copies in the local OpenPencil design are a design-preview workaround, not additional runtime modal stacks.
+The catalog and extension rules are in [UI Framework](UI_FRAMEWORK.md). Prototype context copies in the Figma design are a design-preview workaround, not additional runtime modal stacks.
 
 ## Safe Customization Surface
 
