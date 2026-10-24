@@ -217,7 +217,11 @@ Run `shared/ui/catalog/ui_catalog.tscn` with F6 to inspect primitives independen
 
 ### Scene loading
 
-The template now includes async scene loading through `ResourceLoader.load_threaded_request(...)`.
+SceneRouter loads scenes with `ResourceLoader.load(...)` in an owned `Thread`, then joins it before instantiating the scene on the main thread. This avoids the LoadToken leak in Godot 4.7.2's `load_threaded_request` path ([engine issue #120661](https://github.com/godotengine/godot/issues/120661)). Router shutdown also joins an active worker.
+
+The loading screen remains responsive and indeterminate while reading the resource. `scene_load_progress` reports 0 at the start and 1 on success; intermediate percentages are not available through this path. Loading status, tips, queued transitions and recovery remain owned by the existing services.
+
+The Web preset disables threads. On Web, the resource is loaded synchronously after showing the loading screen; no `Thread` is started.
 
 This gives you:
 
@@ -404,7 +408,11 @@ GameplayHud принимает view model и не читает контекст�
 
 ### Загрузка сцен
 
-В шаблоне уже есть асинхронная загрузка сцен через `ResourceLoader.load_threaded_request(...)`.
+SceneRouter вызывает `ResourceLoader.load(...)` в собственном `Thread`, присоединяет поток и создает сцену в основном потоке. Это обходит утечку LoadToken в Godot 4.7.2 при `load_threaded_request` ([ошибка движка #120661](https://github.com/godotengine/godot/issues/120661)). При выходе активный поток также присоединяется.
+
+Во время чтения ресурса экран остается отзывчивым и показывает вращающийся индикатор. `scene_load_progress` сообщает 0 в начале и 1 при успехе; промежуточных процентов у этого способа нет. Статусы, подсказки, очередь переходов и восстановление сохраняют прежних владельцев.
+
+Web-пресет отключает потоки. В Web ресурс загружается синхронно после показа экрана загрузки; `Thread` не запускается.
 
 Это даёт:
 
