@@ -23,6 +23,7 @@ var impact_left: float = 0.0
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	wants_capture = not OS.has_feature("web")
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 
 func get_hud_scene() -> PackedScene:
@@ -117,6 +118,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT and not wants_capture and _can_play():
 		wants_capture = true
+		# Web pointer lock must be requested inside a real input callback.
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("proto_interact") and player.enabled:
 		interact()
@@ -128,11 +131,14 @@ func _process(delta: float) -> void:
 	if not is_instance_valid(player):
 		return
 	var allowed: bool = _can_play()
+	if OS.has_feature("web"):
+		wants_capture = allowed and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED
 	player.enabled = allowed and wants_capture
 	for enemy: RetroZombie in enemies:
-		enemy.enabled = allowed
+		enemy.enabled = player.enabled
 	var mode: int = Input.MOUSE_MODE_CAPTURED if allowed and wants_capture else Input.MOUSE_MODE_VISIBLE
-	if Input.mouse_mode != mode and not DisplayServer.get_name() == "headless":
+	# Only release from the frame loop on Web; acquiring belongs to the click.
+	if Input.mouse_mode != mode and not DisplayServer.get_name() == "headless" and (not OS.has_feature("web") or mode == Input.MOUSE_MODE_VISIBLE):
 		Input.mouse_mode = mode
 	if allowed and not get_tree().paused:
 		_sync_state()

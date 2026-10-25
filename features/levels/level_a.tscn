@@ -390,6 +390,9 @@ points = PackedVector3Array(-1.5, 3.2, -16.15, -1.5, 3.2, -15.849999, -1.5, 2.5,
 [sub_resource type="BoxMesh" id="BoxMesh_2gm2g"]
 size = Vector3(10, 0.15, 34)
 
+[sub_resource type="BoxShape3D" id="CeilingShape"]
+size = Vector3(10, 0.15, 34)
+
 [sub_resource type="BoxShape3D" id="BoxShape3D_5ssex"]
 size = Vector3(0.65, 1.8, 0.45)
 
@@ -719,6 +722,11 @@ transform = Transform3D(2.5, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -16)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.3, -12.5)
 material_override = SubResource("StandardMaterial3D_au1vi")
 mesh = SubResource("BoxMesh_2gm2g")
+
+[node name="CeilingBody" type="StaticBody3D" parent="Navigation/Geometry/@MeshInstance3D@82"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Geometry/@MeshInstance3D@82/CeilingBody"]
+shape = SubResource("CeilingShape")
 
 [node name="@StaticBody3D@83" type="StaticBody3D" parent="Navigation/Geometry" unique_id=2045406986]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.3, 0, 1.5)

@@ -39,7 +39,7 @@ func build() -> void:
 		block(Vector3(0, 2.85, z), Vector3(3.0, 0.7, 0.3), wall_material)
 		var frame: Node3D = model("doorframe", geometry, Vector3(0, 0, z))
 		frame.scale.x = 2.5
-	# Ceiling is visual only; the bounded bake ignores overhead surfaces.
+	# The bounded navigation bake excludes this overhead collider.
 	var ceiling: MeshInstance3D = MeshInstance3D.new()
 	var ceiling_mesh: BoxMesh = BoxMesh.new()
 	ceiling_mesh.size = Vector3(10, 0.15, 34)
@@ -47,6 +47,13 @@ func build() -> void:
 	ceiling.material_override = wall_material
 	ceiling.position = Vector3(0, 3.3, -12.5)
 	geometry.add_child(ceiling)
+	var ceiling_body: StaticBody3D = StaticBody3D.new()
+	ceiling.add_child(ceiling_body)
+	var ceiling_collision: CollisionShape3D = CollisionShape3D.new()
+	var ceiling_shape: BoxShape3D = BoxShape3D.new()
+	ceiling_shape.size = ceiling_mesh.size
+	ceiling_collision.shape = ceiling_shape
+	ceiling_body.add_child(ceiling_collision)
 	prop("locker", Vector3(-4.3, 0, 1.5), Vector3(0.65, 1.8, 0.45))
 	prop("crate", Vector3(3.3, 0, -2.2), Vector3(0.8, 0.8, 0.8))
 	prop("crate", Vector3(-2.3, 0, -10.3), Vector3(0.8, 0.8, 0.8))

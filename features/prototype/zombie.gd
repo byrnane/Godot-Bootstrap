@@ -110,12 +110,13 @@ func take_damage(amount: int) -> void:
 		RetroPlayer.play_clip(animation, "Hit", true)
 
 func snapshot() -> Dictionary:
-	return {"health": health, "position": [position.x, position.y, position.z], "yaw": rotation.y}
+	return {"health": health, "position": [position.x, position.y, position.z], "yaw": rotation.y, "alerted": alerted}
 
 func restore(data: Dictionary) -> void:
 	health = clampi(int(SavedState.number(data.get("health"), 100)), 0, 100)
 	position = SavedState.point(data.get("position"), position)
 	rotation.y = SavedState.number(data.get("yaw"), 0.0)
+	alerted = bool(data.get("alerted", false))
 	if health == 0:
 		collision_layer = 0
 		collision_mask = 0

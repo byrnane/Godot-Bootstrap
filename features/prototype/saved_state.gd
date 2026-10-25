@@ -12,7 +12,9 @@ static func point(value: Variant, fallback: Vector3) -> Vector3:
 		if not (component is int or component is float) or not is_finite(float(component)):
 			return fallback
 	var candidate: Vector3 = Vector3(value[0], value[1], value[2])
-	if absf(candidate.x) >= 4.8 or candidate.z < -29.1 or candidate.z > 4.1 or candidate.y < -0.1 or candidate.y >= 3.0:
+	# End walls are at 4.4/-29.4; the player's 0.28m capsule can reach
+	# 4.12/-29.12. Leave tolerance for the physics contact margin.
+	if absf(candidate.x) >= 4.8 or candidate.z < -29.2 or candidate.z > 4.2 or candidate.y < -0.1 or candidate.y >= 3.0:
 		return fallback
 	candidate.y = maxf(candidate.y, 0.0)
 	return candidate

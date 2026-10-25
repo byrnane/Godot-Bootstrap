@@ -44,7 +44,9 @@ func _ready() -> void:
 	place(interaction_label, Control.PRESET_CENTER_BOTTOM, Rect2(-420, -180, 840, 50))
 	interaction_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	pause_button = Button.new()
-	pause_button.text = "Ⅱ"
+	pause_button.theme_type_variation = &"UiIconButton"
+	pause_button.icon = preload("res://shared/ui/theme/icons/semantic/pause.svg")
+	pause_button.expand_icon = true
 	pause_button.tooltip_text = tr("UI_PAUSE_TITLE")
 	add_child(pause_button)
 	place(pause_button, Control.PRESET_TOP_RIGHT, Rect2(-76, 24, 52, 48))
@@ -105,7 +107,7 @@ func apply_view_model(value: Dictionary) -> void:
 	interaction_label.text = ""
 	if not str(data.get("interaction", "")).is_empty():
 		interaction_label.text = "[%s] %s" % [InputManager.get_action_binding_text(&"proto_interact"), tr(data.interaction)]
-	elif not data.get("captured", true):
+	elif not data.get("captured", true) and str(data.get("outcome", "")).is_empty():
 		interaction_label.text = tr("P3_CLICK_TO_PLAY")
 	var outcome: String = str(data.get("outcome", ""))
 	overlay.visible = not outcome.is_empty()

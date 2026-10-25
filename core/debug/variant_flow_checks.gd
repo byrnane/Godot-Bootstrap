@@ -16,6 +16,22 @@ static func run(runner: Node) -> Array[String]:
 	check(errors, player.third_camera.current and not player.first_camera.current, "third-person camera should become current")
 	player.set_camera_mode(false)
 	check(errors, player.first_camera.current and is_equal_approx(player.rotation.y, yaw), "camera switching must preserve facing")
+	await check_camera_collision(runner, player, errors)
+	var spawn: Vector3 = player.position
+	for wall_z: float in [4.115, -29.115]:
+		player.position = Vector3(0, 0, wall_z)
+		var wall_state: Dictionary = player.snapshot()
+		player.position = spawn
+		player.restore(wall_state)
+		check(errors, is_equal_approx(player.position.z, wall_z), "restore must preserve reachable positions against end walls")
+	player.position = spawn
+	game.wants_capture = false
+	await runner.get_tree().process_frame
+	await runner.get_tree().process_frame
+	check(errors, not player.enabled and not game.enemies[0].enabled, "released controls must also stop enemy attacks")
+	game.wants_capture = true
+	await runner.get_tree().process_frame
+	await runner.get_tree().process_frame
 	# Exercise real physics rays, collision layers, weapon timing, and zombie death.
 	var enemy: RetroZombie = game.enemies[0]
 	enemy.position = Vector3(0, 0.05, -1)
@@ -114,6 +130,7 @@ static func run(runner: Node) -> Array[String]:
 	player.position = Vector3(0.7, 0.0, 1.0)
 	player.magazine = 3
 	player.reserve = 17
+	game.enemies[1].alerted = true
 	player.set_camera_mode(true)
 	game._sync_state()
 	check(errors, SaveManager.save_current_session(87), "prototype save should succeed")
@@ -131,6 +148,7 @@ static func run(runner: Node) -> Array[String]:
 		player = game.player
 		check(errors, player.position.distance_to(Vector3(0.7, 0, 1)) < 0.15 and player.magazine == 3 and player.reserve == 17 and player.third_person, "continue must restore player transform, ammunition and camera")
 		check(errors, game.enemies[0].health == 0 and find_pickup(game, "medkit_1").consumed, "continue must preserve killed zombies and consumed items")
+		check(errors, game.enemies[1].alerted, "continue must preserve an alerted zombie even when the player is out of sight")
 	# Observe real navigation across the first doorway, then an actual melee hit.
 	var chaser: RetroZombie = game.enemies[1]
 	chaser.position = Vector3(0, 0.05, -6)
@@ -175,6 +193,35 @@ static func _resume_params() -> SessionStartParams:
 	var params: SessionStartParams = SessionStartParams.new()
 	params.mode = SessionStartParams.Mode.RESUME_OR_CONTINUE_OR_NEW
 	return params
+
+static func check_camera_collision(runner: Node, player: RetroPlayer, errors: Array[String]) -> void:
+	var original_position: Vector3 = player.position
+	var probe: SphereShape3D = SphereShape3D.new()
+	probe.radius = 0.12
+	var query: PhysicsShapeQueryParameters3D = PhysicsShapeQueryParameters3D.new()
+	query.shape = probe
+	query.collision_mask = 1
+	# Side wall, corner, doorway jamb and a steep look near the ceiling/floor.
+	for point: Vector3 in [Vector3(4.65, 0, 0), Vector3(4.65, 0, 4.05), Vector3(1.15, 0, -4.4), Vector3.ZERO]:
+		for yaw_index: int in range(4):
+			for pitch: float in [-1.2, 0.0, 1.2]:
+				player.position = point
+				player.rotation.y = yaw_index * PI * 0.5
+				player.pivot.rotation.x = pitch
+				player.set_camera_mode(true)
+				await runner.get_tree().physics_frame
+				await runner.get_tree().physics_frame
+				var camera: Camera3D = player.active_camera()
+				query.transform = Transform3D(Basis.IDENTITY, camera.global_position)
+				var clear: bool = player.get_world_3d().direct_space_state.intersect_shape(query).is_empty()
+				clear = clear and player.ray(player.pivot.global_position, camera.global_position, 1).is_empty()
+				clear = clear and camera.global_position.y < 3.15
+				check(errors, clear, "camera must stay inside geometry at %s yaw=%d pitch=%.1f" % [point, yaw_index, pitch])
+	player.position = original_position
+	player.rotation.y = 0.0
+	player.pivot.rotation.x = 0.0
+	player.set_camera_mode(false)
+	await runner.get_tree().physics_frame
 
 static func find_pickup(game: Variant, id: String) -> RetroPickup:
 	for pickup: RetroPickup in game.pickups:

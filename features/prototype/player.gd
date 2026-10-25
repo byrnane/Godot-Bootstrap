@@ -27,6 +27,7 @@ var gun_animation: AnimationPlayer
 var muzzle_light: OmniLight3D
 @onready var pivot: Node3D = $CameraPivot
 @onready var first_camera: Camera3D = $CameraPivot/FirstCamera
+@onready var spring_arm: SpringArm3D = $CameraPivot/SpringArm
 @onready var third_camera: Camera3D = $CameraPivot/SpringArm/ThirdCamera
 
 func _ready() -> void:
@@ -60,7 +61,13 @@ func _ready() -> void:
 	muzzle_light.light_color = Color(1.0, 0.68, 0.28)
 	muzzle_light.omni_range = 4.0
 	muzzle_light.light_energy = 0.0
-	$CameraPivot/SpringArm.add_excluded_object(get_rid())
+	# Sweep the whole shoulder offset from inside the player's capsule. An
+	# offset arm origin can already be on the far side of a nearby wall.
+	var camera_offset: Vector3 = Vector3(0.5, 0.12, 2.6)
+	spring_arm.quaternion = Quaternion(Vector3.BACK, camera_offset.normalized())
+	spring_arm.spring_length = camera_offset.length()
+	third_camera.quaternion = spring_arm.quaternion.inverse()
+	spring_arm.add_excluded_object(get_rid())
 	set_camera_mode(false)
 
 func _model(asset_name: String, parent_node: Node) -> Node3D:
