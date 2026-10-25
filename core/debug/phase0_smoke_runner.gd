@@ -183,7 +183,10 @@ func _check_variant_configuration() -> void:
 	var expected_type: String = "Control" if variant == "main" else ("Node3D" if variant == "3d" else "Node2D");
 	_check(world_type == expected_type, "template: wrong world type for " + variant);
 	var pixel_art: bool = variant == "2d-pixelart";
-	_check(ProjectSettings.get_setting("rendering/renderer/rendering_method") == "gl_compatibility", "template: expected Compatibility renderer");
+	var expected_renderer: String = "mobile" if variant == "3d" and not OS.has_feature("web") else "gl_compatibility";
+	_check(ProjectSettings.get_setting("rendering/renderer/rendering_method") == expected_renderer, "template: wrong renderer for " + variant);
+	if variant == "3d":
+		_check(ProjectSettings.get_setting("rendering/rendering_device/driver.windows") == "d3d12", "template: expected Direct3D 12 on Windows");
 	_check(ProjectSettings.get_setting("display/window/size/viewport_width") == (640 if pixel_art else 1280), "template: wrong viewport width");
 	_check(ProjectSettings.get_setting("display/window/size/viewport_height") == (360 if pixel_art else 720), "template: wrong viewport height");
 	_check(ProjectSettings.get_setting("display/window/size/window_width_override") == (1600 if variant == "2d" else 1280), "template: wrong initial window width");
