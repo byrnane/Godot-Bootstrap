@@ -12,7 +12,11 @@
 | `2d` | «Лесной хранитель»: платформер, аренный шутер, головоломка | База 1280×720, canvas_items, expand, linear; fullscreen |
 | `2d-pixelart` | Технический 2D-пример на пиксельной сетке | 640×360, viewport, integer, nearest |
 
-Во всех ветках: Godot 4.7.2, Compatibility, Windows/Web и сохранение пропорций. В `2d` первый запуск полноэкранный, оконный размер 1600×900; остальные варианты сохраняют стартовое окно 1280×720.
+Во всех ветках: Godot 4.7.2, Windows/Web и сохранение пропорций. `main`, `2d` и
+`2d-pixelart` используют Compatibility. В `3d` для настольного запуска выбран
+Mobile, на Windows — Direct3D 12; Web использует Compatibility/WebGL 2.
+В `2d` первый запуск полноэкранный, оконный размер 1600×900; остальные варианты
+сохраняют стартовое окно 1280×720.
 Godot AI общий. Cyclops и его export plugin входят только в `3d`.
 Общие идентификаторы сцен и формат SaveData v3 одинаковы. Игровые данные варианта находятся в `game_data`. Путь игровой сцены — `features/gameplay/gameplay.tscn`, уровней — `features/levels/level_a.tscn` и `level_b.tscn`.
 
