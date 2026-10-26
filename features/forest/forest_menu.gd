@@ -112,6 +112,11 @@ func _make_card(mode: String) -> PanelContainer:
 
 func on_enter(_payload: SceneTransitionPayload = null) -> void:
 	_refresh()
+	focus_default_control()
+
+func focus_default_control() -> void:
+	if not InputManager.ui_navigation_active:
+		return
 	if not _continue_button.disabled:
 		_continue_button.grab_focus()
 	else:
