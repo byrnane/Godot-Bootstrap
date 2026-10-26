@@ -96,9 +96,52 @@ func _process(delta: float) -> void:
 func _input(event: InputEvent) -> void:
 	if InputManager != null and InputManager.is_rebinding():
 		return;
+	_update_ui_navigation_focus(event);
 	if event.is_action_pressed(&"ui_debug_overlay"):
 		AppContext.toggle_debug_enabled();
 		get_viewport().set_input_as_handled();
+
+
+func _update_ui_navigation_focus(event: InputEvent) -> void:
+	# _input order must not depend on the autoload order: GUI receives the event
+	# only after this phase, so establish the intent here as well as in the manager.
+	InputManager.update_ui_navigation(event);
+	if InputManager.is_ui_pointer_event(event):
+		if event is InputEventMouseButton:
+			if event.pressed:
+				UiFocus.release_navigation_focus(get_viewport(), event);
+			else:
+				# Releasing focus while a button is held cancels its click. Wait
+				# until GUI has delivered RELEASE and emitted pressed instead.
+				call_deferred("_release_pointer_navigation_focus");
+		elif event is InputEventMouseMotion and event.button_mask == 0:
+			UiFocus.release_navigation_focus(get_viewport());
+		return;
+	if not InputManager.is_ui_navigation_event(event):
+		return;
+	_compact_modal_stack();
+	var root: Node = _modal_stack.back() if not _modal_stack.is_empty() else SceneRouter.current_scene_root;
+	if not is_instance_valid(root):
+		return;
+	var owner: Control = UiFocus.capture(get_viewport());
+	if owner != null and (_modal_stack.is_empty() or owner == root or root.is_ancestor_of(owner)):
+		return;
+	if root.has_method("focus_default_control"):
+		root.call("focus_default_control");
+	else:
+		UiFocus.restore(UiFocus.find_first_focusable(root));
+	# The first Tab/arrow selects the initial item; passing it on would skip it.
+	# Accept/cancel/pause still perform their normal action after taking focus.
+	if UiFocus.capture(get_viewport()) != null:
+		for action: StringName in [&"ui_focus_next", &"ui_focus_prev", &"ui_up", &"ui_down", &"ui_left", &"ui_right"]:
+			if event.is_action_pressed(action):
+				get_viewport().set_input_as_handled();
+				break;
+
+
+func _release_pointer_navigation_focus() -> void:
+	if not InputManager.ui_navigation_active:
+		UiFocus.release_navigation_focus(get_viewport());
 
 
 func open_settings() -> void:
