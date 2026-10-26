@@ -30,6 +30,18 @@ In your root scene script, optionally implement:
 
 Use `AppFlow` as orchestration layer for top-level behavior.
 
+### Alternate Root Scene IDs
+
+`GameConfig.start_scene_id` and `gameplay_scene_id` set the default registered IDs.
+`AppStartupParams.main_menu_scene_id` and `SessionStartParams.gameplay_scene_id`
+can override them. AppFlow connects menu/gameplay intent signals to the selected
+roots and preserves the selected gameplay root for pause, restart and slot loading
+in the current process. Return-to-menu uses the menu selected at startup.
+A failed load leaves the previous gameplay role intact.
+
+Root IDs are not stored in SaveData. To use the same roots after restarting the
+application, set them in GameConfig or provide the startup/session parameters again.
+
 ## Extend App Context vs Session Context
 
 - `AppContext`: long-lived app-level state (settings, debug flags, runtime mode).

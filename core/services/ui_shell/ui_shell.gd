@@ -49,6 +49,7 @@ var _feedback_queue: Array[Dictionary] = [];
 var _queued_feedback_request_ids: Dictionary = {};
 var _active_feedback_kind: StringName = &"";
 var _active_feedback_request_id: int = -1;
+var _feedback_closing: bool = false;
 var _debug_refresh_elapsed: float = 0.0;
 var _reported_setup_issues: Dictionary = {};
 var _loading_visible: bool = false;
@@ -130,6 +131,8 @@ func close_pause() -> void:
 
 func close_all_modals() -> void:
 	_compact_modal_stack();
+	if _modal_stack.has(_feedback_modal):
+		_close_feedback_modal();
 	for modal: Control in _modal_stack:
 		if modal != null and modal.has_method("close_modal"):
 			modal.call("close_modal");
@@ -293,6 +296,7 @@ func _ensure_modals() -> void:
 			_bind_modal_lifecycle(_feedback_modal);
 			_feedback_modal.confirmed.connect(_on_feedback_confirmed);
 			_feedback_modal.canceled.connect(_on_feedback_canceled);
+			_feedback_modal.closed.connect(_on_feedback_modal_closed);
 	if pause_modal_scene == null:
 		_warn_setup_issue("pause_modal_scene_missing", "pause_modal_scene is not assigned");
 	if settings_modal_scene == null:
@@ -355,7 +359,12 @@ func _push_modal(modal: Control) -> void:
 	_refresh_modal_visibility();
 	_refresh_debug_overlay();
 	if modal.has_method("open_modal"):
-		modal.call_deferred("open_modal");
+		call_deferred("_open_stacked_modal", modal);
+
+
+func _open_stacked_modal(modal: Control) -> void:
+	if is_instance_valid(modal) and _modal_stack.has(modal):
+		modal.call("open_modal");
 
 
 func _pop_modal(modal: Control) -> void:
@@ -568,7 +577,7 @@ func _on_toast_requested(payload: Dictionary) -> void:
 func _try_show_next_feedback() -> void:
 	if _feedback_modal == null:
 		return;
-	if _active_feedback_request_id >= 0:
+	if _active_feedback_request_id >= 0 or _feedback_closing:
 		return;
 	while not _feedback_queue.is_empty():
 		var request: Dictionary = _feedback_queue.pop_front();
@@ -592,12 +601,14 @@ func _try_show_next_feedback() -> void:
 
 
 func _on_feedback_confirmed(request_id: int) -> void:
-	if request_id != _active_feedback_request_id:
+	if request_id != _active_feedback_request_id or _feedback_closing:
 		return;
 
 	var resolved_kind: StringName = _active_feedback_kind;
-	_clear_active_feedback_request();
 	await _close_feedback_modal();
+	if request_id != _active_feedback_request_id:
+		return;
+	_clear_active_feedback_request();
 	if resolved_kind == &"alert":
 		UiFeedback.resolve_alert(request_id);
 	else:
@@ -606,25 +617,31 @@ func _on_feedback_confirmed(request_id: int) -> void:
 
 
 func _on_feedback_canceled(request_id: int) -> void:
-	if request_id != _active_feedback_request_id:
+	if request_id != _active_feedback_request_id or _feedback_closing:
 		return;
 
-	_clear_active_feedback_request();
 	await _close_feedback_modal();
+	if request_id != _active_feedback_request_id:
+		return;
+	_clear_active_feedback_request();
 	UiFeedback.resolve_confirm(request_id, false);
 	call_deferred("_try_show_next_feedback");
 
 
 func _cancel_active_feedback_request() -> void:
+	var canceled_requests: Array[Dictionary] = _feedback_queue.duplicate();
+	if _active_feedback_request_id >= 0:
+		canceled_requests.push_front({"kind": _active_feedback_kind, "request_id": _active_feedback_request_id});
 	_feedback_queue.clear();
 	_queued_feedback_request_ids.clear();
-	if _active_feedback_request_id < 0:
-		return;
-	if _active_feedback_kind == &"alert":
-		UiFeedback.resolve_alert(_active_feedback_request_id);
-	else:
-		UiFeedback.resolve_confirm(_active_feedback_request_id, false);
 	_clear_active_feedback_request();
+	# Callbacks may enqueue feedback again; cancel only the captured requests.
+	for request: Dictionary in canceled_requests:
+		var request_id: int = int(request.get("request_id", -1));
+		if request.get("kind", &"") == &"alert":
+			UiFeedback.resolve_alert(request_id);
+		else:
+			UiFeedback.resolve_confirm(request_id, false);
 
 
 func _clear_active_feedback_request() -> void:
@@ -652,8 +669,16 @@ func _bind_modal_lifecycle(modal: BaseModal) -> void:
 func _close_feedback_modal() -> void:
 	if _feedback_modal == null:
 		return;
-	_pop_modal(_feedback_modal);
-	await _feedback_modal.closed;
+	if not _feedback_closing:
+		_feedback_closing = true;
+		_pop_modal(_feedback_modal);
+	if _feedback_closing:
+		await _feedback_modal.closed;
+
+
+func _on_feedback_modal_closed() -> void:
+	_feedback_closing = false;
+	call_deferred("_try_show_next_feedback");
 
 
 func _on_modal_visibility_changed() -> void:
