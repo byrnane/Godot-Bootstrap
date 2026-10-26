@@ -123,8 +123,8 @@ func _update_ui_navigation_focus(event: InputEvent) -> void:
 	var root: Node = _modal_stack.back() if not _modal_stack.is_empty() else SceneRouter.current_scene_root;
 	if not is_instance_valid(root):
 		return;
-	var owner: Control = UiFocus.capture(get_viewport());
-	if owner != null and (_modal_stack.is_empty() or owner == root or root.is_ancestor_of(owner)):
+	var focused_control: Control = UiFocus.capture(get_viewport());
+	if focused_control != null and (_modal_stack.is_empty() or focused_control == root or root.is_ancestor_of(focused_control)):
 		return;
 	if root.has_method("focus_default_control"):
 		root.call("focus_default_control");

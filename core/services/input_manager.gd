@@ -165,8 +165,8 @@ func is_ui_navigation_event(event: InputEvent) -> bool:
 		if key == KEY_TAB:
 			return true;
 		# Arrow keys in a text field move its caret, not the surrounding menu.
-		var owner: Control = get_viewport().gui_get_focus_owner();
-		if owner is LineEdit or owner is TextEdit:
+		var focused_control: Control = get_viewport().gui_get_focus_owner();
+		if focused_control is LineEdit or focused_control is TextEdit:
 			return false;
 		return key in [KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT];
 	if event is InputEventJoypadButton or event is InputEventJoypadMotion:
