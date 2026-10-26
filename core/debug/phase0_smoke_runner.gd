@@ -72,6 +72,9 @@ func _run() -> void:
 		var ui_failures: Array[String] = await preload("res://core/debug/ui_smoke_checks.gd").run(self);
 		for failure: String in ui_failures:
 			_check(false, failure);
+		var feedback_failures: Array[String] = await preload("res://core/debug/feedback_queue_checks.gd").run(self);
+		for failure: String in feedback_failures:
+			_check(false, failure);
 	# Retry can quit the application, so it must remain the last check.
 	if suite in ["persistence", "all"]:
 		await _check_exit_save_retry();
