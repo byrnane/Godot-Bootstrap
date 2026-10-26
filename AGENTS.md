@@ -48,7 +48,5 @@
 
 ## Макеты
 
-Рабочий исходник — [Game Template](https://www.figma.com/design/le33QeQV2WWwvlW0hGpT0M/Game-Template-UI). Макеты, UI-kit и компоненты
-редактируй в Figma Desktop через локальный figma-console-mcp и Desktop Bridge.
-Правила работы — в [FIGMA.md](docs/FIGMA.md); локальный .fig хранится как резервный
-снимок. Сохраняй компоненты, переменные и индивидуальные правки экземпляров.
+Рабочий исходник — [Game Template](https://www.figma.com/design/le33QeQV2WWwvlW0hGpT0M/Game-Template-UI).
+Правила работы и приемки — в [FIGMA.md](docs/FIGMA.md).
