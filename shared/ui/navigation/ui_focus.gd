@@ -18,9 +18,26 @@ static func restore(control: Variant) -> bool:
 		return false;
 	if focus_target.get_focus_mode_with_override() == Control.FOCUS_NONE:
 		return false;
+	if focus_target is BaseButton and (focus_target as BaseButton).disabled:
+		return false;
 
 	focus_target.grab_focus();
 	return true;
+
+
+static func release_navigation_focus(viewport: Viewport, pointer_press: InputEventMouseButton = null) -> void:
+	var owner: Control = capture(viewport);
+	if owner == null:
+		return;
+	if owner is LineEdit or owner is TextEdit:
+		# Keep editing while moving the pointer or clicking inside this field.
+		# An actual click outside it gives up the caret, including on empty space.
+		if pointer_press == null:
+			return;
+		var local_position: Vector2 = owner.get_global_transform_with_canvas().affine_inverse() * pointer_press.position;
+		if Rect2(Vector2.ZERO, owner.size).has_point(local_position):
+			return;
+	owner.release_focus();
 
 
 static func grab_path(owner: Node, focus_path: NodePath) -> bool:
@@ -34,7 +51,7 @@ static func find_first_focusable(node: Node) -> Control:
 		return null;
 	if node is Control:
 		var control: Control = node as Control;
-		if control.is_visible_in_tree() and control.get_focus_mode_with_override() != Control.FOCUS_NONE:
+		if control.is_visible_in_tree() and control.get_focus_mode_with_override() != Control.FOCUS_NONE and not (control is BaseButton and (control as BaseButton).disabled):
 			return control;
 
 	for child: Node in node.get_children():
