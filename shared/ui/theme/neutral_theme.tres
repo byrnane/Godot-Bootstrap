@@ -206,6 +206,49 @@ corner_radius_top_right = 6
 corner_radius_bottom_left = 6
 corner_radius_bottom_right = 6
 
+[sub_resource type="StyleBoxFlat" id="icon_button_hover"]
+bg_color = Color(0.215686, 0.243137, 0.286275, 1)
+content_margin_left = 12.0
+content_margin_top = 12.0
+content_margin_right = 12.0
+content_margin_bottom = 12.0
+border_color = Color(0.294118, 0.329412, 0.376471, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_left = 6
+corner_radius_bottom_right = 6
+
+[sub_resource type="StyleBoxFlat" id="icon_button_pressed"]
+bg_color = Color(0.160784, 0.180392, 0.215686, 1)
+content_margin_left = 12.0
+content_margin_top = 12.0
+content_margin_right = 12.0
+content_margin_bottom = 12.0
+border_color = Color(0.894118, 0.729412, 0.509804, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_left = 6
+corner_radius_bottom_right = 6
+
+[sub_resource type="StyleBoxFlat" id="icon_button_disabled"]
+bg_color = Color(0.113725, 0.129412, 0.156863, 1)
+content_margin_left = 12.0
+content_margin_top = 12.0
+content_margin_right = 12.0
+content_margin_bottom = 12.0
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_left = 6
+corner_radius_bottom_right = 6
+
 [sub_resource type="StyleBoxEmpty" id="UiTabItemnormal"]
 content_margin_left = 16.0
 content_margin_right = 16.0
@@ -783,6 +826,9 @@ UiButtonGhost/base_type = &"Button"
 UiButtonGhost/styles/normal = SubResource("ghost")
 UiIconButton/base_type = &"Button"
 UiIconButton/styles/normal = SubResource("icon_button")
+UiIconButton/styles/hover = SubResource("icon_button_hover")
+UiIconButton/styles/pressed = SubResource("icon_button_pressed")
+UiIconButton/styles/disabled = SubResource("icon_button_disabled")
 UiTabItem/base_type = &"Button"
 UiTabItem/styles/normal = SubResource("UiTabItemnormal")
 UiTabItem/styles/pressed = SubResource("UiTabItemselected")

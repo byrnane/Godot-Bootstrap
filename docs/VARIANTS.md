@@ -7,8 +7,8 @@
 
 | Ветка | Состав | Viewport и фильтрация |
 | --- | --- | --- |
-| `main` | Общие сервисы, UI и нейтральные Control-заглушки | 1280×720, canvas_items, linear |
-| `3d` | Node3D, камера, свет, модели, коллизии, Jolt, Cyclops, Blender → GLB | 1280×720, canvas_items, linear |
+| `main` | Общие сервисы, UI и нейтральные Control-заглушки | База 1280×720, canvas_items, expand, linear |
+| `3d` | Node3D, камера, свет, модели, коллизии, Jolt, Cyclops, Blender → GLB | База 1280×720, canvas_items, expand, linear |
 | `2d` | «Лесной хранитель»: платформер, аренный шутер, головоломка | База 1280×720, canvas_items, expand, linear; fullscreen |
 | `2d-pixelart` | Технический 2D-пример на пиксельной сетке | 640×360, viewport, integer, nearest |
 
@@ -17,6 +17,9 @@
 Mobile, на Windows — Direct3D 12; Web использует Compatibility/WebGL 2.
 В `2d` первый запуск полноэкранный, оконный размер 1600×900; остальные варианты
 сохраняют стартовое окно 1280×720.
+В main, 2d и 3d viewport расширяется под соотношение сторон окна без растяжения
+элементов. PixelArt сохраняет keep и integer: пиксельная сетка важнее заполнения
+произвольного окна.
 Godot AI общий. Cyclops и его export plugin входят только в `3d`.
 Общие идентификаторы сцен и формат SaveData v3 одинаковы. Игровые данные варианта находятся в `game_data`. Путь игровой сцены — `features/gameplay/gameplay.tscn`, уровней — `features/levels/level_a.tscn` и `level_b.tscn`.
 

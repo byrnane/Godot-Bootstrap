@@ -75,6 +75,9 @@ func _run() -> void:
 		var navigation_failures: Array[String] = await preload("res://core/debug/ui_navigation_checks.gd").run(self);
 		for failure: String in navigation_failures:
 			_check(false, failure);
+		var geometry_failures: Array[String] = await preload("res://core/debug/ui_geometry_checks.gd").run(self);
+		for failure: String in geometry_failures:
+			_check(false, failure);
 		var feedback_failures: Array[String] = await preload("res://core/debug/feedback_queue_checks.gd").run(self);
 		for failure: String in feedback_failures:
 			_check(false, failure);
@@ -198,7 +201,7 @@ func _check_variant_configuration() -> void:
 	_check(ProjectSettings.get_setting("display/window/size/window_width_override") == (1600 if variant == "2d" else 1280), "template: wrong initial window width");
 	_check(ProjectSettings.get_setting("display/window/size/window_height_override") == (900 if variant == "2d" else 720), "template: wrong initial window height");
 	_check(ProjectSettings.get_setting("display/window/stretch/mode") == ("viewport" if pixel_art else "canvas_items"), "template: wrong stretch mode");
-	_check(ProjectSettings.get_setting("display/window/stretch/aspect") == ("expand" if variant == "2d" else "keep"), "template: wrong stretch aspect");
+	_check(ProjectSettings.get_setting("display/window/stretch/aspect") == ("keep" if pixel_art else "expand"), "template: wrong stretch aspect");
 	_check(UserSettings.new().fullscreen == (variant == "2d"), "template: wrong default fullscreen mode");
 	_check(ProjectSettings.get_setting("display/window/stretch/scale_mode") == ("integer" if pixel_art else "fractional"), "template: wrong scale mode");
 	var expected_filter: int = Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_NEAREST if pixel_art else Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_LINEAR;
