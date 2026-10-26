@@ -493,6 +493,10 @@ func _apply_video_settings(settings: UserSettings) -> bool:
 	# report a false failure and pollute smoke output.
 	if DisplayServer.get_name().to_lower() == "headless":
 		return true;
+	# The editor owns the embedded window and does not support mode/flag changes.
+	# Keep the user's standalone preference instead of recovering to windowed.
+	if Engine.is_embedded_in_editor():
+		return true;
 	DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED if settings.vsync_enabled else DisplayServer.VSYNC_DISABLED);
 	var fullscreen_mode: int = int(ProjectSettings.get_setting("display/window/size/mode", 3));
 	if fullscreen_mode not in [DisplayServer.WINDOW_MODE_FULLSCREEN, DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN]:
@@ -507,7 +511,8 @@ func _apply_video_settings(settings: UserSettings) -> bool:
 			var usable: Rect2i = DisplayServer.screen_get_usable_rect();
 			requested = requested.min(usable.size - Vector2i(64, 80));
 			DisplayServer.window_set_size(requested);
-			DisplayServer.window_set_position(usable.position + (usable.size - requested) / 2);
+			var centered_offset: Vector2i = Vector2i(Vector2(usable.size - requested) * 0.5);
+			DisplayServer.window_set_position(usable.position + centered_offset);
 	return DisplayServer.window_get_mode() == expected_mode;
 
 
