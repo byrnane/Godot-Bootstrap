@@ -99,6 +99,9 @@ const REBINDABLE_ACTIONS: Array[StringName] = [
 
 var _default_bindings: Dictionary = {};
 var last_device: StringName = &"keyboard";
+# Mouse and keyboard share last_device for gameplay hints. UI focus has its own
+# intent: typing or movement bindings must not turn on menu navigation.
+var ui_navigation_active: bool = false;
 var _project_gamepad_bindings: Dictionary = {};
 var _project_actions: Dictionary = {};
 var _pending_rebind_action: StringName = &"";
@@ -120,14 +123,7 @@ func _ready() -> void:
 
 
 func _input(event: InputEvent) -> void:
-	var device: StringName = last_device;
-	if event is InputEventJoypadButton or (event is InputEventJoypadMotion and absf(event.axis_value) > 0.25):
-		device = &"gamepad";
-	elif event is InputEventKey or event is InputEventMouseButton or (event is InputEventMouseMotion and event.relative.length() > 2.0):
-		device = &"keyboard";
-	if device != last_device:
-		last_device = device;
-		device_changed.emit();
+	update_ui_navigation(event);
 	if not is_rebinding():
 		return;
 
@@ -136,6 +132,48 @@ func _input(event: InputEvent) -> void:
 
 	_apply_rebind(_pending_rebind_action, event);
 	get_viewport().set_input_as_handled();
+
+
+func update_ui_navigation(event: InputEvent) -> void:
+	# UiShell may consume the first navigation event before this autoload's
+	# _input runs; keep legacy device hints in sync for that event too.
+	var device: StringName = last_device;
+	if event is InputEventJoypadButton or (event is InputEventJoypadMotion and absf(event.axis_value) > 0.25):
+		device = &"gamepad";
+	elif event is InputEventKey or event is InputEventMouseButton or (event is InputEventMouseMotion and event.relative.length() > 2.0):
+		device = &"keyboard";
+	if device != last_device:
+		last_device = device;
+		device_changed.emit();
+	if is_rebinding():
+		return;
+	if is_ui_pointer_event(event):
+		ui_navigation_active = false;
+	elif is_ui_navigation_event(event):
+		ui_navigation_active = true;
+
+
+func is_ui_pointer_event(event: InputEvent) -> bool:
+	return event is InputEventMouseButton or (event is InputEventMouseMotion and event.relative.length() > 0.0);
+
+
+func is_ui_navigation_event(event: InputEvent) -> bool:
+	if event is InputEventKey:
+		if not event.pressed or event.alt_pressed or event.ctrl_pressed or event.meta_pressed:
+			return false;
+		var key: Key = event.keycode if event.keycode != KEY_NONE else event.physical_keycode;
+		if key == KEY_TAB:
+			return true;
+		# Arrow keys in a text field move its caret, not the surrounding menu.
+		var owner: Control = get_viewport().gui_get_focus_owner();
+		if owner is LineEdit or owner is TextEdit:
+			return false;
+		return key in [KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT];
+	if event is InputEventJoypadButton or event is InputEventJoypadMotion:
+		for action: StringName in [&"ui_up", &"ui_down", &"ui_left", &"ui_right", &"ui_accept", &"ui_cancel", &"ui_pause"]:
+			if event.is_action_pressed(action):
+				return true;
+	return false;
 
 
 func get_rebindable_actions() -> Array[StringName]:

@@ -92,6 +92,8 @@ func can_close_from_cancel() -> bool:
 
 
 func focus_default_control() -> void:
+	if not InputManager.ui_navigation_active or not is_visible_in_tree() or _is_closing:
+		return;
 	if UI_FOCUS_UTIL.grab_path(self, default_focus_path):
 		return;
 
@@ -130,7 +132,7 @@ func _remember_focus_owner() -> void:
 
 
 func _restore_previous_focus() -> void:
-	if UI_FOCUS_UTIL.restore(_previous_focus_owner):
+	if InputManager.ui_navigation_active and UI_FOCUS_UTIL.restore(_previous_focus_owner):
 		_previous_focus_owner = null;
 		return;
 

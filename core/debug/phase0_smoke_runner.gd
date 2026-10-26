@@ -72,6 +72,9 @@ func _run() -> void:
 		var ui_failures: Array[String] = await preload("res://core/debug/ui_smoke_checks.gd").run(self);
 		for failure: String in ui_failures:
 			_check(false, failure);
+		var navigation_failures: Array[String] = await preload("res://core/debug/ui_navigation_checks.gd").run(self);
+		for failure: String in navigation_failures:
+			_check(false, failure);
 		var feedback_failures: Array[String] = await preload("res://core/debug/feedback_queue_checks.gd").run(self);
 		for failure: String in feedback_failures:
 			_check(false, failure);
