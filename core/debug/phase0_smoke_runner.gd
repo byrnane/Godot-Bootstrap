@@ -72,6 +72,9 @@ func _run() -> void:
 		var ui_failures: Array[String] = await preload("res://core/debug/ui_smoke_checks.gd").run(self);
 		for failure: String in ui_failures:
 			_check(false, failure);
+		var feedback_failures: Array[String] = await preload("res://core/debug/feedback_queue_checks.gd").run(self);
+		for failure: String in feedback_failures:
+			_check(false, failure);
 	# Retry can quit the application, so it must remain the last check.
 	if suite in ["persistence", "all"]:
 		await _check_exit_save_retry();
@@ -527,13 +530,9 @@ func _check_settings_write_retry() -> void:
 
 
 func _check_session_scene_override() -> void:
-	var params: SessionStartParams = SessionStartParams.new();
-	params.gameplay_scene_id = Scenes.LEVEL_STUB_A;
-	await _expect_transition(Callable(AppFlow, "start_session").bind(params), Scenes.LEVEL_STUB_A,
-		AppState.Value.IN_GAME, "session scene override");
-	_check(bool(AutosaveManager.get("_session_active")), "session regression: scene override disabled autosave");
-	await _expect_transition(Callable(AppFlow, "return_to_main_menu"), Scenes.MAIN_MENU,
-		AppState.Value.MAIN_MENU, "return from session scene override");
+	var failures: Array[String] = await preload("res://core/debug/flow_scene_checks.gd").run(self);
+	for failure: String in failures:
+		_check(false, failure);
 
 
 func _check_core_data_containers() -> void:
