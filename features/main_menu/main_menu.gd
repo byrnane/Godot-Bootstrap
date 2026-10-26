@@ -36,6 +36,12 @@ func _ready() -> void:
 
 func on_enter(_payload: SCENE_TRANSITION_PAYLOAD_TYPE = null) -> void:
 	_refresh_continue_state();
+	focus_default_control();
+
+
+func focus_default_control() -> void:
+	if not InputManager.ui_navigation_active:
+		return;
 	if continue_button.disabled:
 		new_game_button.grab_focus();
 	else:

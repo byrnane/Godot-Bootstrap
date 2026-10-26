@@ -39,7 +39,16 @@ func _ready() -> void:
 	jump_scene_button.pressed.connect(_on_jump_scene_button_pressed);
 	restart_session_button.pressed.connect(_on_restart_session_button_pressed);
 	visible = false;
+	get_viewport().size_changed.connect(_fit_panel);
+	_fit_panel();
 	_refresh_text();
+
+
+func _fit_panel() -> void:
+	var available: Vector2 = (get_viewport_rect().size - Vector2(32, 32)).max(Vector2.ONE);
+	var panel: Control = $MarginContainer;
+	panel.position = Vector2(16, 16);
+	panel.size = Vector2(minf(480, available.x), available.y);
 
 func _process(delta: float) -> void:
 	if not visible:
