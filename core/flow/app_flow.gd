@@ -8,6 +8,8 @@ const SAVE_SLOTS_MODE_SAVE: StringName = &"save";
 
 
 var _started: bool = false;
+var _main_menu_scene_id: StringName = &"";
+var _session_gameplay_scene_id: StringName = &"";
 var _reported_missing_scene_signals: Dictionary = {};
 var _pending_flow: Dictionary = {};
 var _quit_dialog_open: bool = false;
@@ -35,6 +37,7 @@ func startup(params: APP_STARTUP_PARAMS_TYPE = null) -> void:
 	_started = true;
 	AppContext.ensure_defaults();
 	var startup_params: APP_STARTUP_PARAMS_TYPE = _resolve_startup_params(params);
+	_main_menu_scene_id = startup_params.main_menu_scene_id;
 	match startup_params.launch_mode:
 		APP_STARTUP_PARAMS_TYPE.LaunchMode.START_SESSION:
 			start_session(startup_params.session_start_params as SESSION_START_PARAMS_TYPE);
@@ -296,6 +299,8 @@ func _on_scene_changed(_scene_id: StringName, scene_root: Node) -> void:
 	var current_scene_id: StringName = SceneRouter.current_scene_id;
 	if not _pending_flow.is_empty():
 		if bool(_pending_flow["starts_session"]):
+			# Commit the role only after a successful load; failed starts retain it.
+			_session_gameplay_scene_id = current_scene_id;
 			AutosaveManager.start_for_session();
 		else:
 			AutosaveManager.stop_for_session();
@@ -303,11 +308,10 @@ func _on_scene_changed(_scene_id: StringName, scene_root: Node) -> void:
 			UiFeedback.toast(tr("UI_SAVE_SLOT_TOAST_LOAD_SUCCESS"), {"variant": "success"});
 		_pending_flow.clear();
 	_sync_scene_music(current_scene_id);
-	match current_scene_id:
-		Scenes.MAIN_MENU:
-			_connect_main_menu(scene_root);
-		Scenes.GAMEPLAY:
-			_connect_gameplay(scene_root);
+	if current_scene_id == _get_start_scene_id():
+		_connect_main_menu(scene_root);
+	elif current_scene_id == _get_gameplay_scene_id():
+		_connect_gameplay(scene_root);
 
 
 func _connect_main_menu(scene_root: Node) -> void:
@@ -480,16 +484,16 @@ func _resolve_startup_params(params: APP_STARTUP_PARAMS_TYPE, warn_on_fallback: 
 	if resolved_params == null:
 		resolved_params = APP_STARTUP_PARAMS_TYPE.new();
 	if resolved_params.main_menu_scene_id == StringName():
-		resolved_params.main_menu_scene_id = _get_start_scene_id();
+		resolved_params.main_menu_scene_id = GameConfig.get_start_scene_id();
 	if not Scenes.has(resolved_params.main_menu_scene_id):
 		if warn_on_fallback:
 			push_warning(
 				"AppFlow: startup main_menu_scene_id '%s' is unknown, fallback to '%s'." % [
 					String(resolved_params.main_menu_scene_id),
-					String(_get_start_scene_id()),
+					String(GameConfig.get_start_scene_id()),
 				]
 			);
-		resolved_params.main_menu_scene_id = _get_start_scene_id();
+		resolved_params.main_menu_scene_id = GameConfig.get_start_scene_id();
 	if resolved_params.launch_mode == APP_STARTUP_PARAMS_TYPE.LaunchMode.START_SESSION:
 		if resolved_params.session_start_params == null:
 			resolved_params.session_start_params = _create_session_start_params(SESSION_START_PARAMS_TYPE.Mode.NEW_GAME);
@@ -526,8 +530,8 @@ func _create_session_start_params(mode: int) -> SESSION_START_PARAMS_TYPE:
 
 
 func _get_start_scene_id() -> StringName:
-	return GameConfig.get_start_scene_id();
+	return _main_menu_scene_id if _main_menu_scene_id != StringName() else GameConfig.get_start_scene_id();
 
 
 func _get_gameplay_scene_id() -> StringName:
-	return GameConfig.get_gameplay_scene_id();
+	return _session_gameplay_scene_id if _session_gameplay_scene_id != StringName() else GameConfig.get_gameplay_scene_id();
