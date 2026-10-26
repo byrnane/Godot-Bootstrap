@@ -19,7 +19,7 @@ Mobile, на Windows — Direct3D 12; Web использует Compatibility/Web
 сохраняют стартовое окно 1280×720.
 В main, 2d и 3d viewport расширяется под соотношение сторон окна без растяжения
 элементов. PixelArt сохраняет keep и integer: пиксельная сетка важнее заполнения
-произвольного окна.
+произвольного окна. Web во всех ветках использует Stream playback, как Nine Lives.
 Godot AI общий. Cyclops и его export plugin входят только в `3d`.
 Общие идентификаторы сцен и формат SaveData v3 одинаковы. Игровые данные варианта находятся в `game_data`. Путь игровой сцены — `features/gameplay/gameplay.tscn`, уровней — `features/levels/level_a.tscn` и `level_b.tscn`.
 

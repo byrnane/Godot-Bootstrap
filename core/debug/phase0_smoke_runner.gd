@@ -657,6 +657,8 @@ func _check_core_data_containers() -> void:
 
 
 func _check_audio_pipeline_contract() -> void:
+	_check(ProjectSettings.get_setting("audio/general/default_playback_type.web") == 0,
+		"audio test: Web must use Stream playback, as in Nine Lives");
 	_check_audio_bus_layout();
 	_check_one_shot_audio_path();
 	await _check_music_audio_path();
