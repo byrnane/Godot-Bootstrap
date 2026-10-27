@@ -12,6 +12,7 @@ var _progress_labels: Dictionary = {}
 var _play_buttons: Dictionary = {}
 var _restart_buttons: Dictionary = {}
 var _continue_button: Button
+var _fullscreen_button: Button
 var _profile: Dictionary = {}
 
 func _ready() -> void:
@@ -51,6 +52,7 @@ func _ready() -> void:
 	heading.add_child(ForestArt.label("UI_FOREST_TAGLINE", &"UiBody"))
 	_continue_button = ForestArt.button("UI_CONTINUE", _continue_last, true)
 	_continue_button.custom_minimum_size.x = 230
+	_continue_button.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	header.add_child(_continue_button)
 	var cards: HBoxContainer = HBoxContainer.new()
 	cards.add_theme_constant_override("separation", 16)
@@ -65,7 +67,10 @@ func _ready() -> void:
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		actions.add_child(button)
 	if OS.has_feature("web"):
-		actions.add_child(ForestArt.button("UI_FOREST_FULLSCREEN", func() -> void: DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)))
+		_fullscreen_button = ForestArt.button("UI_FOREST_FULLSCREEN", _toggle_fullscreen)
+		_fullscreen_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		_fullscreen_button.toggle_mode = true
+		actions.add_child(_fullscreen_button)
 	else:
 		var quit: Button = ForestArt.button("UI_QUIT", func() -> void: quit_requested.emit())
 		quit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -75,6 +80,15 @@ func _ready() -> void:
 	column.add_child(note)
 	AudioManager.bind_ui_sounds(self)
 	_refresh()
+	set_process(_fullscreen_button != null)
+
+func _process(_delta: float) -> void:
+	# Browser Escape and the settings dialog can change fullscreen independently.
+	_fullscreen_button.set_pressed_no_signal(DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN)
+
+func _toggle_fullscreen() -> void:
+	var is_fullscreen: bool = DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN
+	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED if is_fullscreen else DisplayServer.WINDOW_MODE_FULLSCREEN)
 
 func _make_card(mode: String) -> PanelContainer:
 	var panel: PanelContainer = ForestArt.panel()
