@@ -1,4 +1,4 @@
-﻿KEY,ru,en
+KEY,ru,en
 Main menu,,
 UI_NEW_GAME,Начать игру,New Game
 UI_CONTINUE,Продолжить,Continue
@@ -19,20 +19,20 @@ UI_GAME_VERSION,Версия игры: {major}.{minor}.{patch}-{status},Game ver
 UI_ENGINE_VERSION,Версия движка Godot: {string},Godot engine version: {string}
 UI_LOADING,Загрузка...,Loading...
 UI_LOADING_MESSAGE,Подготавливаем следующую сцену,Preparing the next scene
-UI_LOADING_TIP,Здесь позже можно показывать подсказки, советы и служебную информацию,This area can later show tips hints and useful loading info
-UI_LOADING_CONTEXT,Контекст: {value},Context: {value}
+UI_LOADING_TIP,Фонари на тропе сохраняют твой путь.,Lanterns along the trail mark your checkpoints.
+UI_LOADING_CONTEXT,Лесной хранитель,Forest Keeper
 UI_LOADING_READY,Сцена готова,Scene is ready
 UI_LOADING_STATE_LOADING,ЗАГРУЗКА,LOADING
 UI_LOADING_STATE_SUCCESS,ГОТОВО,DONE
 UI_LOADING_STATE_ERROR,ОШИБКА,ERROR
 UI_LOADING_STATE_WARNING,ВНИМАНИЕ,WARNING
-UI_LOADING_TIP_1,Подготавливаем следующую сцену и подключаем UI,Preparing the next scene and mounting the UI
-UI_LOADING_TIP_2,Здесь удобно показывать подсказки по управлению или полезные советы,This is a good place for controls hints or useful tips
-UI_LOADING_TIP_3,Тяжёлые сцены лучше грузить через асинхронный переход,Heavy scenes feel better with async transitions
-UI_LOADING_TIP_MENU_1,Возврат в меню завершит текущую игровую сессию,Returning to menu ends the active gameplay session
-UI_LOADING_TIP_MENU_2,Через меню удобно быстро проверить настройки и локализацию,Main menu is useful for quick settings and localization checks
-UI_LOADING_TIP_GAMEPLAY_1,HUD и игровая сцена загружаются раздельно для гибкой замены экранов,HUD and world scene are loaded separately for easier screen replacement
-UI_LOADING_TIP_GAMEPLAY_2,Сохранения и состояние сессии применяются до первого кадра gameplay,Save data and session state are applied before the first gameplay frame
+UI_LOADING_TIP_1,Не стой на месте: тени идут на свет фонаря.,Keep moving: shadows follow your lantern light.
+UI_LOADING_TIP_2,"Ящики можно толкать, но нельзя тянуть. Повтори комнату, если застрял.","Crates can be pushed, but not pulled. Restart the room if you get stuck."
+UI_LOADING_TIP_3,Каждое приключение хранит свой прогресс.,Each adventure keeps its own progress.
+UI_LOADING_TIP_MENU_1,Ручной слот сохраняет сразу все три приключения.,A manual save contains all three adventures.
+UI_LOADING_TIP_MENU_2,Управление можно изменить в настройках.,You can change your controls in Settings.
+UI_LOADING_TIP_GAMEPLAY_1,Фонари на тропе сохраняют твой путь.,Lanterns along the trail mark your checkpoints.
+UI_LOADING_TIP_GAMEPLAY_2,Не стой на месте: тени идут на свет фонаря.,Keep moving: shadows follow your lantern light.
 UI_LOADING_PROGRESS,Загружено: {percent}%,Loaded: {percent}%
 UI_LOADING_ERROR,Не удалось загрузить сцену,Failed to load the scene
 UI_DEBUG_HEADER,Отладочный оверлей,Debug Overlay
@@ -170,7 +170,7 @@ UI_SAVE_SLOT_EMPTY,Слот не выбран,No slot selected
 UI_SAVE_SLOT_KIND_LABEL,Тип: {value},Type: {value}
 UI_SAVE_SLOT_TIME_LABEL,Время: {value},Time: {value}
 UI_SAVE_SLOT_LEVEL_LABEL,Уровень: {value},Level: {value}
-UI_SAVE_SLOT_SCORE_LABEL,Счетчик B: {value},Counter B: {value}
+UI_SAVE_SLOT_SCORE_LABEL,Очки: {value},Score: {value}
 UI_SAVE_SLOT_KIND_MANUAL,Ручной,Manual
 UI_SAVE_SLOT_KIND_QUICK,Быстрый,Quick
 UI_SAVE_SLOT_KIND_AUTOSAVE,Автосейв,Autosave
@@ -249,3 +249,48 @@ UI_KIT_DIALOG,Диалог,Dialog
 UI_LOAD_MODE_TAB,Загрузка,Load
 UI_SAVE_MODE_TAB,Сохранение,Save
 UI_NO_CONTINUE,Пока нет сохраненной игры,No saved game yet
+UI_FOREST_TITLE,Лесной хранитель,Forest Keeper
+UI_FOREST_TAGLINE,Три маленьких приключения в одном волшебном лесу,Three little adventures in one enchanted forest
+UI_FOREST_TRAIL,Лесная тропа,Forest Trail
+UI_FOREST_DEFENSE,Защита поляны,Glade Defense
+UI_FOREST_RUINS,Древние механизмы,Ancient Mechanisms
+UI_FOREST_DESC_PLATFORMER,"Прыгай по тропам, собирай огоньки и найди выход. Три уровня.","Jump along forest paths, collect wisps and find the exit. Three levels."
+UI_FOREST_DESC_SHOOTER,Защити поляну светом фонаря. Продержись три волны.,Defend the glade with your lantern. Survive three waves.
+UI_FOREST_DESC_PUZZLE,Передвигай ящики на плиты и открывай древние ворота. Три комнаты.,Push crates onto plates to open ancient gates. Three rooms.
+UI_FOREST_PLAY,Играть,Play
+UI_FOREST_PLAY_AGAIN,Сыграть снова,Play again
+UI_FOREST_RESTART_MODE,Начать заново,Start over
+UI_FOREST_CONFIRM_RESTART,Начать «%s» заново? Прогресс двух других приключений сохранится.,Start %s over? The other two adventures will keep their progress.
+UI_FOREST_SAVE_NOTE,Слоты сохраняют весь сборник. Продолжение — с последнего чекпоинта.,Save slots contain all three adventures. Resume from your last checkpoint.
+UI_FOREST_STAGE,Этап %d / 3,Stage %d / 3
+UI_FOREST_NOT_STARTED,Приключение еще не начато,Not started yet
+UI_FOREST_COMPLETE,Приключение завершено!,Adventure complete!
+UI_FOREST_VICTORY,Этап пройден!,Stage complete!
+UI_FOREST_DEFEAT,Свет погас,The light faded
+UI_FOREST_RESULT_HINT,Продолжи приключение или вернись к выбору режима.,Continue your adventure or return to the menu.
+UI_FOREST_NEXT,Дальше,Next
+UI_FOREST_RETRY,Повторить этап,Retry stage
+UI_FOREST_SCORE,Очки: %d,Score: %d
+UI_FOREST_SCORE_LABEL,Очки,Score
+UI_FOREST_SPARKS,Огоньки: %d / %d,Wisps: %d / %d
+UI_FOREST_ENEMIES,Теней осталось: %d,Shadows remaining: %d
+UI_FOREST_PLATES,Плиты: %d / %d · Ходы: %d,Plates: %d / %d · Moves: %d
+UI_FOREST_GOAL_PLATFORMER,Найди каменные ворота. Фонарь сохранит путь.,Find the stone gate. Lanterns mark checkpoints.
+UI_FOREST_GOAL_SHOOTER,Не дай теням погасить твой фонарь.,Keep the shadows away from your lantern.
+UI_FOREST_GOAL_PUZZLE,Поставь ящики на все плиты и пройди в ворота.,"Cover every plate with a crate, then enter the gate."
+UI_FOREST_MOVE,движение,move
+UI_FOREST_JUMP,Прыжок,Jump
+UI_FOREST_AIM_FIRE,прицел и выстрел,aim and shoot
+UI_FOREST_MOUSE,Мышь,Mouse
+UI_FOREST_LEFT,Влево,Move left
+UI_FOREST_RIGHT,Вправо,Move right
+UI_FOREST_UP,Вверх,Move up
+UI_FOREST_DOWN,Вниз,Move down
+UI_FOREST_FIRE,Стрелять,Fire
+UI_FOREST_CONTROLS,Приключения,Adventures
+UI_FOREST_FULLSCREEN,На весь экран,Full screen
+UI_FOREST_ADVANCED,Дополнительные настройки сохранений,Advanced save settings
+UI_FOREST_ADVANCED_SHOW,Показать дополнительные настройки,Show advanced settings
+UI_FOREST_SNAPSHOT,Общий снимок трех приключений,Snapshot of all three adventures
+UI_FOREST_COMPLETE_HINT,Приключение пройдено. Сыграй снова или выбери другой режим.,Adventure complete. Play again or choose another mode.
+UI_FOREST_DEFEAT_HINT,Попробуй снова с последнего чекпоинта.,Try again from the last checkpoint.

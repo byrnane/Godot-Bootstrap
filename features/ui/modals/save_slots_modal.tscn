@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://features/ui/modals/save_slots_modal.gd" id="script"]
+[ext_resource type="Script" path="res://features/forest/forest_save_slots.gd" id="script"]
 [ext_resource type="PackedScene" path="res://features/ui/modals/base_modal.tscn" id="base"]
 [ext_resource type="Script" path="res://shared/ui/components/ui_action_bar.gd" id="actions"]
 
