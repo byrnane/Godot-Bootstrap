@@ -56,17 +56,18 @@ Scene IDs и gameplay/HUD-контракты одинаковы во всех в
 
 ## Windows и Web
 
-Все варианты используют Compatibility. В **Project → Export** доступны Windows x86_64 и Web без потоков/GDExtension.
+`main`, `2d` и `2d-pixelart` используют Compatibility. В `3d` для Windows выбран Mobile с Direct3D 12; Web использует Compatibility/WebGL 2. В **Project → Export** доступны Windows x86_64 и Web без потоков/GDExtension.
+
+Перед экспортом создайте папки, указанные в `export_path` выбранных пресетов.
 
 ```powershell
-New-Item -ItemType Directory -Force builds/windows, builds/web
 godot --headless --path . --export-release Windows
 godot --headless --path . --export-release Web
 ```
 
-Нужны export templates той же версии, что Godot. Результаты находятся в `builds/windows` и `builds/web` и исключены из Git.
+Нужны export templates той же версии, что Godot. Пути результатов задаются в `export_presets.cfg`: `main` использует `builds/windows` и `builds/web`, варианты — собственные каталоги внутри `builds/`. Все сборки исключены из Git.
 В обычном терминале Windows проверьте `godot --version`.
-Для Web используйте HTTP-сервер, например `python -m http.server 8067 --bind 127.0.0.1 --directory builds/web`; `file://` не подходит.
+Для Web используйте HTTP-сервер для папки Web-экспорта. Например, для `main`: `python -m http.server 8067 --bind 127.0.0.1 --directory builds/web`; `file://` не подходит.
 
 Сейвы Web привязаны к origin; другой адрес/порт, приватный режим и очистка данных браузера влияют на их доступность.
 Звук разрешается после взаимодействия, полный экран включается действием пользователя в настройках.
