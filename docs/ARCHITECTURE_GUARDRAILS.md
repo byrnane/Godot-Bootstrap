@@ -66,7 +66,7 @@ Why: smoke checks and runtime locale switch rely on this convention.
 - Screen controllers adapt manager/context data to component properties and view models.
 - A different skin preserves these contracts and the existing `UiShell` / `BaseModal` stack.
 
-The catalog and extension rules are in [UI Framework](UI_FRAMEWORK.md). Prototype context copies in the Figma design are a design-preview workaround, not additional runtime modal stacks.
+The catalog and extension rules are in [UI Framework](UI_FRAMEWORK.md).
 
 ## Safe Customization Surface
 
@@ -86,4 +86,4 @@ If you touch `AppFlow`, `SceneRouter`, `UiShell`, `TransitionManager`, or persis
 2. Use the relevant manual checklist section only when the changed behavior needs native or visual acceptance.
 3. Document behavior changes in `CHANGELOG.md`.
 
-Use `-Suite all` only on owner request or when a concrete broad risk cannot be checked with selected suites; explain that risk first. A commit or review alone does not require it. Reuse current results. GitHub Actions are not used.
+Use `-Suite all` for changes whose cross-system risk cannot be covered by selected suites. Reuse current results for unchanged behavior. Checks currently run locally; GitHub Actions are not used.

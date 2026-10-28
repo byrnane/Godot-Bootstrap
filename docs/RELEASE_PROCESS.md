@@ -1,13 +1,13 @@
 # Release Process
 
-Internal document for template maintainers.
+This guide is for maintainers preparing a template release.
 
 ## Release Checklist
 
 Before creating a template release:
 
 1. Confirm roadmap phase criteria status in `TODO.md`.
-2. Use current results for the changed behavior from [TESTING.md](TESTING.md). Run `-Suite all` only on owner request or for a concrete broad risk that selected suites cannot cover; explain the reason first. A release commit alone does not require it.
+2. Use current results for the changed behavior from [TESTING.md](TESTING.md). Run `-Suite all` when selected suites cannot cover a concrete cross-system risk.
 3. Use only the relevant sections of `docs/MANUAL_TEST_PLAN.md` when the release needs native or visual acceptance; reuse current results.
 4. Update `CHANGELOG.md`:
    - `Added`
@@ -19,9 +19,11 @@ Before creating a template release:
    - document migration notes;
    - confirm compatibility behavior for `SaveData` / `UserSettings`.
 7. Ensure docs reflect current architecture and extension points. If UI changed, check the Figma source linked in `FIGMA.md` and the UI Framework guide.
-8. Merge the accepted common commits from `main` into `3d`, `2d`, and `2d-pixelart`, preserving variant settings; follow [VARIANTS.md](VARIANTS.md). Uncommitted worktree copies do not update branch history.
+8. Merge the accepted common commits from `main` into `3d` and `2d`, then from `2d` into `2d-pixelart`, preserving variant settings; follow [VARIANTS.md](VARIANTS.md). Uncommitted copies do not update branch history.
 9. Build and accept target-platform exports from the release candidate when packaging or native behavior changed. Earlier pre-UI exports do not validate a new UI. Record actual results and remaining limits in [READINESS.md](READINESS.md).
-10. Create the release commit and git tag only with owner authorization. Push/publication require a separate instruction.
+10. Check the release contents, third-party notices and license files, then create the release commit and tag. Publish the accepted release candidate.
+
+Agent authorization rules are recorded separately in [AGENTS.md](../AGENTS.md).
 
 ## Semantic Version Policy
 
