@@ -2,6 +2,10 @@
 
 Current version: `0.4.0` + unreleased template variants and universal UI
 
+Код и документация: [MIT](LICENSE). Музыка, звуки, шрифты и графика имеют
+отдельные условия; подтвержденные источники и открытые вопросы перечислены
+в [THIRD_PARTY.md](THIRD_PARTY.md).
+
 Цель проекта — универсальный шаблон разработки игр на Godot и специализированные шаблоны для 2D, 2D PixelArt и 3D. Игры создаются в отдельных репозиториях клонированием выбранной ветки.
 
 Основное ядро и основная разработка находятся в `main`. Ветки `2d` и `3d` получают его изменения напрямую, а `2d-pixelart` наследует ядро и игровую логику через `2d`. Все варианты должны содержать актуальную закоммиченную базу `main`. Специфика PixelArt — собственные ассеты, представление и настройки. Общие изменения переносятся обычным merge в порядке `main → 2d → 2d-pixelart` и `main → 3d`.
@@ -54,7 +58,8 @@ Choose `3d`, `2d`, or `2d-pixelart` and clone that branch into a separate game r
 ### About documentation
 
 - If you use this repository as a game template, stay with the guides above.
-- Internal template-maintenance docs are grouped in [Maintainer Guide](docs/MAINTAINER_GUIDE.md).
+- Template-maintenance docs are grouped in [Maintainer Guide](docs/MAINTAINER_GUIDE.md).
+- Bundled materials, addon versions and license information: [Third-party materials](THIRD_PARTY.md).
 
 ## RU
 
@@ -102,4 +107,5 @@ Choose `3d`, `2d`, or `2d-pixelart` and clone that branch into a separate game r
 ### О документации
 
 - Если вы используете репозиторий как шаблон игры, вам достаточно гайдов выше.
-- Внутренние документы для развития самого шаблона вынесены в [Maintainer Guide](docs/MAINTAINER_GUIDE.md).
+- Документы по сопровождению шаблона собраны в [Maintainer Guide](docs/MAINTAINER_GUIDE.md).
+- Состав материалов, версии аддонов и сведения о лицензиях: [THIRD_PARTY.md](THIRD_PARTY.md).
