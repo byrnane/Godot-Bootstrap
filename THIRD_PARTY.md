@@ -39,22 +39,29 @@
 > Creative Commons Attribution 3.0: https://creativecommons.org/licenses/by/3.0/
 > Music promoted by Audio Library: https://www.audiolibrary.com.co/sakura-girl/tiny-paws
 
-## Звуки: происхождение уточняется
+## Звуковые эффекты
 
-| Файл | Подтвержденные сведения | Что остается проверить |
+Перечисленные OGG-файлы взяты из наборов [Kenney](https://kenney.nl/assets).
+Происхождение подтверждено владельцем проекта. Автор публикует игровые ассеты
+под [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/):
+их можно использовать и распространять, в том числе в коммерческих проектах.
+[Условия Kenney](https://kenney.nl/support) не требуют атрибуции;
+добровольная строка благодарности — `Sound effects: Kenney (kenney.nl)`.
+
+| Файл | Автор | Лицензия |
 | --- | --- | --- |
-| `assets/sfx/btn_click.ogg`, `btn_hover.ogg` | В метаданных указан Kenney и GameSynth | Исходный пакет и совпадение файлов |
-| `assets/sfx/score.ogg` | В метаданных название `handleCoins2` | Автор, исходный пакет и лицензия конкретной копии |
-| `assets/sfx/heal.ogg` | В метаданных указан GameSynth | Автор, источник и лицензия |
-| `assets/sfx/damage.ogg` | Атрибуционных метаданных нет | Автор, источник и лицензия |
+| `assets/sfx/btn_click.ogg`, `btn_hover.ogg` | Kenney | CC0 1.0 |
+| `assets/sfx/score.ogg` | Kenney | CC0 1.0 |
+| `assets/sfx/heal.ogg` | Kenney | CC0 1.0 |
+| `assets/sfx/damage.ogg` | Kenney | CC0 1.0 |
 
-Kenney публикует [UI Audio](https://kenney.nl/assets/ui-audio),
+Официальные звуковые наборы: [UI Audio](https://kenney.nl/assets/ui-audio),
 [Interface Sounds](https://kenney.nl/assets/interface-sounds),
 [RPG Audio](https://kenney.nl/assets/rpg-audio) и
-[Digital Audio](https://kenney.nl/assets/digital-audio) под CC0.
-Это не доказывает происхождение всех переименованных файлов в этом проекте.
-До подтверждения конкретных исходников звуки не считаются покрытыми MIT;
-для распространяемой игры подтвердите их условия либо замените.
+[Digital Audio](https://kenney.nl/assets/digital-audio). Конкретные архивы
+для переименованных файлов не восстановлены; метаданные части копий сохранили
+имя Kenney и название `handleCoins2`. На эти звуки распространяется CC0,
+а на музыку из предыдущего раздела — указанные там лицензии CC BY.
 
 ## Графика и модели
 
