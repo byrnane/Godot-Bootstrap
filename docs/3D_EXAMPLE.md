@@ -73,7 +73,7 @@ NavigationAgent3D, обнаружение по видимости и ближн�
 Редактируемые исходники и отдельные текстуры находятся в
 `art_source/retro_prototype`; игровые GLB — в `assets/models/retro_prototype`.
 Исходная модель зомби сохранена отдельным `Zombie_Rigged.original.blend`,
-а исходный экспорт — `Zombie_Godot.original.glb`; обе копии совпадают с NAS.
+а исходный экспорт — `Zombie_Godot.original.glb`; обе копии сохранены как неизменяемые исходники.
 Доработки и дополнительные клипы находятся в `Zombie_Rigged.prototype.blend`.
 Остальные модели собраны в `Retro_Prototype.blend`.
 

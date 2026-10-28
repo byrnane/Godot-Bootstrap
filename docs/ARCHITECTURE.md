@@ -2,6 +2,9 @@
 
 ## EN
 
+This section is the detailed technical reference. A [brief Russian overview](#ru)
+follows below.
+
 This template is intentionally simple and predictable. It is not a universal game architecture. It is a clean application skeleton that keeps the project from turning into a pile of loosely connected scenes and scripts.
 
 ### Layers
@@ -266,6 +269,9 @@ This gives you:
 - prefer local signals and explicit APIs
 
 ## RU
+
+Ниже — краткий обзор архитектуры. Подробные контракты, API и точки расширения
+описаны в [английском техническом справочнике](#en).
 
 Этот шаблон специально собран простым и предсказуемым. Это не универсальная игровая архитектура на все случаи жизни, а чистый каркас приложения, который не даёт проекту развалиться на набор случайно связанных сцен и скриптов.
 
