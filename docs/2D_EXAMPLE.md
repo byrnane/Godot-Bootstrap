@@ -5,7 +5,11 @@
 как заглушки; собственные пиксельные ассеты и адаптация меню, HUD и камер отложены.
 Визуальная приемка PixelArt еще не начата. `main` остается источником общего ядра.
 Запуск: Godot 4.7.2, обычный F5 / `main/main.tscn`. После экспорта сборки находятся в
+<<<<<<< HEAD
 `builds/2D-PixelArt/windows/ForestKeeperPixelArt.exe` и `builds/2D-PixelArt/web/index.html`; в Git они не входят.
+=======
+`builds/2D/windows/ForestKeeper.exe` и `builds/2D/web/index.html`; в Git они не входят.
+>>>>>>> 2d
 
 ## Режимы
 
