@@ -16,6 +16,8 @@ var _fullscreen_button: Button
 var _profile: Dictionary = {}
 
 func _ready() -> void:
+	theme = ForestArt.ui_theme()
+	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	var background: TextureRect = TextureRect.new()
 	background.texture = ForestArt.texture("forest_panorama")
 	background.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
@@ -36,14 +38,14 @@ func _ready() -> void:
 	var center: CenterContainer = CenterContainer.new()
 	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(center)
-	var margin: MarginContainer = ForestArt.margin(16)
+	var margin: MarginContainer = ForestArt.margin(6)
 	center.add_child(margin)
 	var column: VBoxContainer = VBoxContainer.new()
-	column.custom_minimum_size.x = 1120
-	column.add_theme_constant_override("separation", 14)
+	column.custom_minimum_size.x = 616
+	column.add_theme_constant_override("separation", 6)
 	margin.add_child(column)
 	var header: HBoxContainer = HBoxContainer.new()
-	header.add_theme_constant_override("separation", 24)
+	header.add_theme_constant_override("separation", 4)
 	column.add_child(header)
 	var heading: VBoxContainer = VBoxContainer.new()
 	heading.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -51,19 +53,20 @@ func _ready() -> void:
 	heading.add_child(ForestArt.label("UI_FOREST_TITLE", &"UiDisplay"))
 	heading.add_child(ForestArt.label("UI_FOREST_TAGLINE", &"UiBody"))
 	_continue_button = ForestArt.button("UI_CONTINUE", _continue_last, true)
-	_continue_button.custom_minimum_size.x = 230
+	_continue_button.custom_minimum_size.x = 112
 	_continue_button.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	header.add_child(_continue_button)
 	var cards: HBoxContainer = HBoxContainer.new()
-	cards.add_theme_constant_override("separation", 16)
+	cards.add_theme_constant_override("separation", 4)
 	column.add_child(cards)
 	for mode: String in ForestData.MODES:
 		cards.add_child(_make_card(mode))
 	var actions: HBoxContainer = HBoxContainer.new()
-	actions.add_theme_constant_override("separation", 12)
+	actions.add_theme_constant_override("separation", 6)
 	column.add_child(actions)
 	for item: Array in [["UI_SETTINGS", func() -> void: settings_requested.emit()], ["UI_SAVE_SLOTS", func() -> void: save_slots_requested.emit()]]:
 		var button: Button = ForestArt.button(item[0], item[1])
+		button.icon = ForestArt.texture("ui_settings" if item[0] == "UI_SETTINGS" else "ui_save")
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		actions.add_child(button)
 	if OS.has_feature("web"):
@@ -92,23 +95,23 @@ func _toggle_fullscreen() -> void:
 
 func _make_card(mode: String) -> PanelContainer:
 	var panel: PanelContainer = ForestArt.panel()
-	panel.custom_minimum_size.x = 360
+	panel.custom_minimum_size.x = 200
 	panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	var margin: MarginContainer = ForestArt.margin(16)
+	var margin: MarginContainer = ForestArt.margin(6)
 	panel.add_child(margin)
 	var content: VBoxContainer = VBoxContainer.new()
-	content.add_theme_constant_override("separation", 8)
+	content.add_theme_constant_override("separation", 4)
 	margin.add_child(content)
 	var artwork: TextureRect = TextureRect.new()
 	artwork.texture = ForestArt.texture("keeper_side" if mode == "platformer" else ("shadow" if mode == "shooter" else "stone_gate"))
-	artwork.custom_minimum_size = Vector2(0, 80)
+	artwork.custom_minimum_size = Vector2(0, 40)
 	artwork.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	artwork.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	artwork.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	content.add_child(artwork)
 	content.add_child(ForestArt.label(ForestData.TITLES[mode], &"UiSection"))
 	var description: Label = ForestArt.label("UI_FOREST_DESC_" + mode.to_upper(), &"UiBody")
-	description.custom_minimum_size.y = 78
+	description.custom_minimum_size.y = 44
 	description.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	content.add_child(description)
 	var progress: Label = ForestArt.label("", &"UiLabel")
@@ -119,7 +122,7 @@ func _make_card(mode: String) -> PanelContainer:
 	_play_buttons[mode] = play
 	var restart: Button = ForestArt.button("UI_FOREST_RESTART_MODE", func() -> void: _confirm_restart(mode))
 	restart.theme_type_variation = &"UiButtonGhost"
-	restart.custom_minimum_size.y = 36
+	restart.custom_minimum_size.y = 22
 	content.add_child(restart)
 	_restart_buttons[mode] = restart
 	return panel

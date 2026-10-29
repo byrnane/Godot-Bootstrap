@@ -34,6 +34,7 @@ func configure(entry: Dictionary) -> void:
 	collected.assign(entry.collected)
 
 func _ready() -> void:
+	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	var ground: Array[Rect2] = [Rect2(0, FLOOR_Y, 850, 160), Rect2(1000, FLOOR_Y, 900, 160), Rect2(2080, FLOOR_Y, 1120, 160)]
 	if stage == 1:
 		ground = [Rect2(0, FLOOR_Y, 850, 160), Rect2(1080, FLOOR_Y, 720, 160), Rect2(2120, FLOOR_Y, 1080, 160)]
@@ -51,8 +52,6 @@ func _ready() -> void:
 		var platform_width: float = 220.0 if stage == 2 else 150.0
 		_collision(moving_platform, Vector2(platform_width, 28))
 		add_child(moving_platform)
-		var art: Sprite2D = ForestArt.sprite("platform", Vector2(platform_width, 40))
-		moving_platform.add_child(art)
 	_hazards = [Rect2(1130, 548, 90, 32)]
 	if stage == 2:
 		_hazards.append(Rect2(2580, 548, 140, 32))
@@ -64,10 +63,11 @@ func _ready() -> void:
 	_collision(player, Vector2(30, 54))
 	player.position = Vector2(1490, 545) if checkpoint == 1 else Vector2(140, 545)
 	add_child(player)
-	actor = ForestArt.sprite("keeper_side", Vector2(64, 78))
+	actor = ForestArt.sprite("keeper_side", Vector2(64, 80))
 	actor.position.y = -10
 	player.add_child(actor)
 	camera = Camera2D.new()
+	camera.zoom = Vector2.ONE * 0.5
 	camera.position_smoothing_enabled = true
 	camera.position_smoothing_speed = 7.0
 	player.add_child(camera)
@@ -157,17 +157,15 @@ func snapshot() -> Dictionary:
 func _draw() -> void:
 	for rect: Rect2 in _platform_rects:
 		draw_rect(rect, Color("213c35"))
-		var count: int = ceili(rect.size.x / 180)
-		for tile: int in range(count):
-			ForestArt.draw_asset(self, "platform", Rect2(rect.position + Vector2(tile * 180, 0), Vector2(minf(180, rect.size.x - tile * 180), 72)))
+		ForestArt.draw_tiled(self, "platform", Rect2(rect.position - Vector2(0, 2), Vector2(rect.size.x, 48)))
+	if moving_platform != null:
+		var platform_width: float = 220.0 if stage == 2 else 150.0
+		ForestArt.draw_tiled(self, "platform", Rect2(moving_platform.position - Vector2(platform_width / 2, 16), Vector2(platform_width, 48)))
 	for hazard: Rect2 in _hazards:
-		for index: int in range(int(hazard.size.x / 15)):
-			var point: Vector2 = hazard.position + Vector2(index * 15, 0)
-			draw_colored_polygon(PackedVector2Array([point + Vector2(0, 32), point + Vector2(7, 0), point + Vector2(15, 32)]), Color("b878a4"))
+		ForestArt.draw_tiled(self, "spikes", Rect2(hazard.position - Vector2(0, 8), Vector2(hazard.size.x, 40)))
 	for index: int in range(_sparks.size()):
 		if not collected.has(index):
 			var center: Vector2 = _sparks[index] + Vector2(0, sin(_clock * 2 + index) * 5)
-			draw_circle(center, 16, Color(1, 0.72, 0.25, 0.15))
-			draw_circle(center, 6, Color("ffe5a0"))
-	ForestArt.draw_asset(self, "checkpoint_lantern", Rect2(1460, 470, 60, 110))
-	ForestArt.draw_asset(self, "stone_gate", Rect2(WIDTH - 190, 400, 150, 180))
+			ForestArt.draw_asset(self, "firefly", Rect2(center.round() - Vector2(16, 16), Vector2(32, 32)))
+	ForestArt.draw_asset(self, "checkpoint_lantern", Rect2(1458, 466, 64, 128))
+	ForestArt.draw_asset(self, "stone_gate", Rect2(WIDTH - 190, 394, 144, 192))

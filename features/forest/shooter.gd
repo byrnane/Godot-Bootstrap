@@ -27,12 +27,13 @@ func configure(entry: Dictionary) -> void:
 	score = int(entry.score)
 
 func _ready() -> void:
+	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	player = CharacterBody2D.new()
 	player.name = "Keeper"
 	player.collision_layer = 2
 	player.collision_mask = 0
 	add_child(player)
-	actor = ForestArt.sprite("keeper_top", Vector2(58, 70))
+	actor = ForestArt.sprite("keeper_top", Vector2(64, 80))
 	player.add_child(actor)
 	camera = Camera2D.new()
 	add_child(camera)
@@ -40,9 +41,8 @@ func _ready() -> void:
 	get_viewport().size_changed.connect(fit_camera)
 	for index: int in range(WAVE_COUNTS[stage]):
 		var angle: float = TAU * index / WAVE_COUNTS[stage]
-		var body: Sprite2D = ForestArt.sprite("shadow", Vector2(55, 55))
 		var ranged: bool = stage > 0 and index % 3 == 0
-		body.modulate = Color("d8a1e3") if ranged else Color.WHITE
+		var body: Sprite2D = ForestArt.sprite("shadow_ranged" if ranged else "shadow", Vector2(64, 80))
 		body.position = Vector2(cos(angle) * 480, sin(angle) * 230)
 		add_child(body)
 		enemies.append({"node": body, "ranged": ranged, "timer": 1.2 + index * 0.11})
@@ -50,10 +50,11 @@ func _ready() -> void:
 	queue_redraw()
 
 func fit_camera() -> void:
-	var available: Vector2 = get_viewport_rect().size - Vector2(80, 280)
-	var factor: float = minf(available.x / ARENA.size.x, available.y / ARENA.size.y)
-	camera.zoom = Vector2.ONE * maxf(0.35, factor)
-	camera.position.y = -30 / camera.zoom.y
+	var available: Vector2 = (get_viewport_rect().size - Vector2(24, 112)).max(Vector2.ONE)
+	var bounds: Vector2 = ARENA.size + Vector2(16, 32)
+	var factor: float = minf(available.x / bounds.x, available.y / bounds.y)
+	camera.zoom = Vector2.ONE * factor
+	camera.position.y = -4 / factor
 
 func _physics_process(delta: float) -> void:
 	if finished or not ForestData.input_available():
@@ -136,12 +137,12 @@ static func _segment_distance(point: Vector2, start: Vector2, end: Vector2) -> f
 	return point.distance_to(Geometry2D.get_closest_point_to_segment(point, start, end))
 
 func _draw() -> void:
-	ForestArt.draw_asset(self, "forest_floor", ARENA)
+	ForestArt.draw_tiled(self, "forest_floor", ARENA)
 	draw_rect(ARENA, Color("608b76"), false, 8)
-	for position: Vector2 in [Vector2(-530, -260), Vector2(530, -260), Vector2(-530, 260), Vector2(530, 260)]:
-		ForestArt.draw_asset(self, "checkpoint_lantern", Rect2(position - Vector2(22, 50), Vector2(44, 70)))
+	for position: Vector2 in [Vector2(-520, -176), Vector2(520, -176), Vector2(-520, 274), Vector2(520, 274)]:
+		ForestArt.draw_asset(self, "checkpoint_lantern", Rect2(position - Vector2(32, 114), Vector2(64, 128)))
 	for bullet: Dictionary in bullets:
-		var tint: Color = Color("c89ce5") if bullet.enemy else Color("ffe3a0")
-		draw_circle(bullet.position, 11, Color(tint, 0.16))
-		draw_circle(bullet.position, 5, tint)
-	draw_line(player.position + _aim * 34, player.position + _aim * 49, Color("ffe3a0"), 3)
+		var asset: String = "projectile_enemy" if bullet.enemy else "projectile_player"
+		ForestArt.draw_asset(self, asset, Rect2(bullet.position.round() - Vector2(12, 14), Vector2(24, 28)))
+	var aim_position: Vector2 = (player.position + _aim * 60).round()
+	ForestArt.draw_asset(self, "reticle", Rect2(aim_position - Vector2(16, 16), Vector2(32, 32)))

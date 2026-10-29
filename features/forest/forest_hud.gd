@@ -6,6 +6,7 @@ signal retry_requested
 signal primary_requested
 signal menu_requested
 
+var _hearts: Array[TextureRect] = []
 var _title: Label
 var _metrics: Label
 var _objective: Label
@@ -16,41 +17,57 @@ var _view: Dictionary = {}
 var _result_state: Dictionary = {}
 
 func _ready() -> void:
+	theme = ForestArt.ui_theme()
+	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var top: MarginContainer = ForestArt.margin(24)
+	var top: MarginContainer = ForestArt.margin(6)
 	top.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
 	add_child(top)
 	var panel: PanelContainer = ForestArt.panel()
 	top.add_child(panel)
-	var inset: MarginContainer = ForestArt.margin(18)
+	var inset: MarginContainer = ForestArt.margin(2)
 	panel.add_child(inset)
 	var column: VBoxContainer = VBoxContainer.new()
-	column.add_theme_constant_override("separation", 8)
+	column.add_theme_constant_override("separation", 0)
 	inset.add_child(column)
 	var row: HBoxContainer = HBoxContainer.new()
-	row.add_theme_constant_override("separation", 22)
+	row.add_theme_constant_override("separation", 6)
 	column.add_child(row)
-	_title = ForestArt.label("", &"UiSection")
+	_title = ForestArt.label("", &"UiLabel")
 	_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	row.add_child(_title)
+	for index: int in range(3):
+		var heart: TextureRect = TextureRect.new()
+		heart.texture = ForestArt.texture("heart")
+		heart.custom_minimum_size = Vector2(16, 16)
+		heart.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		heart.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		heart.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		row.add_child(heart)
+		_hearts.append(heart)
 	_metrics = ForestArt.label("", &"UiLabel")
 	_metrics.autowrap_mode = TextServer.AUTOWRAP_OFF
-	_metrics.custom_minimum_size.x = 180
+	_metrics.custom_minimum_size.x = 76
 	_metrics.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	row.add_child(_metrics)
 	var pause_button: Button = ForestArt.button("UI_GAMEPLAY_PAUSE", func() -> void: pause_requested.emit())
+	pause_button.icon = ForestArt.texture("ui_pause")
+	pause_button.custom_minimum_size.y = 24
 	pause_button.focus_mode = Control.FOCUS_NONE
 	row.add_child(pause_button)
-	_objective = ForestArt.label("", &"UiBody")
+	pause_button.name = "PauseButton"
+	pause_button.owner = self
+	pause_button.unique_name_in_owner = true
+	_objective = ForestArt.label("", &"UiSmall")
 	column.add_child(_objective)
-	var bottom: MarginContainer = ForestArt.margin(24)
+	var bottom: MarginContainer = ForestArt.margin(6)
 	bottom.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
 	bottom.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	add_child(bottom)
 	var hints_panel: PanelContainer = ForestArt.panel()
 	bottom.add_child(hints_panel)
-	var hints_margin: MarginContainer = ForestArt.margin(12)
+	var hints_margin: MarginContainer = ForestArt.margin(2)
 	hints_panel.add_child(hints_margin)
 	_hint = ForestArt.label("", &"UiLabel")
 	hints_margin.add_child(_hint)
@@ -59,11 +76,15 @@ func _ready() -> void:
 	_result_layer.mouse_filter = Control.MOUSE_FILTER_STOP
 	add_child(_result_layer)
 	var result_panel: PanelContainer = ForestArt.panel()
-	result_panel.custom_minimum_size = Vector2(620, 300)
+	result_panel.custom_minimum_size = Vector2(440, 200)
 	_result_layer.add_child(result_panel)
-	var result_margin: MarginContainer = ForestArt.margin(32)
+	var result_margin: MarginContainer = ForestArt.margin(10)
 	result_panel.add_child(result_margin)
 	_result = preload("res://shared/ui/components/ui_result_content.tscn").instantiate()
+	_result.custom_minimum_size.x = 400
+	_result.add_theme_constant_override("separation", 10)
+	for button: Button in [_result.get_node("%Primary"), _result.get_node("%Secondary")]:
+		button.custom_minimum_size.y = 28
 	result_margin.add_child(_result)
 	_result.primary_requested.connect(func() -> void: primary_requested.emit())
 	_result.secondary_requested.connect(func() -> void: menu_requested.emit())
@@ -75,8 +96,10 @@ func apply_view_model(view: Dictionary) -> void:
 		return
 	var mode: String = str(view.get("mode_id", "platformer"))
 	_title.text = tr(ForestData.TITLES[mode]) + "  ·  " + tr("UI_FOREST_STAGE") % int(view.get("stage", 1))
-	var hearts: String = "● ".repeat(int(view.get("health", 0)))
-	_metrics.text = hearts + "   " + tr("UI_FOREST_SCORE") % int(view.get("score", 0))
+	for index: int in range(_hearts.size()):
+		_hearts[index].visible = mode != "puzzle"
+		_hearts[index].modulate = Color.WHITE if index < int(view.get("health", 0)) else Color("345366")
+	_metrics.text = tr("UI_FOREST_SCORE") % int(view.get("score", 0))
 	_objective.text = str(view.get("metric", "")) + "   ·   " + tr("UI_FOREST_GOAL_" + mode.to_upper())
 	var pad: bool = InputManager.last_device == &"gamepad"
 	var movement: String = "L / D-pad" if pad else InputManager.get_action_binding_text(&"keeper_left") + " / " + InputManager.get_action_binding_text(&"keeper_right")

@@ -30,6 +30,7 @@ func configure(entry: Dictionary) -> void:
 	score = int(entry.score)
 
 func _ready() -> void:
+	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	load_room()
 	camera = Camera2D.new()
 	add_child(camera)
@@ -57,9 +58,9 @@ func load_room() -> void:
 
 func fit_camera() -> void:
 	var room_size: Vector2 = Vector2(ROOMS[stage][0].length(), ROOMS[stage].size()) * CELL
-	var available: Vector2 = get_viewport_rect().size - Vector2(100, 280)
-	camera.zoom = Vector2.ONE * maxf(0.3, minf(available.x / room_size.x, available.y / room_size.y))
-	camera.position = room_size / 2 - Vector2(0, 30 / camera.zoom.y)
+	var available: Vector2 = (get_viewport_rect().size - Vector2(24, 112)).max(Vector2.ONE)
+	camera.zoom = Vector2.ONE * minf(available.x / room_size.x, available.y / room_size.y)
+	camera.position = room_size / 2 - Vector2(0, 4 / camera.zoom.y)
 
 func _physics_process(delta: float) -> void:
 	if finished or not ForestData.input_available():
@@ -117,24 +118,20 @@ func occupied_plates() -> int:
 
 func _draw() -> void:
 	var room: Array = ROOMS[stage]
-	ForestArt.draw_asset(self, "forest_floor", Rect2(Vector2.ZERO, Vector2(room[0].length(), room.size()) * CELL))
-	for y: int in range(room.size()):
-		for x: int in range(room[y].length()):
-			draw_rect(Rect2(Vector2(x, y) * CELL, Vector2.ONE * CELL), Color(0.6, 0.8, 0.7, 0.12), false, 1)
+	ForestArt.draw_tiled(self, "forest_floor", Rect2(Vector2.ZERO, Vector2(room[0].length(), room.size()) * CELL))
 	for cell: Vector2i in walls:
 		var rect: Rect2 = Rect2(Vector2(cell) * CELL, Vector2.ONE * CELL)
-		draw_rect(rect.grow(-2), Color("2e4b46"))
-		draw_rect(Rect2(rect.position + Vector2(2, 2), Vector2(CELL - 4, 6)), Color("587567"))
+		draw_rect(rect, Color("18282f"))
+		ForestArt.draw_asset(self, "wall", Rect2(rect.position + Vector2(4, 4), Vector2(64, 64)))
 	for cell: Vector2i in plates:
 		var center: Vector2 = (Vector2(cell) + Vector2.ONE / 2) * CELL
-		draw_circle(center, 23, Color("ddb86b") if crates.has(cell) else Color("557b75"))
-		draw_circle(center, 16, Color("243b36"))
+		ForestArt.draw_asset(self, "pressure_plate_active" if crates.has(cell) else "pressure_plate", Rect2(center - Vector2(32, 32), Vector2(64, 64)))
 	for cell: Vector2i in crates:
-		ForestArt.draw_asset(self, "crate", Rect2(Vector2(cell) * CELL + Vector2(7, 7), Vector2.ONE * (CELL - 14)))
-	ForestArt.draw_asset(self, "stone_gate", Rect2(Vector2(gate_cell) * CELL + Vector2(0, -10), Vector2(CELL, CELL + 10)), Color.WHITE if gate_open() else Color("66807b"))
+		ForestArt.draw_asset(self, "crate", Rect2(Vector2(cell) * CELL + Vector2(4, -4), Vector2(64, 80)))
+	ForestArt.draw_asset(self, "stone_gate", Rect2(Vector2(gate_cell) * CELL + Vector2(-12, -56), Vector2(96, 128)), Color.WHITE if gate_open() else Color("66807b"))
 	var image: Texture2D = ForestArt.texture("keeper_top")
 	if image != null:
 		var center: Vector2 = (Vector2(player_cell) + Vector2.ONE / 2) * CELL
 		draw_set_transform(center, _facing.angle() - PI / 2)
-		draw_texture_rect(image, Rect2(-Vector2(26, 31), Vector2(52, 62)), false)
+		draw_texture_rect(image, Rect2(-Vector2(32, 40), Vector2(64, 80)), false)
 		draw_set_transform(Vector2.ZERO)

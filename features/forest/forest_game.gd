@@ -22,7 +22,7 @@ func _ready() -> void:
 	background.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	background.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	background.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	background.modulate = Color(0.5, 0.65, 0.65)
+	background.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	background_layer.add_child(background)
 	var particles: CPUParticles2D = ForestArt.fireflies(background_layer, get_viewport_rect().size)

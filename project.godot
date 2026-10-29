@@ -15,7 +15,7 @@ run/main_scene="res://main/main.tscn"
 config/use_custom_user_dir=true
 config/custom_user_dir_name="GameTemplate/ForestKeeperPixelArt"
 config/features=PackedStringArray("4.7", "GL Compatibility")
-config/icon="res://assets/forest/keeper_side.png"
+config/icon="res://assets/pixel_forest/keeper_side.png"
 
 [audio]
 
