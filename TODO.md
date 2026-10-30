@@ -11,7 +11,7 @@ Maintain a universal Godot game-development template in `main` and specialized 2
 - stable, debuggable, testable, and easy to extend.
 
 
-## Current Status — 2026-10-28
+## Current Status — 2026-10-29
 
 The checked baseline phases below record implemented infrastructure, not unconditional current release acceptance. The universal native UI is implemented in the common base; variants receive its commits through merge. See [READINESS.md](docs/READINESS.md) for actual checks and limits, [UI_FRAMEWORK.md](docs/UI_FRAMEWORK.md) for extension.
 
@@ -21,8 +21,8 @@ The checked baseline phases below record implemented infrastructure, not uncondi
 - [x] Shared compact UI and layout acceptance at 640×360; a separate pixelart skin is optional.
 - [ ] Physical gamepad acceptance of the updated UI.
 - [x] Fresh Windows/Web exports; native Theme/font/full OFL and absence of design/editor payload verified in the packages.
-- [x] Windows/Web acceptance of `main`, `2d`, and `3d` along the short route: startup, audio, controls, smoothness, and main transitions. This does not cover full playthroughs or Web storage durability after restart.
-- [ ] PixelArt assets and adaptation of ForestMenu, ForestHud, and cameras; visual acceptance of `2d-pixelart` remains deferred.
+- [x] Windows/Web acceptance of `main`, `2d`, `2d-pixelart`, and `3d` along the short route: startup, audio, controls, smoothness, and main transitions. This does not cover full playthroughs or Web storage durability after restart.
+- [x] PixelArt assets and adaptation of ForestMenu, ForestHud, and cameras; the owner accepted `2d-pixelart` in Godot and Windows/Web builds on 2026-10-29. See READINESS.md for the accepted revision and scope.
 - [x] Eliminate the ObjectDB scene-loading leak and Cyclops 3D editor shutdown errors; see the focused acceptance in READINESS.md.
 
 ## Non-Goals
